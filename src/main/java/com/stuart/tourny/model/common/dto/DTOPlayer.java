@@ -1,4 +1,4 @@
-package com.stuart.tourny.model.dto;
+package com.stuart.tourny.model.common.dto;
 
 public class DTOPlayer {
 

@@ -23,6 +23,15 @@ public class ConnectionManager {
 
     }
 
+    /**
+     * Get an instance of the connection manager. Will create a new one if it does not already
+     * exist.
+     *
+     * @return - Connection manager
+     *
+     * @throws SQLException
+     * @throws PropertyVetoException
+     */
     public static ConnectionManager getInstance () throws SQLException, PropertyVetoException {
         if (conn == null) {
             conn = new ConnectionManager ();
@@ -41,7 +50,7 @@ public class ConnectionManager {
      * @throws SQLException
      */
     public Connection getConnection () throws SQLException {
-        Connection con = this.cpds.getConnection ();
+        Connection con = cpds.getConnection ();
         con.setAutoCommit (false);
         return con;
     }

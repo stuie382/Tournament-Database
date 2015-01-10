@@ -1,6 +1,6 @@
 package com.stuart.tourny.model.engines;
 
-import com.stuart.tourny.model.dto.DTOPlayer;
+import com.stuart.tourny.model.common.dto.DTOPlayer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,11 +19,11 @@ public class PlayerDbEngine {
     }
 
     /**
-     * Attempt to retrieve a record from the player table for the given
-     * playerName
-     * @param con
-     * @param playerName
-     * @return
+     * Attempt to retrieve a record from the player table for the given playerName
+     *
+     * @param con - The connection to the database
+     * @param playerName - Key of the record to look for
+     * @return DTOPlayer - Player record
      */
     public DTOPlayer getPlayer (Connection con,
                                 String playerName) {
@@ -33,10 +33,11 @@ public class PlayerDbEngine {
     }
 
     /**
-     * Add a new player record to the database. This will not return an
-     * updated DTO back as a result.
-     * @param con
-     * @param dto
+     * Add a new player record to the database. This will not return an updated DTO back as a
+     * result.
+     *
+     * @param con - The connection to the database
+     * @param dto - Record to add to the database
      */
     public void addPlayer (Connection con,
                            DTOPlayer dto) {
@@ -50,6 +51,30 @@ public class PlayerDbEngine {
         } catch (SQLException ex) {
             System.out.println ("Error adding player: " + ex.getMessage ());
         }
+    }
+
+    /**
+     * Update a given player record.
+     *
+     * @param conn - The connection to the database
+     * @param dto - Record to update
+     * @return - Updated record from the database
+     */
+    public DTOPlayer updatePlayer (Connection conn,
+                                   DTOPlayer dto) {
+        //TODO
+        return null;
+    }
+
+    /**
+     * Delete a given player record.
+     *
+     * @param conn - The connection to the database
+     * @param dto - Record to delete
+     */
+    public void deletePlayer (Connection conn,
+                              DTOPlayer dto) {
+        //TODO
     }
 
 

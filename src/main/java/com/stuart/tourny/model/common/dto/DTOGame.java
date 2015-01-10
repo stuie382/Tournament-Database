@@ -1,10 +1,11 @@
-package com.stuart.tourny.model.dto;
+package com.stuart.tourny.model.common.dto;
 
 public class DTOGame {
 
-    public DTOGame() {
+    public DTOGame () {
         // Empty constructor
     }
+
     private int gameId;
     private String homePlayer;
     private String awayPlayer;
