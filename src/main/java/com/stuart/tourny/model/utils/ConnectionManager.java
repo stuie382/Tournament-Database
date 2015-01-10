@@ -1,4 +1,4 @@
-package main.java.com.stuart.tourny.model.utils;
+package com.stuart.tourny.model.utils;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

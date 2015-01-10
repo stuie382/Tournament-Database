@@ -1,4 +1,5 @@
-package main.java.com.stuart.tourny.model.dto;
+package com.stuart.tourny.model.dto;
+
 
 public class DTOTournament {
 

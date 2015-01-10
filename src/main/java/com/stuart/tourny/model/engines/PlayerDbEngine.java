@@ -1,6 +1,6 @@
-package main.java.com.stuart.tourny.model.engines;
+package com.stuart.tourny.model.engines;
 
-import main.java.com.stuart.tourny.model.dto.DTOPlayer;
+import com.stuart.tourny.model.dto.DTOPlayer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
