@@ -17,7 +17,7 @@ public class ConnectionManagerTest extends TestCase {
 
     @org.junit.After
     public void tearDown () throws Exception {
-
+        conn.close ();
     }
 
     @Test
@@ -28,7 +28,6 @@ public class ConnectionManagerTest extends TestCase {
         try {
             Statement s = conn.createStatement ();
             updated = s.executeUpdate (insert);
-            conn.close ();
         } catch (Exception ex) {
             System.out.println ("insert test fail: " + ex.getMessage ());
         }
