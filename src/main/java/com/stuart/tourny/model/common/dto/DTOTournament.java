@@ -11,7 +11,7 @@ public class DTOTournament {
     private String tournamentName;
     private String tournamentWinner;
     private String woodenSpoon;
-    private String GoldenBoot;
+    private String goldenBoot;
     private int goldenBootGoals;
 
     public int getTournamentId () {
@@ -47,11 +47,11 @@ public class DTOTournament {
     }
 
     public String getGoldenBoot () {
-        return GoldenBoot;
+        return goldenBoot;
     }
 
     public void setGoldenBoot (String goldenBoot) {
-        GoldenBoot = goldenBoot;
+        this.goldenBoot = goldenBoot;
     }
 
     public int getGoldenBootGoals () {
@@ -69,7 +69,7 @@ public class DTOTournament {
         sb.append (", tournamentName='").append (tournamentName).append ('\'');
         sb.append (", tournamentWinner='").append (tournamentWinner).append ('\'');
         sb.append (", woodenSpoon='").append (woodenSpoon).append ('\'');
-        sb.append (", GoldenBoot='").append (GoldenBoot).append ('\'');
+        sb.append (", goldenBoot='").append (goldenBoot).append ('\'');
         sb.append (", goldenBootGoals=").append (goldenBootGoals);
         sb.append ('}');
         return sb.toString ();
@@ -92,7 +92,7 @@ public class DTOTournament {
         if (tournamentId != that.tournamentId) {
             return false;
         }
-        if (!GoldenBoot.equals (that.GoldenBoot)) {
+        if (!goldenBoot.equals (that.goldenBoot)) {
             return false;
         }
         if (!tournamentName.equals (that.tournamentName)) {
@@ -114,7 +114,7 @@ public class DTOTournament {
         result = 31 * result + tournamentName.hashCode ();
         result = 31 * result + tournamentWinner.hashCode ();
         result = 31 * result + woodenSpoon.hashCode ();
-        result = 31 * result + GoldenBoot.hashCode ();
+        result = 31 * result + goldenBoot.hashCode ();
         result = 31 * result + goldenBootGoals;
         return result;
     }
