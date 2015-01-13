@@ -2,8 +2,12 @@ package com.stuart.tourny.model.engines;
 
 import com.stuart.tourny.model.common.dto.DTOGame;
 import com.stuart.tourny.model.common.key.KeyGame;
+import com.stuart.tourny.model.utils.SqlUtils;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class GameDbEngine {
 
@@ -27,21 +31,62 @@ public class GameDbEngine {
      * Get a game record matching the key object.
      *
      * @param conn - The connection to the database
-     * @param key - Key of the record to return
+     * @param key  - Key of the record to return
      * @return DTOGame - Game record
      */
     public DTOGame getGame (Connection conn,
-                            KeyGame key) {
+                            KeyGame key) throws SQLException {
+        DTOGame dto = null;
+        StringBuilder sql = new StringBuilder (getSelectSQL ());
+        sql.append ("  FROM game ");
+        sql.append (" WHERE game_id = ? ");
+        try (PreparedStatement ps = conn.prepareStatement (sql.toString ())) {
+            int col = 1;
+            ps.setLong (col, key.getGameId ());
+            try (ResultSet rs = ps.executeQuery ()) {
+                if (rs.next ()) {
+                    dto = getDTOFromResultSet (rs);
+                }
+            }
+        }
+        if (dto == null) {
+            throw new IllegalArgumentException ("Could not find Game record for " + key);
+        }
+        return dto;
+    }
 
-        //TODO
-        return null;
+    /**
+     * Create a new DTOGame from a result set. Needs to set the hash code of the DTO.
+     *
+     * @param rs ResultSet to convert into a DTO
+     * @return populated DTOGame object
+     *
+     * @throws SQLException
+     */
+    private DTOGame getDTOFromResultSet (ResultSet rs) throws SQLException {
+        DTOGame dto = new DTOGame ();
+        int col = 1;
+        dto.setGameId (rs.getLong (col++));
+        dto.setHomePlayer (rs.getString (col++));
+        dto.setAwayPlayer (rs.getString (col++));
+        dto.setHomeGoals (rs.getLong (col++));
+        dto.setAwayGoals (rs.getLong (col++));
+        dto.setExtraTime (SqlUtils.stb (rs.getString (col++)));
+        dto.setHomePens (rs.getLong (col++));
+        dto.setAwayPens (rs.getLong (col++));
+        dto.setWinner (rs.getString (col++));
+        dto.setTournamentId (rs.getLong (col++));
+        dto.setKnockOut (SqlUtils.stb (rs.getString (col++)));
+        dto.setHashCode (dto.hashCode ());
+        //TODO hashcode??
+        return dto;
     }
 
     /**
      * Add a new game record, returning the record created.
      *
      * @param conn - The connection to the database
-     * @param dto - Record to add
+     * @param dto  - Record to add
      * @return DTOGame - Record added
      */
     public DTOGame addGameAndReturn (Connection conn,
@@ -54,7 +99,7 @@ public class GameDbEngine {
      * Add a new game record, no result is returned.
      *
      * @param conn - The connection to the database
-     * @param dto - Record to add
+     * @param dto  - Record to add
      */
     public void addGame (Connection conn,
                          DTOGame dto) {
@@ -65,7 +110,7 @@ public class GameDbEngine {
      * Update a given game record.
      *
      * @param conn - The connection to the database
-     * @param dto - Record to update
+     * @param dto  - Record to update
      * @return DTOGame - Record updated from the database
      */
     public DTOGame updateGame (Connection conn,
@@ -78,7 +123,7 @@ public class GameDbEngine {
      * Delete a given game record.
      *
      * @param conn - The connection to the database
-     * @param dto - Record to delete
+     * @param dto  - Record to delete
      */
     public void deleteGame (Connection conn,
                             DTOGame dto) {

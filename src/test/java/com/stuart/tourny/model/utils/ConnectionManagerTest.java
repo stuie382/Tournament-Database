@@ -23,7 +23,7 @@ public class ConnectionManagerTest extends TestCase {
     @Test
     public void testInsertTest () throws Exception {
 
-        String insert = "insert into player values ('bob')";
+        String insert = "INSERT INTO player VALUES ('bob')";
         int updated = -1;
         try {
             Statement s = conn.createStatement ();

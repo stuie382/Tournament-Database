@@ -6,22 +6,24 @@ public class DTOGame {
         // Empty constructor
     }
 
-    private int gameId;
+    private long gameId;
     private String homePlayer;
     private String awayPlayer;
-    private int homeGoals;
-    private int awayGoals;
+    private long homeGoals;
+    private long awayGoals;
     private boolean extraTime;
-    private int homePens;
-    private int awayPens;
+    private long homePens;
+    private long awayPens;
     private String winner;
-    private int tournamentId;
+    private long tournamentId;
+    private boolean knockOut;
+    private int hashCode;
 
-    public int getGameId () {
+    public long getGameId () {
         return gameId;
     }
 
-    public void setGameId (int gameId) {
+    public void setGameId (long gameId) {
         this.gameId = gameId;
     }
 
@@ -41,19 +43,19 @@ public class DTOGame {
         this.awayPlayer = awayPlayer;
     }
 
-    public int getHomeGoals () {
+    public long getHomeGoals () {
         return homeGoals;
     }
 
-    public void setHomeGoals (int homeGoals) {
+    public void setHomeGoals (long homeGoals) {
         this.homeGoals = homeGoals;
     }
 
-    public int getAwayGoals () {
+    public long getAwayGoals () {
         return awayGoals;
     }
 
-    public void setAwayGoals (int awayGoals) {
+    public void setAwayGoals (long awayGoals) {
         this.awayGoals = awayGoals;
     }
 
@@ -65,19 +67,19 @@ public class DTOGame {
         this.extraTime = extraTime;
     }
 
-    public int getHomePens () {
+    public long getHomePens () {
         return homePens;
     }
 
-    public void setHomePens (int homePens) {
+    public void setHomePens (long homePens) {
         this.homePens = homePens;
     }
 
-    public int getAwayPens () {
+    public long getAwayPens () {
         return awayPens;
     }
 
-    public void setAwayPens (int awayPens) {
+    public void setAwayPens (long awayPens) {
         this.awayPens = awayPens;
     }
 
@@ -89,29 +91,20 @@ public class DTOGame {
         this.winner = winner;
     }
 
-    public int getTournamentId () {
+    public long getTournamentId () {
         return tournamentId;
     }
 
-    public void setTournamentId (int tournamentId) {
+    public void setTournamentId (long tournamentId) {
         this.tournamentId = tournamentId;
     }
 
-    @Override
-    public String toString () {
-        final StringBuilder sb = new StringBuilder ("DTOGame{");
-        sb.append ("gameId=").append (gameId);
-        sb.append (", homePlayer='").append (homePlayer).append ('\'');
-        sb.append (", awayPlayer='").append (awayPlayer).append ('\'');
-        sb.append (", homeGoals=").append (homeGoals);
-        sb.append (", awayGoals=").append (awayGoals);
-        sb.append (", extraTime=").append (extraTime);
-        sb.append (", homePens=").append (homePens);
-        sb.append (", awayPens=").append (awayPens);
-        sb.append (", winner='").append (winner).append ('\'');
-        sb.append (", tournamentId=").append (tournamentId);
-        sb.append ('}');
-        return sb.toString ();
+    public boolean isKnockOut () {
+        return knockOut;
+    }
+
+    public void setKnockOut (boolean knockOut) {
+        this.knockOut = knockOut;
     }
 
     @Override
@@ -137,10 +130,16 @@ public class DTOGame {
         if (gameId != dtoGame.gameId) {
             return false;
         }
+        if (hashCode != dtoGame.hashCode) {
+            return false;
+        }
         if (homeGoals != dtoGame.homeGoals) {
             return false;
         }
         if (homePens != dtoGame.homePens) {
+            return false;
+        }
+        if (knockOut != dtoGame.knockOut) {
             return false;
         }
         if (tournamentId != dtoGame.tournamentId) {
@@ -161,16 +160,46 @@ public class DTOGame {
 
     @Override
     public int hashCode () {
-        int result = gameId;
+        int result = (int) (gameId ^ (gameId >>> 32));
         result = 31 * result + homePlayer.hashCode ();
         result = 31 * result + awayPlayer.hashCode ();
-        result = 31 * result + homeGoals;
-        result = 31 * result + awayGoals;
+        result = 31 * result + (int) (homeGoals ^ (homeGoals >>> 32));
+        result = 31 * result + (int) (awayGoals ^ (awayGoals >>> 32));
         result = 31 * result + (extraTime ? 1 : 0);
-        result = 31 * result + homePens;
-        result = 31 * result + awayPens;
+        result = 31 * result + (int) (homePens ^ (homePens >>> 32));
+        result = 31 * result + (int) (awayPens ^ (awayPens >>> 32));
         result = 31 * result + winner.hashCode ();
-        result = 31 * result + tournamentId;
+        result = 31 * result + (int) (tournamentId ^ (tournamentId >>> 32));
+        result = 31 * result + (knockOut ? 1 : 0);
+        result = 31 * result + hashCode;
         return result;
     }
+
+    @Override
+    public String toString () {
+        final StringBuilder sb = new StringBuilder ("DTOGame{");
+        sb.append ("gameId=").append (gameId);
+        sb.append (", homePlayer='").append (homePlayer).append ('\'');
+        sb.append (", awayPlayer='").append (awayPlayer).append ('\'');
+        sb.append (", homeGoals=").append (homeGoals);
+        sb.append (", awayGoals=").append (awayGoals);
+        sb.append (", extraTime=").append (extraTime);
+        sb.append (", homePens=").append (homePens);
+        sb.append (", awayPens=").append (awayPens);
+        sb.append (", winner='").append (winner).append ('\'');
+        sb.append (", tournamentId=").append (tournamentId);
+        sb.append (", knockOut=").append (knockOut);
+        sb.append (", hashCode=").append (hashCode);
+        sb.append ('}');
+        return sb.toString ();
+    }
+
+    public int getHashCode () {
+        return hashCode;
+    }
+
+    public void setHashCode (int hashCode) {
+        this.hashCode = hashCode;
+    }
+
 }
