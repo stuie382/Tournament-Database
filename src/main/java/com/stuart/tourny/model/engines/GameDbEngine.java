@@ -38,8 +38,8 @@ public class GameDbEngine {
                             KeyGame key) throws SQLException {
         DTOGame dto = null;
         StringBuilder sql = new StringBuilder (getSelectSQL ());
-        sql.append ("  FROM game ");
-        sql.append (" WHERE game_id = ? ");
+        sql.append ("  FROM game g ");
+        sql.append (" WHERE g.game_id = ? ");
         try (PreparedStatement ps = conn.prepareStatement (sql.toString ())) {
             int col = 1;
             ps.setLong (col, key.getGameId ());
