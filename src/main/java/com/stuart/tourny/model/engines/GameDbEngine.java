@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class GameDbEngine {
 
-    private static String getSelectSQL () {
+    private static String getSelectSql () {
         StringBuilder sql = new StringBuilder ();
         sql.append (" SELECT g.game_id, ");
         sql.append ("        g.home_player, ");
@@ -27,6 +27,22 @@ public class GameDbEngine {
         return sql.toString ();
     }
 
+    private static String getInsertSql() {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" INSERT INTO game (home_player, ");
+        sql.append("                   away_player, ");
+        sql.append("                   home_goals, ");
+        sql.append("                   away_goals, ");
+        sql.append("                   extra_time, ");
+        sql.append("                   home_pens, ");
+        sql.append("                   away_pens, ");
+        sql.append("                   winner, ");
+        sql.append("                   tournament_id, ");
+        sql.append("                   knock_out) ");
+        sql.append(" VALUES (?,?,?,?,?,?,?,?,?,? ");
+        return sql.toString();
+    }
+
     /**
      * Get a game record matching the key object.
      *
@@ -37,7 +53,7 @@ public class GameDbEngine {
     public DTOGame getGame (Connection conn,
                             KeyGame key) throws SQLException {
         DTOGame dto = null;
-        StringBuilder sql = new StringBuilder (getSelectSQL ());
+        StringBuilder sql = new StringBuilder (getSelectSql ());
         sql.append ("  FROM game g ");
         sql.append (" WHERE g.game_id = ? ");
         try (PreparedStatement ps = conn.prepareStatement (sql.toString ())) {

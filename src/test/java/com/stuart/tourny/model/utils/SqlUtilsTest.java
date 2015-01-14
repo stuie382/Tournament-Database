@@ -26,7 +26,7 @@ public class SqlUtilsTest {
     }
 
     @Test
-    public void testStb_Lower_Y () throws Exception {
+    public void testStb_Lower_y () throws Exception {
         String input = "y";
         boolean result = SqlUtils.stb (input);
         assertTrue (result);

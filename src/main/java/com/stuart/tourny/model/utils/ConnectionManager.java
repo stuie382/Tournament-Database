@@ -3,7 +3,6 @@ package com.stuart.tourny.model.utils;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -21,9 +20,6 @@ public class ConnectionManager {
         cpds.setMaxStatements (50);
         cpds.setInitialPoolSize (5);
         cpds.setAutoCommitOnClose (false);
-
-        File file = new File("scripts/tournament_010.sql");
-
     }
 
     /**
