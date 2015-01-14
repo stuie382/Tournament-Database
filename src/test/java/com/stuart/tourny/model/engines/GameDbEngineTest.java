@@ -2,7 +2,6 @@ package com.stuart.tourny.model.engines;
 
 import com.stuart.tourny.model.common.key.KeyGame;
 import com.stuart.tourny.model.utils.ConnectionManager;
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -11,7 +10,7 @@ import org.junit.rules.ExpectedException;
 
 import java.sql.Connection;
 
-public class GameDbEngineTest extends TestCase {
+public class GameDbEngineTest {
 
     private Connection conn;
     private GameDbEngine uut;
@@ -31,7 +30,7 @@ public class GameDbEngineTest extends TestCase {
     @Rule
     public ExpectedException exception = ExpectedException.none ();
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void testGetGame () throws Exception {
         KeyGame key = new KeyGame (99999);
         exception.expect (IllegalArgumentException.class);

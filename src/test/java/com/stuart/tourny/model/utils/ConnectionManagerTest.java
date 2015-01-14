@@ -1,12 +1,13 @@
 package com.stuart.tourny.model.utils;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
-public class ConnectionManagerTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class ConnectionManagerTest {
 
     private Connection conn;
 

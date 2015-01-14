@@ -1,11 +1,14 @@
 package com.stuart.tourny.model.utils;
 
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SqlUtilsTest extends TestCase {
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+
+public class SqlUtilsTest {
 
     @Before
     public void setUp () throws Exception {
