@@ -8,10 +8,16 @@ import java.sql.SQLException;
 
 public class ConnectionManager {
 
-    private static ConnectionManager conn;
+    private static ConnectionManager connectionManager;
     private static ComboPooledDataSource cpds;
     private static final String dbURL1 = "jdbc:derby:Tournament/db1;create=true";
 
+    /**
+     * Private constructor that is run the first time that the {@code getInstance} method is run.
+     * That will create the connection pool manager connected to the embedded Derby instance.
+     *
+     * @throws PropertyVetoException
+     */
     private ConnectionManager () throws PropertyVetoException {
         // private constructor
         cpds = new ComboPooledDataSource ();
@@ -20,10 +26,11 @@ public class ConnectionManager {
         cpds.setMaxStatements (50);
         cpds.setInitialPoolSize (5);
         cpds.setAutoCommitOnClose (false);
+
     }
 
     /**
-     * Get an instance of the connection manager. Will create a new one if it does not already
+     * Get an instance of this connection manager. Will create a new one if it does not already
      * exist.
      *
      * @return - Connection manager
@@ -32,24 +39,25 @@ public class ConnectionManager {
      * @throws PropertyVetoException
      */
     public static ConnectionManager getInstance () throws SQLException, PropertyVetoException {
-        if (conn == null) {
-            conn = new ConnectionManager ();
-            return conn;
+        if (connectionManager == null) {
+            connectionManager = new ConnectionManager ();
+            return connectionManager;
         }
         else {
-            return conn;
+            return connectionManager;
         }
     }
 
     /**
-     * Get a connection from the pool, with auto commit disabled.
+     * Get a connection from the pool for the specified schema, with auto commit disabled.
      *
      * @return New connection with auto commit off!
      *
      * @throws SQLException
      */
-    public Connection getConnection () throws SQLException {
+    public Connection getConnection (String schema) throws SQLException {
         Connection con = cpds.getConnection ();
+        con.setSchema (schema);
         con.setAutoCommit (false);
         return con;
     }

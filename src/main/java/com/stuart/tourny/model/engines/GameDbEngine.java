@@ -9,6 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.stuart.tourny.model.utils.SqlUtils.getListFromResultSet;
+import static com.stuart.tourny.model.utils.SqlUtils.makeHashcode;
+
 public class GameDbEngine {
 
     private static String getSelectSql () {
@@ -27,36 +30,36 @@ public class GameDbEngine {
         return sql.toString ();
     }
 
-    private static String getInsertSql() {
-        StringBuilder sql = new StringBuilder();
-        sql.append(" INSERT INTO game (home_player, ");
-        sql.append("                   away_player, ");
-        sql.append("                   home_goals, ");
-        sql.append("                   away_goals, ");
-        sql.append("                   extra_time, ");
-        sql.append("                   home_pens, ");
-        sql.append("                   away_pens, ");
-        sql.append("                   winner, ");
-        sql.append("                   tournament_id, ");
-        sql.append("                   knock_out) ");
-        sql.append(" VALUES (?,?,?,?,?,?,?,?,?,? ");
-        return sql.toString();
+    private static String getInsertSql () {
+        StringBuilder sql = new StringBuilder ();
+        sql.append (" INSERT INTO game (g.home_player, ");
+        sql.append ("                   g.away_player, ");
+        sql.append ("                   g.home_goals, ");
+        sql.append ("                   g.away_goals, ");
+        sql.append ("                   g.extra_time, ");
+        sql.append ("                   g.home_pens, ");
+        sql.append ("                   g.away_pens, ");
+        sql.append ("                   g.winner, ");
+        sql.append ("                   g.tournament_id, ");
+        sql.append ("                   g.knock_out) ");
+        sql.append (" VALUES (?,?,?,?,?,?,?,?,?,? ");
+        return sql.toString ();
     }
 
     /**
      * Get a game record matching the key object.
      *
-     * @param conn - The connection to the database
+     * @param connTDB - The connection to the database
      * @param key  - Key of the record to return
      * @return DTOGame - Game record
      */
-    public DTOGame getGame (Connection conn,
+    public DTOGame getGame (Connection connTDB,
                             KeyGame key) throws SQLException {
         DTOGame dto = null;
         StringBuilder sql = new StringBuilder (getSelectSql ());
         sql.append ("  FROM game g ");
         sql.append (" WHERE g.game_id = ? ");
-        try (PreparedStatement ps = conn.prepareStatement (sql.toString ())) {
+        try (PreparedStatement ps = connTDB.prepareStatement (sql.toString ())) {
             int col = 1;
             ps.setLong (col, key.getGameId ());
             try (ResultSet rs = ps.executeQuery ()) {
@@ -82,6 +85,7 @@ public class GameDbEngine {
     private DTOGame getDTOFromResultSet (ResultSet rs) throws SQLException {
         DTOGame dto = new DTOGame ();
         int col = 1;
+        dto.setHashCode (makeHashcode (getListFromResultSet (rs)));
         dto.setGameId (rs.getLong (col++));
         dto.setHomePlayer (rs.getString (col++));
         dto.setAwayPlayer (rs.getString (col++));
@@ -93,19 +97,17 @@ public class GameDbEngine {
         dto.setWinner (rs.getString (col++));
         dto.setTournamentId (rs.getLong (col++));
         dto.setKnockOut (SqlUtils.stb (rs.getString (col++)));
-        dto.setHashCode (dto.hashCode ());
-        //TODO hashcode??
         return dto;
     }
 
     /**
      * Add a new game record, returning the record created.
      *
-     * @param conn - The connection to the database
+     * @param connTDB - The connection to the database
      * @param dto  - Record to add
      * @return DTOGame - Record added
      */
-    public DTOGame addGameAndReturn (Connection conn,
+    public DTOGame addGameAndReturn (Connection connTDB,
                                      DTOGame dto) {
         //TODO
         return null;
@@ -114,10 +116,10 @@ public class GameDbEngine {
     /**
      * Add a new game record, no result is returned.
      *
-     * @param conn - The connection to the database
+     * @param connTDB - The connection to the database
      * @param dto  - Record to add
      */
-    public void addGame (Connection conn,
+    public void addGame (Connection connTDB,
                          DTOGame dto) {
         //TODO
     }
@@ -125,11 +127,11 @@ public class GameDbEngine {
     /**
      * Update a given game record.
      *
-     * @param conn - The connection to the database
+     * @param connTDB - The connection to the database
      * @param dto  - Record to update
      * @return DTOGame - Record updated from the database
      */
-    public DTOGame updateGame (Connection conn,
+    public DTOGame updateGame (Connection connTDB,
                                DTOGame dto) {
         //TODO
         return null;
@@ -138,10 +140,10 @@ public class GameDbEngine {
     /**
      * Delete a given game record.
      *
-     * @param conn - The connection to the database
+     * @param connTDB - The connection to the database
      * @param dto  - Record to delete
      */
-    public void deleteGame (Connection conn,
+    public void deleteGame (Connection connTDB,
                             DTOGame dto) {
         //TODO
     }

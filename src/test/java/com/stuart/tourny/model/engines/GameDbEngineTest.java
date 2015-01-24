@@ -2,6 +2,7 @@ package com.stuart.tourny.model.engines;
 
 import com.stuart.tourny.model.common.key.KeyGame;
 import com.stuart.tourny.model.utils.ConnectionManager;
+import com.stuart.tourny.model.utils.Constants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,19 +13,19 @@ import java.sql.Connection;
 
 public class GameDbEngineTest {
 
-    private Connection conn;
+    private Connection connTDB;
     private GameDbEngine uut;
 
 
     @Before
     public void setUp () throws Exception {
-        conn = ConnectionManager.getInstance ().getConnection ();
+        connTDB = ConnectionManager.getInstance ().getConnection (Constants.DBS_TDB);
         uut = new GameDbEngine ();
     }
 
     @After
     public void tearDown () throws Exception {
-        conn.close ();
+        connTDB.close ();
     }
 
     @Rule
@@ -35,7 +36,7 @@ public class GameDbEngineTest {
         KeyGame key = new KeyGame (99999);
         exception.expect (IllegalArgumentException.class);
         exception.expectMessage ("Could not find Game record for KeyGame{gameId=99999}");
-        uut.getGame (conn, key);
+        uut.getGame (connTDB, key);
     }
 
     @Test

@@ -17,7 +17,7 @@ public class DTOGame {
     private String winner;
     private long tournamentId;
     private boolean knockOut;
-    private int hashCode;
+    private String hashCode;
 
     public long getGameId () {
         return gameId;
@@ -171,7 +171,7 @@ public class DTOGame {
         result = 31 * result + winner.hashCode ();
         result = 31 * result + (int) (tournamentId ^ (tournamentId >>> 32));
         result = 31 * result + (knockOut ? 1 : 0);
-        result = 31 * result + hashCode;
+        result = 31 * result + hashCode.hashCode ();
         return result;
     }
 
@@ -194,11 +194,11 @@ public class DTOGame {
         return sb.toString ();
     }
 
-    public int getHashCode () {
+    public String getHashCode () {
         return hashCode;
     }
 
-    public void setHashCode (int hashCode) {
+    public void setHashCode (String hashCode) {
         this.hashCode = hashCode;
     }
 
