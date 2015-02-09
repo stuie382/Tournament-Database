@@ -19,14 +19,12 @@ public class ConnectionManager {
      * @throws PropertyVetoException
      */
     private ConnectionManager () throws PropertyVetoException {
-        // private constructor
         cpds = new ComboPooledDataSource ();
         cpds.setDriverClass ("org.apache.derby.jdbc.EmbeddedDataSource");
         cpds.setJdbcUrl (dbURL1);
         cpds.setMaxStatements (50);
         cpds.setInitialPoolSize (5);
         cpds.setAutoCommitOnClose (false);
-
     }
 
     /**
@@ -55,9 +53,9 @@ public class ConnectionManager {
      *
      * @throws SQLException
      */
-    public Connection getConnection (String schema) throws SQLException {
+    public Connection getConnection (final String schema) throws SQLException {
         Connection con = cpds.getConnection ();
-        con.setSchema (schema);
+        //con.setSchema (schema);
         con.setAutoCommit (false);
         return con;
     }

@@ -13,7 +13,7 @@ public class ConnectionManagerTest {
 
     @org.junit.Before
     public void setUp () throws Exception {
-        conn = ConnectionManager.getInstance ().getConnection ();
+        conn = ConnectionManager.getInstance ().getConnection (Constants.DBS_TDB);
     }
 
     @org.junit.After
@@ -23,7 +23,8 @@ public class ConnectionManagerTest {
 
     @Test
     public void testInsertTest () throws Exception {
-
+        System.out.println(conn.getSchema ());
+        conn.setSchema (Constants.DBS_TDB);
         String insert = "INSERT INTO player VALUES ('bob')";
         int updated = -1;
         try {
