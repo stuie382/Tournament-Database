@@ -1,5 +1,10 @@
 package com.stuart.tourny.model.common.dto;
 
+import com.stuart.tourny.model.common.key.KeyGame;
+import com.stuart.tourny.model.utils.SqlUtils;
+
+import java.sql.Timestamp;
+
 public class DTOGame {
 
     public DTOGame () {
@@ -17,94 +22,114 @@ public class DTOGame {
     private String winner;
     private long tournamentId;
     private boolean knockOut;
-    private String hashCode;
+    private Timestamp createDatetime;
+    private String createdUser;
+    private Timestamp updateDatetime;
+    private String updatedUser;
+    private String rowHash;
+
+    public String getRowHash () {
+        return rowHash;
+    }
 
     public long getGameId () {
         return gameId;
-    }
-
-    public void setGameId (long gameId) {
-        this.gameId = gameId;
     }
 
     public String getHomePlayer () {
         return homePlayer;
     }
 
-    public void setHomePlayer (String homePlayer) {
-        this.homePlayer = homePlayer;
-    }
-
     public String getAwayPlayer () {
         return awayPlayer;
-    }
-
-    public void setAwayPlayer (String awayPlayer) {
-        this.awayPlayer = awayPlayer;
     }
 
     public long getHomeGoals () {
         return homeGoals;
     }
 
-    public void setHomeGoals (long homeGoals) {
-        this.homeGoals = homeGoals;
-    }
-
     public long getAwayGoals () {
         return awayGoals;
     }
 
-    public void setAwayGoals (long awayGoals) {
-        this.awayGoals = awayGoals;
-    }
-
-    public boolean isExtraTime () {
+    public boolean getExtraTime () {
         return extraTime;
-    }
-
-    public void setExtraTime (boolean extraTime) {
-        this.extraTime = extraTime;
     }
 
     public long getHomePens () {
         return homePens;
     }
 
-    public void setHomePens (long homePens) {
-        this.homePens = homePens;
-    }
-
     public long getAwayPens () {
         return awayPens;
-    }
-
-    public void setAwayPens (long awayPens) {
-        this.awayPens = awayPens;
     }
 
     public String getWinner () {
         return winner;
     }
 
-    public void setWinner (String winner) {
-        this.winner = winner;
-    }
-
     public long getTournamentId () {
         return tournamentId;
     }
 
-    public void setTournamentId (long tournamentId) {
-        this.tournamentId = tournamentId;
-    }
-
-    public boolean isKnockOut () {
+    public boolean getKnockOut () {
         return knockOut;
     }
 
-    public void setKnockOut (boolean knockOut) {
-        this.knockOut = knockOut;
+    public Timestamp getCreateDatetime () {
+        return createDatetime;
+    }
+
+    public String getCreatedUser () {
+        return createdUser;
+    }
+
+    public Timestamp getUpdateDatetime () {
+        return updateDatetime;
+    }
+
+    public String getUpdatedUser () {
+        return updatedUser;
+    }
+
+    public void setRowHash (String rowHash) {
+        this.rowHash = rowHash;
+    }
+
+    public void setGameId (long gameId) {
+        this.gameId = gameId;
+    }
+
+    public void setHomePlayer (String homePlayer) {
+        this.homePlayer = homePlayer;
+    }
+
+    public void setAwayPlayer (String awayPlayer) {
+        this.awayPlayer = awayPlayer;
+    }
+
+    public void setHomeGoals (long homeGoals) {
+        this.homeGoals = homeGoals;
+    }
+
+    public void setAwayGoals (long awayGoals) {
+        this.awayGoals = awayGoals;
+    }
+
+    public void setExtraTime (String extraTime) {
+        this.extraTime = SqlUtils.stb (extraTime);
+    }
+
+    public void setHomePens (long homePens) {
+        this.homePens = homePens;
+    }
+
+    public void setAwayPens (long awayPens) {
+        this.awayPens = awayPens;
+    }
+
+    public void setWinner (String winner) {
+        this.winner = winner;
     }
 
     @Override
@@ -130,9 +155,6 @@ public class DTOGame {
         if (gameId != dtoGame.gameId) {
             return false;
         }
-        if (hashCode != dtoGame.hashCode) {
-            return false;
-        }
         if (homeGoals != dtoGame.homeGoals) {
             return false;
         }
@@ -148,7 +170,22 @@ public class DTOGame {
         if (!awayPlayer.equals (dtoGame.awayPlayer)) {
             return false;
         }
+        if (!createDatetime.equals (dtoGame.createDatetime)) {
+            return false;
+        }
+        if (!createdUser.equals (dtoGame.createdUser)) {
+            return false;
+        }
         if (!homePlayer.equals (dtoGame.homePlayer)) {
+            return false;
+        }
+        if (!rowHash.equals (dtoGame.rowHash)) {
+            return false;
+        }
+        if (!updateDatetime.equals (dtoGame.updateDatetime)) {
+            return false;
+        }
+        if (!updatedUser.equals (dtoGame.updatedUser)) {
             return false;
         }
         if (!winner.equals (dtoGame.winner)) {
@@ -171,8 +208,36 @@ public class DTOGame {
         result = 31 * result + winner.hashCode ();
         result = 31 * result + (int) (tournamentId ^ (tournamentId >>> 32));
         result = 31 * result + (knockOut ? 1 : 0);
-        result = 31 * result + hashCode.hashCode ();
+        result = 31 * result + createDatetime.hashCode ();
+        result = 31 * result + createdUser.hashCode ();
+        result = 31 * result + updateDatetime.hashCode ();
+        result = 31 * result + updatedUser.hashCode ();
+        result = 31 * result + rowHash.hashCode ();
         return result;
+    }
+
+    public void setTournamentId (long tournamentId) {
+        this.tournamentId = tournamentId;
+    }
+
+    public void setKnockOut (String knockOut) {
+        this.knockOut = SqlUtils.stb (knockOut);
+    }
+
+    public void setCreateDatetime (Timestamp createDatetime) {
+        this.createDatetime = createDatetime;
+    }
+
+    public void setCreatedUser (String createdUser) {
+        this.createdUser = createdUser;
+    }
+
+    public void setUpdateDatetime (Timestamp updateDatetime) {
+        this.updateDatetime = updateDatetime;
+    }
+
+    public void setUpdatedUser (String updatedUser) {
+        this.updatedUser = updatedUser;
     }
 
     @Override
@@ -183,23 +248,22 @@ public class DTOGame {
         sb.append (", awayPlayer='").append (awayPlayer).append ('\'');
         sb.append (", homeGoals=").append (homeGoals);
         sb.append (", awayGoals=").append (awayGoals);
-        sb.append (", extraTime=").append (extraTime);
+        sb.append (", extraTime='").append (extraTime).append ('\'');
         sb.append (", homePens=").append (homePens);
         sb.append (", awayPens=").append (awayPens);
         sb.append (", winner='").append (winner).append ('\'');
         sb.append (", tournamentId=").append (tournamentId);
-        sb.append (", knockOut=").append (knockOut);
-        sb.append (", hashCode=").append (hashCode);
+        sb.append (", knockOut='").append (knockOut).append ('\'');
+        sb.append (", createDatetime=").append (createDatetime);
+        sb.append (", createdUser='").append (createdUser).append ('\'');
+        sb.append (", updateDatetime=").append (updateDatetime);
+        sb.append (", updatedUser='").append (updatedUser).append ('\'');
+        sb.append (", rowHash='").append (rowHash).append ('\'');
         sb.append ('}');
         return sb.toString ();
     }
 
-    public String getHashCode () {
-        return hashCode;
+    public KeyGame getKey () {
+        return new KeyGame (this.gameId);
     }
-
-    public void setHashCode (String hashCode) {
-        this.hashCode = hashCode;
-    }
-
 }

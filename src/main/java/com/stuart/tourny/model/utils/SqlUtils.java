@@ -44,7 +44,7 @@ public class SqlUtils {
      * @param inputList - List you wish to get the hash code from
      * @return - String representation of the input list
      */
-    public static String makeHashcode (List<Object> inputList) {
+    public static String makeRowHash (List<Object> inputList) {
         if (inputList.isEmpty ()) {
             return Constants.EMPTY_STRING;
         }

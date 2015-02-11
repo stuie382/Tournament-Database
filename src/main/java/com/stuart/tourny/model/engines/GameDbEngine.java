@@ -9,14 +9,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static com.stuart.tourny.model.utils.SqlUtils.getBoolFromResults;
+import static com.stuart.tourny.model.utils.SqlUtils.bts;
 import static com.stuart.tourny.model.utils.SqlUtils.getListFromResultSet;
 import static com.stuart.tourny.model.utils.SqlUtils.getLongFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.getSFromResults;
-import static com.stuart.tourny.model.utils.SqlUtils.makeHashcode;
+import static com.stuart.tourny.model.utils.SqlUtils.getTSFromResults;
+import static com.stuart.tourny.model.utils.SqlUtils.makeRowHash;
 
 public class GameDbEngine {
-
+    private static final String USER_ID = "GameEngine";
     private static String getSelectSql () {
         StringBuilder sql = new StringBuilder ();
         sql.append (" SELECT g.game_id, ");
@@ -35,24 +36,29 @@ public class GameDbEngine {
 
     private static String getInsertSql () {
         StringBuilder sql = new StringBuilder ();
-        sql.append (" INSERT INTO tdb.game (g.home_player, ");
-        sql.append ("                   g.away_player, ");
-        sql.append ("                   g.home_goals, ");
-        sql.append ("                   g.away_goals, ");
-        sql.append ("                   g.extra_time, ");
-        sql.append ("                   g.home_pens, ");
-        sql.append ("                   g.away_pens, ");
-        sql.append ("                   g.winner, ");
-        sql.append ("                   g.tournament_id, ");
-        sql.append ("                   g.knock_out) ");
-        sql.append (" VALUES (?,?,?,?,?,?,?,?,?,? ");
+        sql.append ("INSERT INTO tdb.game ( ");
+        sql.append ("                  home_player,");
+        sql.append ("                  away_player,");
+        sql.append ("                  home_goals,");
+        sql.append ("                  away_goals,");
+        sql.append ("                  extra_time,");
+        sql.append ("                  home_pens,");
+        sql.append ("                  away_pens,");
+        sql.append ("                  winner,");
+        sql.append ("                  tournament_id,");
+        sql.append ("                  knock_out,");
+        sql.append ("                  updated_by_user_id,");
+        sql.append ("                  update_datetime,");
+        sql.append ("                  created_by_user_id,");
+        sql.append ("                  create_datetime");
+        sql.append (") VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE, ?, SYSDATE)");
         return sql.toString ();
     }
 
-    private static String getUpdateSql() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("  UPDATE tdb.game g ");
-        sql.append("     SET g.home_player = ?  ");
+    private static String getUpdateSql () {
+        StringBuilder sql = new StringBuilder ();
+        sql.append ("  UPDATE tdb.game g ");
+        sql.append ("     SET g.home_player = ?  ");
         sql.append ("        g.away_player = ?  ");
         sql.append ("        g.home_goals = ?  ");
         sql.append ("        g.away_goals = ?  ");
@@ -62,7 +68,7 @@ public class GameDbEngine {
         sql.append ("        g.winner = ?  ");
         sql.append ("        g.tournament_id = ? ");
         sql.append ("  WHERE g.game_id = ? ");
-        return sql.toString();
+        return sql.toString ();
     }
 
     /**
@@ -103,20 +109,25 @@ public class GameDbEngine {
      */
     private DTOGame getDTOFromResultSet (ResultSet rs) throws SQLException {
         DTOGame dto = new DTOGame ();
-        int col = 1;
+
         List<Object> results = getListFromResultSet (rs);
-        dto.setHashCode (makeHashcode (results));
+        dto.setRowHash (makeRowHash (results));
+        int col = 0;
         dto.setGameId (getLongFromResults (results, col++));
         dto.setHomePlayer (getSFromResults (results, col++));
         dto.setAwayPlayer (getSFromResults (results, col++));
         dto.setHomeGoals (getLongFromResults (results, col++));
         dto.setAwayGoals (getLongFromResults (results, col++));
-        dto.setExtraTime (getBoolFromResults (results, col++));
+        dto.setExtraTime (getSFromResults (results, col++));
         dto.setHomePens (getLongFromResults (results, col++));
         dto.setAwayPens (getLongFromResults (results, col++));
         dto.setWinner (getSFromResults (results, col++));
         dto.setTournamentId (getLongFromResults (results, col++));
-        dto.setKnockOut (getBoolFromResults (results, col++));
+        dto.setKnockOut (getSFromResults (results, col++));
+        dto.setUpdatedUser (getSFromResults (results, col++));
+        dto.setUpdateDatetime (getTSFromResults (results, col++));
+        dto.setCreatedUser (getSFromResults (results, col++));
+        dto.setCreateDatetime (getTSFromResults (results, col++));
         return dto;
     }
 
@@ -140,8 +151,26 @@ public class GameDbEngine {
      * @param dto     - Record to add
      */
     public void addGame (Connection connTDB,
-                         DTOGame dto) {
-        //TODO
+                         DTOGame dto) throws SQLException {
+        String sql = getInsertSql ();
+        try (PreparedStatement ps = connTDB.prepareStatement (sql,new String[]{"ID_COLUMN"})) {
+            int col = 1;
+            ps.setString (col++, dto.getHomePlayer ());
+            ps.setString(col++,dto.getAwayPlayer());
+            ps.setLong (col++,dto.getHomeGoals());
+            ps.setLong( col++,dto.getAwayGoals());
+            ps.setString(col++,bts (dto.getExtraTime ()));
+            ps.setLong(col++,dto.getHomePens());
+            ps.setLong( col++,dto.getAwayPens());
+            ps.setString(col++,dto.getWinner());
+            ps.setLong( col++,dto.getTournamentId());
+            ps.setString(col++,bts (dto.getKnockOut ()));
+            ps.setString(col++,USER_ID);
+            ps.setString(col++,USER_ID);
+
+            ps.executeUpdate ();
+            ResultSet rs = ps.getGeneratedKeys ();
+        }
     }
 
     /**
@@ -153,6 +182,7 @@ public class GameDbEngine {
      */
     public DTOGame updateGame (Connection connTDB,
                                DTOGame dto) {
+
         //TODO
         return null;
     }
@@ -164,7 +194,17 @@ public class GameDbEngine {
      * @param dto     - Record to delete
      */
     public void deleteGame (Connection connTDB,
-                            DTOGame dto) {
-        //TODO
+                            DTOGame dto)
+            throws SQLException {
+        KeyGame key = dto.getKey ();
+        DTOGame oldRow = getGame (connTDB, key);
+        if (!oldRow.getRowHash ().equals (dto.getRowHash ())) {
+            throw new IllegalStateException ("delete Game: record changed by another process");
+        }
+        StringBuilder sql = new StringBuilder ();
+        sql.append (" DELETE game");
+        try (PreparedStatement ps = connTDB.prepareStatement (sql.toString ())) {
+            ps.executeUpdate ();
+        }
     }
 }
