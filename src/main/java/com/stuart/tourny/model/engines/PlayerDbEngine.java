@@ -41,7 +41,7 @@ public class PlayerDbEngine {
   public void addPlayer(Connection con,
                         DTOPlayer dto) {
     StringBuilder sql = new StringBuilder();
-    sql.append(" INSERT INTO app.player ");
+    sql.append(" INSERT INTO tdb.player ");
     sql.append(" VALUES ? ");
 
     try (PreparedStatement ps = con.prepareStatement(sql.toString())) {

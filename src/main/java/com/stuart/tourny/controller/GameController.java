@@ -4,7 +4,6 @@ import com.stuart.tourny.model.common.dto.DTOGame;
 import com.stuart.tourny.model.common.key.KeyGame;
 import com.stuart.tourny.model.engines.GameDbEngine;
 import com.stuart.tourny.model.utils.ConnectionManager;
-import com.stuart.tourny.model.utils.Constants;
 
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
@@ -26,7 +25,7 @@ public class GameController {
    */
   public void addGame(DTOGame dto) throws PropertyVetoException, SQLException {
     try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection(Constants.DBS_TDB)) {
+        .getConnection()) {
       engine.addGame(connTDB, dto);
       connTDB.commit();
     }
@@ -41,7 +40,7 @@ public class GameController {
    */
   public DTOGame addGameAndReturn(DTOGame dto) throws PropertyVetoException, SQLException {
     try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection(Constants.DBS_TDB)) {
+        .getConnection()) {
       DTOGame newDto = engine.addGameAndReturn(connTDB, dto);
       connTDB.commit();
       return newDto;
@@ -56,7 +55,7 @@ public class GameController {
    */
   public DTOGame getGame(KeyGame key) throws PropertyVetoException, SQLException {
     try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection(Constants.DBS_TDB)) {
+        .getConnection()) {
       DTOGame dto = engine.getGame(connTDB, key);
       return dto;
     }
@@ -70,7 +69,7 @@ public class GameController {
    */
   public DTOGame updateGame(DTOGame dto) throws SQLException, PropertyVetoException {
     try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection(Constants.DBS_TDB)) {
+        .getConnection()) {
       dto = engine.updateGame(connTDB, dto);
       connTDB.commit();
       return dto;
@@ -84,7 +83,7 @@ public class GameController {
    */
   public void deleteGame(DTOGame dto) throws SQLException, PropertyVetoException {
     try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection(Constants.DBS_TDB)) {
+        .getConnection()) {
       engine.deleteGame(connTDB, dto);
       connTDB.commit();
     }

@@ -45,9 +45,8 @@ public class ConnectionManager {
    *
    * @return New connection with auto commit off!
    */
-  public Connection getConnection(final String schema) throws SQLException {
+  public Connection getConnection() throws SQLException {
     Connection con = cpds.getConnection();
-    //con.setSchema (schema);
     con.setAutoCommit(false);
     return con;
   }

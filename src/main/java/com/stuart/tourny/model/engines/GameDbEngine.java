@@ -257,6 +257,7 @@ public class GameDbEngine {
     }
     StringBuilder sql = new StringBuilder();
     sql.append(" DELETE game");
+    //TODO finish this
     try (PreparedStatement ps = connTDB.prepareStatement(sql.toString())) {
       ps.executeUpdate();
     }
