@@ -47,8 +47,11 @@ public class PlayerDbEngine {
   /**
    * Attempt to retrieve a record from the player table for the given playerName
    *
-   * @param conn - The connection to the database
-   * @param key  - Key of the record to look for
+   * @param conn
+   *     - The connection to the database
+   * @param key
+   *     - Key of the record to look for
+   *
    * @return DTOPlayer - Player record
    */
   public DTOPlayer getPlayer(Connection conn,
@@ -76,8 +79,10 @@ public class PlayerDbEngine {
   /**
    * Add a new player record to the database. This will return an updated DTO back as a result.
    *
-   * @param conn - The connection to the database
-   * @param dto  - Record to add to the database
+   * @param conn
+   *     - The connection to the database
+   * @param dto
+   *     - Record to add to the database
    */
   public DTOPlayer addPlayer(Connection conn,
                              DTOPlayer dto) throws SQLException {
@@ -95,8 +100,10 @@ public class PlayerDbEngine {
   /**
    * Delete a given player record.
    *
-   * @param conn - The connection to the database
-   * @param dto  - Record to delete
+   * @param conn
+   *     - The connection to the database
+   * @param dto
+   *     - Record to delete
    */
   public void deletePlayer(Connection conn,
                            DTOPlayer dto) throws SQLException {

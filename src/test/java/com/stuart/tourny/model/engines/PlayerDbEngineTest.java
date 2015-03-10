@@ -38,6 +38,9 @@ public class PlayerDbEngineTest {
   public ExpectedException thrown = ExpectedException.none();
 
   @Test
+  /**
+   * Simple test to add a single player record, return it, and validate it looks sensible.
+   */
   public void testAddPlayer()
       throws Exception {
     DTOPlayer dto = new DTOPlayer();
@@ -49,6 +52,5 @@ public class PlayerDbEngineTest {
     assertEquals("PlayerEngine", dto.getUpdatedByUserId());
     assertNotNull(dto.getCreateDatetime());
     assertNotNull(dto.getUpdateDatetime());
-
   }
 }

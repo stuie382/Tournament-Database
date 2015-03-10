@@ -10,7 +10,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlUtils {
+/**
+ * Utility class containing method for use with {@code PreparedStatement} and {@code ResultSet}
+ * manipulation.
+ */
+public final class SqlUtils {
 
   /**
    * If the input is 'Y' then return true, else return false. Will also return false if a null
@@ -72,16 +76,13 @@ public class SqlUtils {
    * @return - Converted list
    */
   public static List<Object> getListFromResultSet(ResultSet rs) throws SQLException {
-    if (!rs.next()) {
-      return new ArrayList<>();
-    }
     List<Object> resultList = new ArrayList<>();
     ResultSetMetaData metaData = rs.getMetaData();
     int counter = metaData.getColumnCount();
 
-    for (int i = 0; i < counter; i++) {
+    for (int i = 1; i <= counter; i++) {
       String columnType = metaData.getColumnTypeName(i);
-      if (Constants.DATE.equals(columnType)) {
+      if (Constants.DATE.equals(columnType) || Constants.TIMESTAMP.equals(columnType)) {
         resultList.add(rs.getTimestamp(i));
       } else {
         resultList.add(rs.getObject(i));
@@ -175,6 +176,14 @@ public class SqlUtils {
     return str.equalsIgnoreCase("Y");
   }
 
+  /**
+   * Where a {@code Long} is used, return -1 if it is a null value.
+   *
+   * @param input
+   *     Long value to be checked
+   *
+   * @return long version of the {@code input} if it is not null, else return -1
+   */
   public static long maybeNull(Long input) {
     if (input == null) {
       return -1;
