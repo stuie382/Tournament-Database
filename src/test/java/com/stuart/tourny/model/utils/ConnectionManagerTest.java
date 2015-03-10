@@ -1,5 +1,7 @@
 package com.stuart.tourny.model.utils;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -11,12 +13,12 @@ public class ConnectionManagerTest {
 
   private Connection conn;
 
-  @org.junit.Before
+  @Before
   public void setUp() throws Exception {
     conn = ConnectionManager.getInstance().getConnection();
   }
 
-  @org.junit.After
+  @After
   public void tearDown() throws Exception {
     conn.close();
   }

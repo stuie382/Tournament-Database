@@ -2,22 +2,14 @@ package com.stuart.tourny.model.common.key;
 
 public class KeyPlayer {
 
-  private final long playerId;
+  private final String player;
 
-  public KeyPlayer(long playerId) {
-    this.playerId = playerId;
+  public KeyPlayer(String player) {
+    this.player = player;
   }
 
-  public long getPlayerId() {
-    return playerId;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("KeyPlayer{");
-    sb.append("playerId=").append(playerId);
-    sb.append('}');
-    return sb.toString();
+  public String getPlayer() {
+    return player;
   }
 
   @Override
@@ -28,15 +20,26 @@ public class KeyPlayer {
     if (!(o instanceof KeyPlayer)) {
       return false;
     }
+
     KeyPlayer keyPlayer = (KeyPlayer) o;
-    if (playerId != keyPlayer.playerId) {
+
+    if (player != null ? !player.equals(keyPlayer.player) : keyPlayer.player != null) {
       return false;
     }
+
     return true;
   }
 
   @Override
   public int hashCode() {
-    return (int) (playerId ^ (playerId >>> 32));
+    return player != null ? player.hashCode() : 0;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("KeyPlayer{");
+    sb.append("playerId='").append(player).append('\'');
+    sb.append('}');
+    return sb.toString();
   }
 }

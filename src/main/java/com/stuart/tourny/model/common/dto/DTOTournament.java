@@ -1,7 +1,9 @@
 package com.stuart.tourny.model.common.dto;
 
 
-public class DTOTournament {
+import java.io.Serializable;
+
+public class DTOTournament implements Serializable {
 
   public DTOTournament() {
     // Empty constructor

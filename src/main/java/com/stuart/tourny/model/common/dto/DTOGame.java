@@ -3,9 +3,10 @@ package com.stuart.tourny.model.common.dto;
 import com.stuart.tourny.model.common.key.KeyGame;
 import com.stuart.tourny.model.utils.SqlUtils;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class DTOGame {
+public class DTOGame implements Serializable {
 
   public DTOGame() {
     // Empty constructor

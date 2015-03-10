@@ -174,4 +174,11 @@ public class SqlUtils {
     }
     return str.equalsIgnoreCase("Y");
   }
+
+  public static long maybeNull(Long input) {
+    if (input == null) {
+      return -1;
+    }
+    return input;
+  }
 }

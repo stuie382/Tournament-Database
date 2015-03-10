@@ -16,6 +16,7 @@ import static com.stuart.tourny.model.utils.SqlUtils.getLongFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.getSFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.getTSFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.makeRowHash;
+import static com.stuart.tourny.model.utils.SqlUtils.maybeNull;
 
 public class GameDbEngine {
 
@@ -27,54 +28,63 @@ public class GameDbEngine {
 
   private static String getSelectSql() {
     StringBuilder sql = new StringBuilder();
-    sql.append(" SELECT g.game_id, ");
-    sql.append("        g.home_player, ");
-    sql.append("        g.away_player, ");
-    sql.append("        g.home_goals, ");
-    sql.append("        g.away_goals, ");
-    sql.append("        g.extra_time, ");
-    sql.append("        g.home_pens, ");
-    sql.append("        g.away_pens, ");
-    sql.append("        g.winner, ");
-    sql.append("        g.tournament_id, ");
-    sql.append("        g.knock_out ");
+    sql.append(" SELECT g.game_id,");
+    sql.append("        g.home_player,");
+    sql.append("        g.away_player,");
+    sql.append("        g.home_goals,");
+    sql.append("        g.away_goals,");
+    sql.append("        g.extra_time,");
+    sql.append("        g.home_pens,");
+    sql.append("        g.away_pens,");
+    sql.append("        g.winner,");
+    sql.append("        g.tournament_id,");
+    sql.append("        g.knock_out,");
+    sql.append("        g.updated_by_user_id,");
+    sql.append("        g.update_datetime,");
+    sql.append("        g.created_by_user_id,");
+    sql.append("        g.create_datetime");
     return sql.toString();
   }
 
   private static String getInsertSql() {
     StringBuilder sql = new StringBuilder();
     sql.append("INSERT INTO tdb.game ( ");
-    sql.append("                  home_player,");
-    sql.append("                  away_player,");
-    sql.append("                  home_goals,");
-    sql.append("                  away_goals,");
-    sql.append("                  extra_time,");
-    sql.append("                  home_pens,");
-    sql.append("                  away_pens,");
-    sql.append("                  winner,");
-    sql.append("                  tournament_id,");
-    sql.append("                  knock_out,");
-    sql.append("                  updated_by_user_id,");
-    sql.append("                  update_datetime,");
-    sql.append("                  created_by_user_id,");
-    sql.append("                  create_datetime");
-    sql.append(") VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE, ?, SYSDATE)");
+    sql.append("            home_player,");
+    sql.append("            away_player,");
+    sql.append("            home_goals,");
+    sql.append("            away_goals,");
+    sql.append("            extra_time,");
+    sql.append("            home_pens,");
+    sql.append("            away_pens,");
+    sql.append("            winner,");
+    sql.append("            tournament_id,");
+    sql.append("            knock_out,");
+    sql.append("            updated_by_user_id,");
+    sql.append("            update_datetime,");
+    sql.append("            created_by_user_id,");
+    sql.append("            create_datetime");
+    sql.append(
+        ") VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP)");
     return sql.toString();
   }
 
   private static String getUpdateSql() {
     StringBuilder sql = new StringBuilder();
-    sql.append("  UPDATE tdb.game g ");
-    sql.append("     SET g.home_player = ?  ");
-    sql.append("        g.away_player = ?  ");
-    sql.append("        g.home_goals = ?  ");
-    sql.append("        g.away_goals = ?  ");
-    sql.append("        g.extra_time = ?  ");
-    sql.append("        g.home_pens = ?  ");
-    sql.append("        g.away_pens = ?  ");
-    sql.append("        g.winner = ?  ");
-    sql.append("        g.tournament_id = ? ");
-    sql.append("  WHERE g.game_id = ? ");
+    sql.append(" UPDATE tdb.game");
+    sql.append("    SET home_player = ? ,");
+    sql.append("        away_player = ? ,");
+    sql.append("        home_goals = ? ,");
+    sql.append("        away_goals = ? ,");
+    sql.append("        extra_time = ? ,");
+    sql.append("        home_pens = ? ,");
+    sql.append("        away_pens = ? ,");
+    sql.append("        winner = ? ,");
+    sql.append("        tournament_id = ? ,");
+    sql.append("        knock_out = ? ,");
+    sql.append("        updated_by_user_id = ? ,");
+    sql.append("        update_datetime = CURRENT_TIMESTAMP ");
+    sql.append("  WHERE game_id = ? ");
+    sql.append("    AND update_datetime = ? ");
     return sql.toString();
   }
 
@@ -151,13 +161,13 @@ public class GameDbEngine {
       int col = 1;
       ps.setString(col++, dto.getHomePlayer());
       ps.setString(col++, dto.getAwayPlayer());
-      ps.setLong(col++, dto.getHomeGoals());
-      ps.setLong(col++, dto.getAwayGoals());
+      ps.setLong(col++, maybeNull(dto.getHomeGoals()));
+      ps.setLong(col++, maybeNull(dto.getAwayGoals()));
       ps.setString(col++, bts(dto.getExtraTime()));
-      ps.setLong(col++, dto.getHomePens());
-      ps.setLong(col++, dto.getAwayPens());
+      ps.setLong(col++, maybeNull(dto.getHomePens()));
+      ps.setLong(col++, maybeNull(dto.getAwayPens()));
       ps.setString(col++, dto.getWinner());
-      ps.setLong(col++, dto.getTournamentId());
+      ps.setLong(col++, maybeNull(dto.getTournamentId()));
       ps.setString(col++, bts(dto.getKnockOut()));
       ps.setString(col++, USER_ID);
       ps.setString(col++, USER_ID);
@@ -217,19 +227,21 @@ public class GameDbEngine {
       throw new IllegalStateException("Game record out of date: " + key.toString());
     }
     int col = 1;
-    try (PreparedStatement ps = connTDB
-        .prepareStatement(getUpdateSql(), Statement.RETURN_GENERATED_KEYS)) {
+    try (PreparedStatement ps = connTDB.prepareStatement(getUpdateSql())) {
+      // Update
       ps.setString(col++, dto.getHomePlayer());
       ps.setString(col++, dto.getAwayPlayer());
-      ps.setLong(col++, dto.getHomeGoals());
-      ps.setLong(col++, dto.getAwayGoals());
+      ps.setLong(col++, maybeNull(dto.getHomeGoals()));
+      ps.setLong(col++, maybeNull(dto.getAwayGoals()));
       ps.setString(col++, bts(dto.getExtraTime()));
-      ps.setLong(col++, dto.getHomePens());
-      ps.setLong(col++, dto.getAwayPens());
+      ps.setLong(col++, maybeNull(dto.getHomePens()));
+      ps.setLong(col++, maybeNull(dto.getAwayPens()));
       ps.setString(col++, dto.getWinner());
-      ps.setLong(col++, dto.getTournamentId());
+      ps.setLong(col++, maybeNull(dto.getTournamentId()));
       ps.setString(col++, bts(dto.getKnockOut()));
       ps.setString(col++, USER_ID);
+      // Where
+      ps.setLong(col++, maybeNull(dto.getGameId()));
       ps.setTimestamp(col++, dto.getUpdateDatetime());
 
       if (ps.executeUpdate() == 0) {
@@ -246,7 +258,6 @@ public class GameDbEngine {
    * @param connTDB - The connection to the database
    * @param dto     - Record to delete
    */
-
   public void deleteGame(Connection connTDB,
                          DTOGame dto)
       throws SQLException {
@@ -256,10 +267,13 @@ public class GameDbEngine {
       throw new IllegalStateException("delete Game: record changed by another process");
     }
     StringBuilder sql = new StringBuilder();
-    sql.append(" DELETE game");
-    //TODO finish this
+    sql.append(" DELETE FROM tdb.game g ");
+    sql.append("       WHERE g.game_id = ? ");
     try (PreparedStatement ps = connTDB.prepareStatement(sql.toString())) {
+      int col = 1;
+      ps.setLong(col++, key.getGameId());
       ps.executeUpdate();
     }
   }
+
 }
