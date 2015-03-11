@@ -108,9 +108,9 @@ public class PlayerDbEngine {
   public void deletePlayer(Connection conn,
                            DTOPlayer dto) throws SQLException {
     StringBuilder sql = new StringBuilder();
-    sql.append(" DELETE tdb.player");
-    sql.append("  WHERE name = ? ");
-    try (PreparedStatement ps = conn.prepareStatement(sql.toString());) {
+    sql.append(" DELETE FROM tdb.player p");
+    sql.append("  WHERE p.name = ? ");
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
       int col = 1;
       ps.setString(col++, dto.getName());
       ps.executeUpdate();

@@ -6,8 +6,10 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ConnectionManagerTest {
 
@@ -16,23 +18,27 @@ public class ConnectionManagerTest {
   @Before
   public void setUp() throws Exception {
     conn = ConnectionManager.getInstance().getConnection();
+    conn.setSavepoint();
   }
 
   @After
   public void tearDown() throws Exception {
+    conn.rollback();
     conn.close();
   }
 
   @Test
   public void testInsertTest() throws Exception {
-    System.out.println(conn.getSchema());
-    String insert = "INSERT INTO tdb.player VALUES ('bob')";
-    int updated = -1;
-    try (PreparedStatement s = conn.prepareStatement(insert)) {
-      updated = s.executeUpdate();
+    String insert = "SELECT 1 FROM SYSIBM.SYSDUMMY1";
+    try (PreparedStatement ps = conn.prepareStatement(insert)) {
+      try (ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+          long result = rs.getLong(1);
+          assertEquals(1, result);
+        }
+      }
     } catch (Exception ex) {
-      System.out.println("insert test fail: " + ex.getMessage());
+      fail("insert test fail: " + ex.getMessage());
     }
-    assertEquals(1, updated);
   }
 }

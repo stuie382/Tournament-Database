@@ -20,7 +20,7 @@ public class ConnectionManager {
     cpds = new ComboPooledDataSource();
     cpds.setDriverClass("org.apache.derby.jdbc.EmbeddedDataSource");
     cpds.setJdbcUrl(dbURL1);
-    cpds.setMaxStatements(50);
+    cpds.setMaxStatements(0);
     cpds.setInitialPoolSize(5);
     cpds.setAutoCommitOnClose(false);
   }

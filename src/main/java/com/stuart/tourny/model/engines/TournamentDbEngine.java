@@ -22,11 +22,46 @@ public class TournamentDbEngine {
     return sql.toString();
   }
 
+  private static String getInsertSql() {
+    StringBuilder sql = new StringBuilder();
+    sql.append("INSERT INTO tournament ( ");
+    sql.append("                        tournament_id,");
+    sql.append("                        tournament_name,");
+    sql.append("                        tournament_winner,");
+    sql.append("                        wooden_spoon,");
+    sql.append("                        golden_boot,");
+    sql.append("                        golden_boot_goals,");
+    sql.append("                        create_datetime,");
+    sql.append("                        created_by_user_id,");
+    sql.append("                        update_datetime,");
+    sql.append("                        updated_by_user_id");
+    sql.append(") VALUES ( ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)");
+    return sql.toString();
+  }
+
+  private static String getUpdateSql() {
+    StringBuilder sql = new StringBuilder();
+    sql.append(" UPDATE tournament");
+    sql.append("    SET tournament_name = ? ,");
+    sql.append("        tournament_winner = ? ,");
+    sql.append("        wooden_spoon = ? ,");
+    sql.append("        golden_boot = ? ,");
+    sql.append("        golden_boot_goals = ? ,");
+    sql.append("        update_datetime = sysdate ,");
+    sql.append("        updated_by_user_id = ? ");
+    sql.append("  WHERE tournament_id = ? ");
+    sql.append("   AND update_datetime = ? ");
+    return sql.toString();
+  }
+
   /**
    * Get a tournament record from the database.
    *
-   * @param conn - The connection to the database
-   * @param key  - Key of the record to look for
+   * @param conn
+   *     - The connection to the database
+   * @param key
+   *     - Key of the record to look for
+   *
    * @return DTOTournament - DTO of the record
    */
   public DTOTournament getTournament(Connection conn,
@@ -38,8 +73,11 @@ public class TournamentDbEngine {
   /**
    * Update a tournament record.
    *
-   * @param conn - The connection to the database
-   * @param dto  - Record to update
+   * @param conn
+   *     - The connection to the database
+   * @param dto
+   *     - Record to update
+   *
    * @return DTOTournament - Record updated from the database
    */
   public DTOTournament updateRecord(Connection conn,
@@ -50,8 +88,10 @@ public class TournamentDbEngine {
   /**
    * Add a tournament record, do not return the new record.
    *
-   * @param conn - The connection to the database
-   * @param dto  - Record to add
+   * @param conn
+   *     - The connection to the database
+   * @param dto
+   *     - Record to add
    */
   public void addRecord(Connection conn,
                         DTOTournament dto) {
@@ -60,8 +100,11 @@ public class TournamentDbEngine {
   /**
    * Add a tournament record, return the new record back.
    *
-   * @param conn - The connection to the database
-   * @param dto  - Record to add
+   * @param conn
+   *     - The connection to the database
+   * @param dto
+   *     - Record to add
+   *
    * @return DTOTournament - Record added
    */
   public DTOTournament addRecordAndReturn(Connection conn,
@@ -72,8 +115,10 @@ public class TournamentDbEngine {
   /**
    * Delete a tournament record.
    *
-   * @param conn - The connection to the database
-   * @param dto  - Record to delete
+   * @param conn
+   *     - The connection to the database
+   * @param dto
+   *     - Record to delete
    */
   public void deleteRecord(Connection conn,
                            DTOTournament dto) {
