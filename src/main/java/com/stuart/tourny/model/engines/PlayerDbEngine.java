@@ -109,7 +109,7 @@ public class PlayerDbEngine {
                            DTOPlayer dto) throws SQLException {
     StringBuilder sql = new StringBuilder();
     sql.append(" DELETE FROM tdb.player p");
-    sql.append("  WHERE p.name = ? ");
+    sql.append("       WHERE p.name = ? ");
     try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
       int col = 1;
       ps.setString(col++, dto.getName());

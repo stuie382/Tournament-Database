@@ -84,15 +84,17 @@ public class GameDbEngine {
     sql.append("        updated_by_user_id = ? ,");
     sql.append("        update_datetime = CURRENT_TIMESTAMP ");
     sql.append("  WHERE game_id = ? ");
-    sql.append("    AND update_datetime = ? ");
     return sql.toString();
   }
 
   /**
    * Get a game record matching the key object.
    *
-   * @param connTDB - The connection to the database
-   * @param key     - Key of the record to return
+   * @param connTDB
+   *     - The connection to the database
+   * @param key
+   *     - Key of the record to return
+   *
    * @return DTOGame - Game record
    */
   public DTOGame getGame(Connection connTDB,
@@ -119,7 +121,9 @@ public class GameDbEngine {
   /**
    * Create a new DTOGame from a result set. Needs to set the hash code of the DTO.
    *
-   * @param rs ResultSet to convert into a DTO
+   * @param rs
+   *     ResultSet to convert into a DTO
+   *
    * @return populated DTOGame object
    */
   private DTOGame getDTOFromResultSet(ResultSet rs) throws SQLException {
@@ -149,12 +153,15 @@ public class GameDbEngine {
   /**
    * Add a new game record, returning the record created.
    *
-   * @param connTDB - The connection to the database
-   * @param dto     - Record to add
+   * @param connTDB
+   *     - The connection to the database
+   * @param dto
+   *     - Record to add
+   *
    * @return DTOGame - Record added
    */
-  public DTOGame addGameAndReturn(Connection connTDB,
-                                  DTOGame dto) throws SQLException {
+  public DTOGame addGame(Connection connTDB,
+                         DTOGame dto) throws SQLException {
     String sql = getInsertSql();
     try (PreparedStatement ps = connTDB.prepareStatement(sql,
                                                          Statement.RETURN_GENERATED_KEYS)) {
@@ -185,38 +192,13 @@ public class GameDbEngine {
   }
 
   /**
-   * Add a new game record, no result is returned.
-   *
-   * @param connTDB - The connection to the database
-   * @param dto     - Record to add
-   */
-  public void addGame(Connection connTDB,
-                      DTOGame dto) throws SQLException {
-    String sql = getInsertSql();
-    try (PreparedStatement ps = connTDB.prepareStatement(sql)) {
-      int col = 1;
-      ps.setString(col++, dto.getHomePlayer());
-      ps.setString(col++, dto.getAwayPlayer());
-      ps.setLong(col++, dto.getHomeGoals());
-      ps.setLong(col++, dto.getAwayGoals());
-      ps.setString(col++, bts(dto.getExtraTime()));
-      ps.setLong(col++, dto.getHomePens());
-      ps.setLong(col++, dto.getAwayPens());
-      ps.setString(col++, dto.getWinner());
-      ps.setLong(col++, dto.getTournamentId());
-      ps.setString(col++, bts(dto.getKnockOut()));
-      ps.setString(col++, USER_ID);
-      ps.setString(col++, USER_ID);
-
-      ps.executeUpdate();
-    }
-  }
-
-  /**
    * Update a given game record.
    *
-   * @param connTDB - The connection to the database
-   * @param dto     - Record to update
+   * @param connTDB
+   *     - The connection to the database
+   * @param dto
+   *     - Record to update
+   *
    * @return DTOGame - Record updated from the database
    */
   public DTOGame updateGame(Connection connTDB,
@@ -255,8 +237,10 @@ public class GameDbEngine {
   /**
    * Delete a given game record.
    *
-   * @param connTDB - The connection to the database
-   * @param dto     - Record to delete
+   * @param connTDB
+   *     - The connection to the database
+   * @param dto
+   *     - Record to delete
    */
   public void deleteGame(Connection connTDB,
                          DTOGame dto)

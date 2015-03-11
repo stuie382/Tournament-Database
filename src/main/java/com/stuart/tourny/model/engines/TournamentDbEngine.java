@@ -4,11 +4,25 @@ import com.stuart.tourny.model.common.dto.DTOTournament;
 import com.stuart.tourny.model.common.key.KeyTournament;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+import static com.stuart.tourny.model.utils.SqlUtils.getListFromResultSet;
+import static com.stuart.tourny.model.utils.SqlUtils.getLongFromResults;
+import static com.stuart.tourny.model.utils.SqlUtils.getSFromResults;
+import static com.stuart.tourny.model.utils.SqlUtils.getTSFromResults;
+import static com.stuart.tourny.model.utils.SqlUtils.makeRowHash;
+import static com.stuart.tourny.model.utils.SqlUtils.maybeNull;
 
 public class TournamentDbEngine {
 
-  public TournamentDbEngine() {
+  private static final String USER_ID = "TournamentEngine";
 
+  public TournamentDbEngine() {
+    // Empty constructor
   }
 
   private static String getSelectSQL() {
@@ -24,33 +38,32 @@ public class TournamentDbEngine {
 
   private static String getInsertSql() {
     StringBuilder sql = new StringBuilder();
-    sql.append("INSERT INTO tournament ( ");
-    sql.append("                        tournament_id,");
-    sql.append("                        tournament_name,");
-    sql.append("                        tournament_winner,");
-    sql.append("                        wooden_spoon,");
-    sql.append("                        golden_boot,");
-    sql.append("                        golden_boot_goals,");
-    sql.append("                        create_datetime,");
-    sql.append("                        created_by_user_id,");
-    sql.append("                        update_datetime,");
-    sql.append("                        updated_by_user_id");
+    sql.append("INSERT INTO tdb.tournament ( ");
+    sql.append("                tournament_id,");
+    sql.append("                tournament_name,");
+    sql.append("                tournament_winner,");
+    sql.append("                wooden_spoon,");
+    sql.append("                golden_boot,");
+    sql.append("                golden_boot_goals,");
+    sql.append("                create_datetime,");
+    sql.append("                created_by_user_id,");
+    sql.append("                update_datetime,");
+    sql.append("                updated_by_user_id");
     sql.append(") VALUES ( ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)");
     return sql.toString();
   }
 
   private static String getUpdateSql() {
     StringBuilder sql = new StringBuilder();
-    sql.append(" UPDATE tournament");
+    sql.append(" UPDATE tdb.tournament");
     sql.append("    SET tournament_name = ? ,");
     sql.append("        tournament_winner = ? ,");
     sql.append("        wooden_spoon = ? ,");
     sql.append("        golden_boot = ? ,");
     sql.append("        golden_boot_goals = ? ,");
-    sql.append("        update_datetime = sysdate ,");
+    sql.append("        update_datetime = CURRENT_TIMESTAMP ,");
     sql.append("        updated_by_user_id = ? ");
     sql.append("  WHERE tournament_id = ? ");
-    sql.append("   AND update_datetime = ? ");
     return sql.toString();
   }
 
@@ -65,9 +78,25 @@ public class TournamentDbEngine {
    * @return DTOTournament - DTO of the record
    */
   public DTOTournament getTournament(Connection conn,
-                                     KeyTournament key) {
-    //TODO
-    return null;
+                                     KeyTournament key) throws SQLException {
+    DTOTournament dto = null;
+
+    StringBuilder sql = new StringBuilder(getSelectSQL());
+    sql.append("   FROM tdb.tournament t ");
+    sql.append("  WHERE t.tournament_id = ? ");
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+      int col = 1;
+      ps.setLong(col++, key.getTournamentId());
+      try (ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+          dto = getDTOFromResultsSet(rs);
+        }
+      }
+    }
+    if (dto == null) {
+      throw new IllegalStateException("Cannot find DTOTournament! " + key);
+    }
+    return dto;
   }
 
   /**
@@ -81,8 +110,28 @@ public class TournamentDbEngine {
    * @return DTOTournament - Record updated from the database
    */
   public DTOTournament updateRecord(Connection conn,
-                                    DTOTournament dto) {
-    return null;
+                                    DTOTournament dto) throws SQLException {
+    KeyTournament key = dto.getKey();
+    DTOTournament oldRow = getTournament(conn, key);
+    if (!oldRow.getRowHash().equals(dto.getRowHash())) {
+      throw new IllegalStateException("update Tournament: record changed by another process");
+    }
+    try (PreparedStatement ps = conn.prepareStatement(getUpdateSql())) {
+      int col = 1;
+      ps.setString(col++, dto.getTournamentName());
+      ps.setString(col++, dto.getTournamentWinner());
+      ps.setString(col++, dto.getWoodenSpoon());
+      ps.setString(col++, dto.getGoldenBoot());
+      ps.setLong(col++, maybeNull(dto.getGoldenBootGoals()));
+      ps.setString(col++, USER_ID);
+      ps.setLong(col++, dto.getTournamentId());
+      ps.setTimestamp(col++, dto.getUpdateDatetime());
+
+      if (ps.executeUpdate() == 0) {
+        throw new IllegalStateException("Update tournament failed: " + key.toString());
+      }
+    }
+    return getTournament(conn, key);
   }
 
   /**
@@ -93,23 +142,30 @@ public class TournamentDbEngine {
    * @param dto
    *     - Record to add
    */
-  public void addRecord(Connection conn,
-                        DTOTournament dto) {
-  }
+  public DTOTournament addRecord(Connection conn,
+                                 DTOTournament dto) throws SQLException {
 
-  /**
-   * Add a tournament record, return the new record back.
-   *
-   * @param conn
-   *     - The connection to the database
-   * @param dto
-   *     - Record to add
-   *
-   * @return DTOTournament - Record added
-   */
-  public DTOTournament addRecordAndReturn(Connection conn,
-                                          DTOTournament dto) {
-    return null;
+    String sql = getInsertSql();
+    try (PreparedStatement ps = conn.prepareStatement(sql,
+                                                      Statement.RETURN_GENERATED_KEYS)) {
+      int col = 1;
+      ps.setLong(col++, dto.getTournamentId());
+      ps.setString(col++, dto.getTournamentName());
+      ps.setString(col++, dto.getTournamentWinner());
+      ps.setString(col++, dto.getWoodenSpoon());
+      ps.setString(col++, dto.getGoldenBoot());
+      ps.setLong(col++, maybeNull(dto.getGoldenBootGoals()));
+      ps.setString(col++, USER_ID);
+      ps.setString(col++, USER_ID);
+      ps.executeUpdate();
+      try (ResultSet rs = ps.getGeneratedKeys()) {
+        long key = -1;
+        if (rs.next()) {
+          key = rs.getLong(1);
+        }
+        return getTournament(conn, new KeyTournament(key));
+      }
+    }
   }
 
   /**
@@ -120,8 +176,40 @@ public class TournamentDbEngine {
    * @param dto
    *     - Record to delete
    */
+
   public void deleteRecord(Connection conn,
-                           DTOTournament dto) {
+                           DTOTournament dto) throws SQLException {
+    KeyTournament key = dto.getKey();
+    DTOTournament oldRow = getTournament(conn, key);
+    if (!oldRow.getRowHash().equals(dto.getRowHash())) {
+      throw new IllegalStateException("delete Tournament: record changed by another process");
+    }
+    StringBuilder sql = new StringBuilder();
+    sql.append(" DELETE FROM tdb.tournament");
+    sql.append("       WHERE tournament_id = ? ");
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+      int col = 1;
+      ps.setLong(col++, key.getTournamentId());
+      ps.executeUpdate();
+    }
+  }
+
+  private DTOTournament getDTOFromResultsSet(ResultSet rs) throws SQLException {
+    DTOTournament dto = new DTOTournament();
+    List<Object> results = getListFromResultSet(rs);
+    dto.setRowHash(makeRowHash(results));
+    int col = 0;
+    dto.setTournamentId(getLongFromResults(results, col++));
+    dto.setTournamentName(getSFromResults(results, col++));
+    dto.setTournamentWinner(getSFromResults(results, col++));
+    dto.setWoodenSpoon(getSFromResults(results, col++));
+    dto.setGoldenBoot(getSFromResults(results, col++));
+    dto.setGoldenBootGoals(getLongFromResults(results, col++));
+    dto.setCreateDatetime(getTSFromResults(results, col++));
+    dto.setCreatedByUserId(getSFromResults(results, col++));
+    dto.setUpdateDatetime(getTSFromResults(results, col++));
+    dto.setUpdatedByUserId(getSFromResults(results, col++));
+    return dto;
   }
 }
 
