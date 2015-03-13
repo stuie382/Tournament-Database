@@ -32,22 +32,6 @@ public class GameController {
   }
 
   /**
-   * Add a new Game record to the database and return the fresh row from the database. This will
-   * commit the connection if the add is successful.
-   *
-   * @param dto Record to add to the database
-   * @return New record from the database
-   */
-  public DTOGame addGameAndReturn(DTOGame dto) throws PropertyVetoException, SQLException {
-    try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection()) {
-      DTOGame newDto = engine.addGameAndReturn(connTDB, dto);
-      connTDB.commit();
-      return newDto;
-    }
-  }
-
-  /**
    * Get an existing Game record from the database.
    *
    * @param key KeyGame record of the record to fetch

@@ -32,7 +32,11 @@ public class TournamentDbEngine {
     sql.append("        t.tournament_winner,  ");
     sql.append("        t.wooden_spoon,  ");
     sql.append("        t.golden_boot,  ");
-    sql.append("        t.golden_boot_goals  ");
+    sql.append("        t.golden_boot_goals,  ");
+    sql.append("        t.create_datetime, ");
+    sql.append("        t.created_by_user_id, ");
+    sql.append("        t.update_datetime, ");
+    sql.append("        t.updated_by_user_id ");
     return sql.toString();
   }
 
