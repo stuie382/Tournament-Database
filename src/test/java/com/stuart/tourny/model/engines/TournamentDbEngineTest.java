@@ -1,7 +1,9 @@
 package com.stuart.tourny.model.engines;
 
 import com.stuart.tourny.model.common.dto.DTOTournament;
+import com.stuart.tourny.model.common.key.KeyTournament;
 import com.stuart.tourny.model.utils.ConnectionManager;
+import com.stuart.tourny.model.utils.dataFixture.TournamentFixture;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -22,6 +24,10 @@ public class TournamentDbEngineTest {
 
   private static Connection connTDB;
   private TournamentDbEngine uut;
+  private TournamentFixture fixture;
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   @BeforeClass
   public static void beforeSetUp() throws SQLException, PropertyVetoException {
@@ -37,15 +43,13 @@ public class TournamentDbEngineTest {
   @Before
   public void setUp() throws Exception {
     uut = new TournamentDbEngine();
+    fixture = new TournamentFixture();
   }
 
   @After
   public void tearDown() throws Exception {
     connTDB.rollback();
   }
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void testAddATournament() throws SQLException {
@@ -70,4 +74,44 @@ public class TournamentDbEngineTest {
     assertNotNull(newDto.getUpdateDatetime());
   }
 
+  @Test
+  public void testUpdateATournament() throws SQLException {
+    DTOTournament dtoToUpdate = fixture.addATournament(connTDB, "March 2015", null, null, null, -1);
+    assertNotNull(dtoToUpdate);
+    long tournamentId = dtoToUpdate.getTournamentId();
+
+    // Test a series of incremental updates
+    dtoToUpdate.setTournamentWinner("Stuart");
+    DTOTournament updated = uut.updateRecord(connTDB, dtoToUpdate);
+    assertEquals(tournamentId, updated.getTournamentId());
+    assertNotNull(updated);
+    assertEquals("Stuart", updated.getTournamentWinner());
+
+    updated.setWoodenSpoon("SpoonFace");
+    updated = uut.updateRecord(connTDB, updated);
+    assertEquals(tournamentId, updated.getTournamentId());
+    assertEquals("SpoonFace", updated.getWoodenSpoon());
+
+    updated.setGoldenBoot("Wonderkid");
+    updated.setGoldenBootGoals(52);
+    updated = uut.updateRecord(connTDB, updated);
+    assertEquals(tournamentId, updated.getTournamentId());
+    assertEquals(52, updated.getGoldenBootGoals());
+    assertEquals("Wonderkid", updated.getGoldenBoot());
+  }
+
+  @Test
+  public void testDeleteATournament()
+      throws Exception {
+    DTOTournament dto = fixture.addATournament(connTDB, "March 2015", null, null, null, -1);
+    assertNotNull(dto);
+
+    long tournamentId = dto.getTournamentId();
+    uut.deleteRecord(connTDB, dto);
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage(
+        "Cannot find DTOTournament! KeyTournament{tournamentId=" + tournamentId + "}");
+    uut.getTournament(connTDB, new KeyTournament(tournamentId));
+  }
 }

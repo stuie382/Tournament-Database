@@ -4,6 +4,7 @@ import com.stuart.tourny.model.common.dto.DTOTournament;
 import com.stuart.tourny.model.engines.TournamentDbEngine;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class TournamentFixture {
 
@@ -18,11 +19,14 @@ public class TournamentFixture {
                                       String tournyWinner,
                                       String spoon,
                                       String goldenBoot,
-                                      long goals) {
-
+                                      long goals) throws SQLException {
     DTOTournament dto = new DTOTournament();
-    //TODO this
-    return dto;
+    dto.setTournamentName(tournyName);
+    dto.setTournamentWinner(tournyWinner);
+    dto.setWoodenSpoon(spoon);
+    dto.setGoldenBoot(goldenBoot);
+    dto.setGoldenBootGoals(goals);
+    return tournamentEngine.addRecord(conn, dto);
   }
 
 }

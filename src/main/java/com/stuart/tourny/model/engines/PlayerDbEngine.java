@@ -54,8 +54,8 @@ public class PlayerDbEngine {
    *
    * @return DTOPlayer - Player record
    */
-  public DTOPlayer getPlayer(Connection conn,
-                             KeyPlayer key)
+  public DTOPlayer getPlayer(final Connection conn,
+                             final KeyPlayer key)
       throws SQLException {
     DTOPlayer dto = null;
     StringBuilder sql = new StringBuilder(getSelectSql());
@@ -84,8 +84,8 @@ public class PlayerDbEngine {
    * @param dto
    *     - Record to add to the database
    */
-  public DTOPlayer addPlayer(Connection conn,
-                             DTOPlayer dto) throws SQLException {
+  public DTOPlayer addPlayer(final Connection conn,
+                             final DTOPlayer dto) throws SQLException {
 
     try (PreparedStatement ps = conn.prepareStatement(getInsertSql())) {
       int col = 1;
@@ -105,8 +105,8 @@ public class PlayerDbEngine {
    * @param dto
    *     - Record to delete
    */
-  public void deletePlayer(Connection conn,
-                           DTOPlayer dto) throws SQLException {
+  public void deletePlayer(final Connection conn,
+                           final DTOPlayer dto) throws SQLException {
     StringBuilder sql = new StringBuilder();
     sql.append(" DELETE FROM tdb.player p");
     sql.append("       WHERE p.name = ? ");
@@ -117,7 +117,7 @@ public class PlayerDbEngine {
     }
   }
 
-  private DTOPlayer getDTOFromResultSet(ResultSet rs)
+  private DTOPlayer getDTOFromResultSet(final ResultSet rs)
       throws SQLException {
     DTOPlayer dto = new DTOPlayer();
     List<Object> results = getListFromResultSet(rs);

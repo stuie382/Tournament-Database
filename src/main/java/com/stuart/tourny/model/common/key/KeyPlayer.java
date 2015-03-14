@@ -37,9 +37,6 @@ public class KeyPlayer {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("KeyPlayer{");
-    sb.append("playerId='").append(player).append('\'');
-    sb.append('}');
-    return sb.toString();
+    return "KeyPlayer{" + "playerId='" + player + '\'' + '}';
   }
 }

@@ -40,8 +40,7 @@ public class GameController {
   public DTOGame getGame(KeyGame key) throws PropertyVetoException, SQLException {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {
-      DTOGame dto = engine.getGame(connTDB, key);
-      return dto;
+      return engine.getGame(connTDB, key);
     }
   }
 

@@ -97,8 +97,8 @@ public class GameDbEngine {
    *
    * @return DTOGame - Game record
    */
-  public DTOGame getGame(Connection connTDB,
-                         KeyGame key) throws SQLException {
+  public DTOGame getGame(final Connection connTDB,
+                         final KeyGame key) throws SQLException {
     DTOGame dto = null;
     StringBuilder sql = new StringBuilder(getSelectSql());
     sql.append("  FROM tdb.game g ");
@@ -126,7 +126,7 @@ public class GameDbEngine {
    *
    * @return populated DTOGame object
    */
-  private DTOGame getDTOFromResultSet(ResultSet rs) throws SQLException {
+  private DTOGame getDTOFromResultSet(final ResultSet rs) throws SQLException {
     DTOGame dto = new DTOGame();
 
     List<Object> results = getListFromResultSet(rs);
@@ -160,8 +160,8 @@ public class GameDbEngine {
    *
    * @return DTOGame - Record added
    */
-  public DTOGame addGame(Connection connTDB,
-                         DTOGame dto) throws SQLException {
+  public DTOGame addGame(final Connection connTDB,
+                         final DTOGame dto) throws SQLException {
     String sql = getInsertSql();
     try (PreparedStatement ps = connTDB.prepareStatement(sql,
                                                          Statement.RETURN_GENERATED_KEYS)) {
@@ -185,10 +185,9 @@ public class GameDbEngine {
         if (rs.next()) {
           key = rs.getLong(1);
         }
-        dto = getGame(connTDB, new KeyGame(key));
+        return getGame(connTDB, new KeyGame(key));
       }
     }
-    return dto;
   }
 
   /**
@@ -201,8 +200,8 @@ public class GameDbEngine {
    *
    * @return DTOGame - Record updated from the database
    */
-  public DTOGame updateGame(Connection connTDB,
-                            DTOGame dto) throws SQLException {
+  public DTOGame updateGame(final Connection connTDB,
+                            final DTOGame dto) throws SQLException {
     KeyGame key = dto.getKey();
     DTOGame oldDto = getGame(connTDB, key);
     if (!oldDto.getRowHash().equals(dto.getRowHash())) {
@@ -229,9 +228,8 @@ public class GameDbEngine {
       if (ps.executeUpdate() == 0) {
         throw new IllegalStateException("Update game failed: " + key.toString());
       }
-      dto = getGame(connTDB, key);
+      return getGame(connTDB, key);
     }
-    return dto;
   }
 
   /**
@@ -242,8 +240,8 @@ public class GameDbEngine {
    * @param dto
    *     - Record to delete
    */
-  public void deleteGame(Connection connTDB,
-                         DTOGame dto)
+  public void deleteGame(final Connection connTDB,
+                         final DTOGame dto)
       throws SQLException {
     KeyGame key = dto.getKey();
     DTOGame oldRow = getGame(connTDB, key);

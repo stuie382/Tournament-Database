@@ -20,10 +20,12 @@ public final class SqlUtils {
    * If the input is 'Y' then return true, else return false. Will also return false if a null
    * string is passed in.
    *
-   * @param input String we want to convert
+   * @param input
+   *     String we want to convert
+   *
    * @return true if input is Y
    */
-  public static boolean stb(String input) {
+  public static boolean stb(final String input) {
     boolean result = false;
     if ((input != null) && (input.equalsIgnoreCase("Y"))) {
       result = true;
@@ -34,10 +36,12 @@ public final class SqlUtils {
   /**
    * If the input it true, return 'Y', else return 'N'
    *
-   * @param input boolean to convert to a string representation
+   * @param input
+   *     boolean to convert to a string representation
+   *
    * @return 'Y' if true
    */
-  public static String bts(boolean input) {
+  public static String bts(final boolean input) {
     return input ? "Y" : "N";
   }
 
@@ -45,10 +49,12 @@ public final class SqlUtils {
    * Method will take a list of objects and create a string representation of the hash code of each
    * object in the list.
    *
-   * @param inputList - List you wish to get the hash code from
+   * @param inputList
+   *     - List you wish to get the hash code from
+   *
    * @return - String representation of the input list
    */
-  public static String makeRowHash(List<Object> inputList) {
+  public static String makeRowHash(final List<Object> inputList) {
     if (inputList.isEmpty()) {
       return Constants.EMPTY_STRING;
     }
@@ -72,10 +78,12 @@ public final class SqlUtils {
   /**
    * Will create an Object list from a result set.
    *
-   * @param rs - ResultSet to convert
+   * @param rs
+   *     - ResultSet to convert
+   *
    * @return - Converted list
    */
-  public static List<Object> getListFromResultSet(ResultSet rs) throws SQLException {
+  public static List<Object> getListFromResultSet(final ResultSet rs) throws SQLException {
     List<Object> resultList = new ArrayList<>();
     ResultSetMetaData metaData = rs.getMetaData();
     int counter = metaData.getColumnCount();
@@ -94,11 +102,14 @@ public final class SqlUtils {
   /**
    * Get a String from the results list. May return null if the location contains a null.
    *
-   * @param in  Object List from the result set
-   * @param loc location in the list
+   * @param in
+   *     Object List from the result set
+   * @param loc
+   *     location in the list
+   *
    * @return String from the location
    */
-  public static String getSFromResults(List<Object> in, int loc) {
+  public static String getSFromResults(final List<Object> in, final int loc) {
     Object o = in.get(loc);
     if (o == null) {
       return null;
@@ -110,11 +121,14 @@ public final class SqlUtils {
   /**
    * Get a Timestamp from the results list. May return null if the location contains a null.
    *
-   * @param in  Object List from the result set
-   * @param loc location in the list
+   * @param in
+   *     Object List from the result set
+   * @param loc
+   *     location in the list
+   *
    * @return Timestamp from the location
    */
-  public static Timestamp getTSFromResults(List<Object> in, int loc) {
+  public static Timestamp getTSFromResults(final List<Object> in, final int loc) {
     Object o = in.get(loc);
     if (o == null) {
       return null;
@@ -126,11 +140,14 @@ public final class SqlUtils {
   /**
    * Get a long from the results list. May return -1 if the location contains a null.
    *
-   * @param in  Object List from the result set
-   * @param loc location in the list
+   * @param in
+   *     Object List from the result set
+   * @param loc
+   *     location in the list
+   *
    * @return long from the location
    */
-  public static long getLongFromResults(List<Object> in, int loc) {
+  public static long getLongFromResults(final List<Object> in, final int loc) {
     Object o = in.get(loc);
     if (o == null) {
       return -1;
@@ -148,11 +165,14 @@ public final class SqlUtils {
   /**
    * Get a BigDecimal from the results list. May return null if the location contains a null.
    *
-   * @param in  Object List from the result set
-   * @param loc location in the list
+   * @param in
+   *     Object List from the result set
+   * @param loc
+   *     location in the list
+   *
    * @return BigDecimal from the location
    */
-  public static BigDecimal getBigDecimalFromResults(List<Object> in, int loc) {
+  public static BigDecimal getBigDecimalFromResults(final List<Object> in, final int loc) {
     Object o = in.get(loc);
     if (o == null) {
       return null;
@@ -164,11 +184,14 @@ public final class SqlUtils {
   /**
    * Get a boolean from the results list. Will return false if the location contains a null.
    *
-   * @param in  Object List from the result set
-   * @param loc location in the list
+   * @param in
+   *     Object List from the result set
+   * @param loc
+   *     location in the list
+   *
    * @return boolean from the location
    */
-  public static boolean getBoolFromResults(List<Object> in, int loc) {
+  public static boolean getBoolFromResults(final List<Object> in, final int loc) {
     String str = getSFromResults(in, loc);
     if (str == null) {
       return false;
@@ -184,7 +207,7 @@ public final class SqlUtils {
    *
    * @return long version of the {@code input} if it is not null, else return -1
    */
-  public static long maybeNull(Long input) {
+  public static long maybeNull(final Long input) {
     if (input == null) {
       return -1;
     }

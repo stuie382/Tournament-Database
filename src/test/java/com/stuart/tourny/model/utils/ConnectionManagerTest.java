@@ -15,6 +15,11 @@ public class ConnectionManagerTest {
 
   private Connection conn;
 
+  /* This class does not contain the before/after class methods
+  as it only contains a single test. The test is simply to connect
+  to the database and see if we can select from it.
+   */
+
   @Before
   public void setUp() throws Exception {
     conn = ConnectionManager.getInstance().getConnection();

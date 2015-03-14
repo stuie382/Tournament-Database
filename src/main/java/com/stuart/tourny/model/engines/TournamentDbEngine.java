@@ -43,7 +43,6 @@ public class TournamentDbEngine {
   private static String getInsertSql() {
     StringBuilder sql = new StringBuilder();
     sql.append("INSERT INTO tdb.tournament ( ");
-    sql.append("                tournament_id,");
     sql.append("                tournament_name,");
     sql.append("                tournament_winner,");
     sql.append("                wooden_spoon,");
@@ -53,7 +52,7 @@ public class TournamentDbEngine {
     sql.append("                created_by_user_id,");
     sql.append("                update_datetime,");
     sql.append("                updated_by_user_id");
-    sql.append(") VALUES ( ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)");
+    sql.append(") VALUES ( ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)");
     return sql.toString();
   }
 
@@ -81,8 +80,8 @@ public class TournamentDbEngine {
    *
    * @return DTOTournament - DTO of the record
    */
-  public DTOTournament getTournament(Connection conn,
-                                     KeyTournament key) throws SQLException {
+  public DTOTournament getTournament(final Connection conn,
+                                     final KeyTournament key) throws SQLException {
     DTOTournament dto = null;
 
     StringBuilder sql = new StringBuilder(getSelectSQL());
@@ -113,8 +112,8 @@ public class TournamentDbEngine {
    *
    * @return DTOTournament - Record updated from the database
    */
-  public DTOTournament updateRecord(Connection conn,
-                                    DTOTournament dto) throws SQLException {
+  public DTOTournament updateRecord(final Connection conn,
+                                    final DTOTournament dto) throws SQLException {
     KeyTournament key = dto.getKey();
     DTOTournament oldRow = getTournament(conn, key);
     if (!oldRow.getRowHash().equals(dto.getRowHash())) {
@@ -129,7 +128,6 @@ public class TournamentDbEngine {
       ps.setLong(col++, maybeNull(dto.getGoldenBootGoals()));
       ps.setString(col++, USER_ID);
       ps.setLong(col++, dto.getTournamentId());
-      ps.setTimestamp(col++, dto.getUpdateDatetime());
 
       if (ps.executeUpdate() == 0) {
         throw new IllegalStateException("Update tournament failed: " + key.toString());
@@ -146,14 +144,13 @@ public class TournamentDbEngine {
    * @param dto
    *     - Record to add
    */
-  public DTOTournament addRecord(Connection conn,
-                                 DTOTournament dto) throws SQLException {
+  public DTOTournament addRecord(final Connection conn,
+                                 final DTOTournament dto) throws SQLException {
 
     String sql = getInsertSql();
     try (PreparedStatement ps = conn.prepareStatement(sql,
                                                       Statement.RETURN_GENERATED_KEYS)) {
       int col = 1;
-      ps.setLong(col++, dto.getTournamentId());
       ps.setString(col++, dto.getTournamentName());
       ps.setString(col++, dto.getTournamentWinner());
       ps.setString(col++, dto.getWoodenSpoon());
@@ -181,8 +178,8 @@ public class TournamentDbEngine {
    *     - Record to delete
    */
 
-  public void deleteRecord(Connection conn,
-                           DTOTournament dto) throws SQLException {
+  public void deleteRecord(final Connection conn,
+                           final DTOTournament dto) throws SQLException {
     KeyTournament key = dto.getKey();
     DTOTournament oldRow = getTournament(conn, key);
     if (!oldRow.getRowHash().equals(dto.getRowHash())) {
@@ -198,7 +195,7 @@ public class TournamentDbEngine {
     }
   }
 
-  private DTOTournament getDTOFromResultsSet(ResultSet rs) throws SQLException {
+  private DTOTournament getDTOFromResultsSet(final ResultSet rs) throws SQLException {
     DTOTournament dto = new DTOTournament();
     List<Object> results = getListFromResultSet(rs);
     dto.setRowHash(makeRowHash(results));

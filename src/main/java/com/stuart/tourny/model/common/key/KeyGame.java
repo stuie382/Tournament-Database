@@ -14,10 +14,7 @@ public class KeyGame {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("KeyGame{");
-    sb.append("gameId=").append(gameId);
-    sb.append('}');
-    return sb.toString();
+    return "KeyGame{" + "gameId=" + gameId + '}';
   }
 
   @Override
@@ -29,10 +26,7 @@ public class KeyGame {
       return false;
     }
     KeyGame keyGame = (KeyGame) o;
-    if (gameId != keyGame.gameId) {
-      return false;
-    }
-    return true;
+    return gameId == keyGame.gameId;
   }
 
   @Override
