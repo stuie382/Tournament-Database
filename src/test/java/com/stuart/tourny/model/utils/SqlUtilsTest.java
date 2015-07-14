@@ -83,7 +83,7 @@ public class SqlUtilsTest {
   public void testMaybeNull_negative() throws Exception {
     long input = -1;
     Long result = SqlUtils.maybeNull(input);
-    assertNull(result);
+    assertEquals(Long.valueOf(input), result);
   }
 
   @Test

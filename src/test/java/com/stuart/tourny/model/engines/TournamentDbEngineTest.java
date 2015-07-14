@@ -51,6 +51,10 @@ public class TournamentDbEngineTest {
     connTDB.rollback();
   }
 
+  /**
+   * Add a new fully populated tournament
+   * @throws SQLException
+   */
   @Test
   public void testAddATournament() throws SQLException {
     DTOTournament dto = new DTOTournament();
@@ -74,6 +78,12 @@ public class TournamentDbEngineTest {
     assertNotNull(newDto.getUpdateDatetime());
   }
 
+  /**
+   * Create an initial tournament with just a name, then add a winner, then a runner up, then golden
+   * boot, all as separate transactions.
+   *
+   * @throws SQLException
+   */
   @Test
   public void testUpdateATournament() throws SQLException {
     DTOTournament dtoToUpdate = fixture.addATournament(connTDB, "March 2015", null, null, null, -1);
