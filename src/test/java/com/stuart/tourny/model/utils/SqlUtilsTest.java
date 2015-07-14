@@ -4,8 +4,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 
 public class SqlUtilsTest {
@@ -66,4 +71,67 @@ public class SqlUtilsTest {
     String result = SqlUtils.bts(input);
     assertEquals("N", result);
   }
+
+  @Test
+  public void testMaybeNull_positive() throws Exception {
+    long input = 3;
+    Long result = SqlUtils.maybeNull(input);
+    assertEquals(input,result.longValue());
+  }
+
+  @Test
+  public void testMaybeNull_negative() throws Exception {
+    long input = -1;
+    Long result = SqlUtils.maybeNull(input);
+    assertNull(result);
+  }
+
+  @Test
+  public void testGetBoolFromResults_positive() throws Exception {
+    List<Object> input = new ArrayList<>();
+    input.add("Y");
+    boolean result = SqlUtils.getBoolFromResults(input,0);
+    assertTrue(result);
+  }
+
+  @Test
+  public void testGetBoolFromResults_negative() throws Exception {
+    List<Object> input = new ArrayList<>();
+    input.add("N");
+    boolean result = SqlUtils.getBoolFromResults(input,0);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testGetBoolFromResults_null() throws Exception {
+    List<Object> input = new ArrayList<>();
+    input.add(null);
+    boolean result = SqlUtils.getBoolFromResults(input,0);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testGetBigDecimalFromResults_positive() throws Exception {
+    List<Object> input = new ArrayList<>();
+    input.add(BigDecimal.TEN);
+    BigDecimal result = SqlUtils.getBigDecimalFromResults(input,0);
+    assertEquals(BigDecimal.TEN,result);
+  }
+
+  @Test
+  public void testGetBigDecimalFromResults_negative() throws Exception {
+    List<Object> input = new ArrayList<>();
+    input.add(BigDecimal.TEN.negate());
+    BigDecimal result = SqlUtils.getBigDecimalFromResults(input,0);
+    assertEquals(BigDecimal.TEN.negate(),result);
+  }
+
+  @Test
+  public void testGetBigDecimalFromResults_null() throws Exception {
+    List<Object> input = new ArrayList<>();
+    input.add(null);
+    BigDecimal result = SqlUtils.getBigDecimalFromResults(input,0);
+    assertNull(result);
+  }
+
 }

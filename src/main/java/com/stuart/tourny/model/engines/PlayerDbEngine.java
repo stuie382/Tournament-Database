@@ -107,6 +107,12 @@ public class PlayerDbEngine {
    */
   public void deletePlayer(final Connection conn,
                            final DTOPlayer dto) throws SQLException {
+    KeyPlayer key = dto.getKey();
+    DTOPlayer oldRow = getPlayer(conn, key);
+    if (!oldRow.getRowHash().equals(dto.getRowHash())) {
+      throw new IllegalStateException("Delete Player failed: record changed by another process");
+    }
+
     StringBuilder sql = new StringBuilder();
     sql.append(" DELETE FROM tdb.player p");
     sql.append("       WHERE p.name = ? ");

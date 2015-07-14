@@ -207,9 +207,9 @@ public final class SqlUtils {
    *
    * @return long version of the {@code input} if it is not null, else return -1
    */
-  public static long maybeNull(final Long input) {
-    if (input == null) {
-      return -1;
+  public static Long maybeNull(final long input) {
+    if (input == -1) {
+      return null;
     }
     return input;
   }
