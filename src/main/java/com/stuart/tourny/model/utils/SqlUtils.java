@@ -64,7 +64,7 @@ public final class SqlUtils {
       if (item == null) {
         sb.append(SEPARATOR);
       } else {
-        if (item instanceof Clob || item instanceof Blob) {
+        if (item instanceof Clob || (item instanceof Blob)) {
           // Can't hash code so skip it
         } else {
           sb.append(item.hashCode());
@@ -193,10 +193,7 @@ public final class SqlUtils {
    */
   public static boolean getBoolFromResults(final List<Object> in, final int loc) {
     String str = getSFromResults(in, loc);
-    if (str == null) {
-      return false;
-    }
-    return str.equalsIgnoreCase("Y");
+    return str != null && str.equalsIgnoreCase("Y");
   }
 
   /**

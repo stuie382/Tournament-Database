@@ -8,7 +8,6 @@ public class ManageTournamentsDialog extends ManageDialog {
 
   private static final String MANAGE_TOURNAMENTS = "Manage Tournaments";
   private static final String TOURNAMENT = "Tournament";
-  private ResultSetTablePanel resultSetTablePanel;
 
   public ManageTournamentsDialog(Window parent) {
     super(parent, MANAGE_TOURNAMENTS);
@@ -33,7 +32,7 @@ public class ManageTournamentsDialog extends ManageDialog {
    */
   private void initGUI() {
     initGUI(MANAGE_TOURNAMENTS, TOURNAMENT);
-    resultSetTablePanel = new ResultSetTablePanel();
+    ResultSetTablePanel resultSetTablePanel = new ResultSetTablePanel();
     getContentPane().add(resultSetTablePanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                                                                      GridBagConstraints.CENTER,
                                                                      GridBagConstraints.BOTH,

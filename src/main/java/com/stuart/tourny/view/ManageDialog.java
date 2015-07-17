@@ -4,8 +4,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -24,28 +22,34 @@ import javax.swing.border.BevelBorder;
  * @author Stuart
  */
 public abstract class ManageDialog extends JDialog {
-    /* private ResultSetTablePanel rsPanel; */
+
+  /* Protected so the implementing classes can add any additional buttons
+   * required to the {@code buttonPanel}.
+   */
+  protected JPanel buttonPanel;
 
   /**
    * Create the dialog providing the parent window and a title. This will be which type of
    * management screen you wish to create.
    *
    * @param parent
-   * @param manage
+   *     - Parent frame that owns this dialog
+   * @param title
+   *     - The title for the dialog
    */
-  public ManageDialog(Window parent, String manage) {
-    super(parent, manage);
-
+  public ManageDialog(Window parent, String title) {
+    super(parent, title);
   }
 
   /**
    * Each implementor will need to call this method first in their own initGUI method. This creates
-   * the standard layout to which the ResultSetTablePanel can be added.
-   * <p>
-   * This also ensures that each management screen is nice and consistent with each other.
+   * the standard layout to which the ResultSetTablePanel can be added. <p> This also ensures that
+   * each management screen is nice and consistent with each other.</p>
    *
    * @param title
+   *     - Title of the dialog screen
    * @param type
+   *     - Singular of the title
    */
   protected void initGUI(String title, String type) {
     setSize(400, 400);
@@ -59,7 +63,7 @@ public abstract class ManageDialog extends JDialog {
     getContentPane().setLayout(gridBagLayout);
 
     // Buttons panel
-    JPanel buttonPanel = new JPanel();
+    buttonPanel = new JPanel();
     buttonPanel.setBackground(TournamentGUI.BACKGROUND);
     buttonPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
     getContentPane()
@@ -75,26 +79,17 @@ public abstract class ManageDialog extends JDialog {
 
     JButton btnViewAll = new JButton("View All");
     btnViewAll.setToolTipText("Show all " + type + "s that exist.");
-    btnViewAll.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        btnViewAll_actionPerformed();
-      }
-    });
+    btnViewAll.addActionListener(e -> btnViewAll_actionPerformed());
 
-    JButton btnAddPlayer = new JButton("Add " + type);
-    btnAddPlayer.setToolTipText("Add a new " + type + " to the database.");
-    btnAddPlayer.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        btnAdd_actionPerformed();
-      }
-    });
+    JButton btnAdd = new JButton("Add " + type);
+    btnAdd.setToolTipText("Add a new " + type + " to the database.");
+    btnAdd.addActionListener(e -> btnAdd_actionPerformed());
 
     buttonPanel
-        .add(btnAddPlayer, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                                                  GridBagConstraints.HORIZONTAL,
-                                                  new Insets(0, 0, 5, 0), 0, 0));
+        .add(btnAdd, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 5, 0), 0, 0));
+
     buttonPanel
         .add(btnViewAll, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                 GridBagConstraints.HORIZONTAL,
@@ -110,18 +105,16 @@ public abstract class ManageDialog extends JDialog {
 
     JButton btnClose = new JButton("Close");
     btnClose.setToolTipText("Close the " + title + " window.");
-    btnClose.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        btnClose_actionPerformed();
-      }
-    });
+    btnClose.addActionListener(e -> btnClose_actionPerformed());
     buttonPanel
         .add(btnClose, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                               GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0),
                                               0, 0));
   }
 
+  /**
+   * Simply dispose of this Dialog.
+   */
   protected void btnClose_actionPerformed() {
     dispose();
   }

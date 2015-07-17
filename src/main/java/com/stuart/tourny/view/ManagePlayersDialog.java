@@ -40,7 +40,6 @@ public class ManagePlayersDialog extends ManageDialog {
                                     + "</html>",
                                     "Error getting all players from the database.",
                                     JOptionPane.ERROR_MESSAGE);
-      return;
     }
   }
 
@@ -66,21 +65,18 @@ public class ManagePlayersDialog extends ManageDialog {
                                         "New player added - " + dto.getName(),
                                         "Success!",
                                         JOptionPane.INFORMATION_MESSAGE);
-          return;
         } catch (ServerProblem sp) {
           JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
                                         "<html><h2>Error adding a player</h2>" + "Error details:"
                                         + sp + "</html>",
                                         "Error adding new player to the database.",
                                         JOptionPane.ERROR_MESSAGE);
-          return;
         }
       } else {
         JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
                                       "Please use alphanumeric characters only for player names!",
                                       "Oops",
                                       JOptionPane.INFORMATION_MESSAGE);
-        return;
       }
     }
   }
@@ -90,6 +86,7 @@ public class ManagePlayersDialog extends ManageDialog {
    * longer than 50 characters.
    *
    * @param userInput
+   *     - User name taken from the input.
    *
    * @return true if both conditions are met
    */
@@ -97,15 +94,6 @@ public class ManagePlayersDialog extends ManageDialog {
     return userInput.matches(ALPHA_NUMERIC_REGEX)
            && userInput.length() <= MAX_LENGTH;
   }
-
-  private void throwException() throws Exception {
-    throw new Exception(stackTrace);
-  }
-
-  // TODO remove this later
-  private final String
-      stackTrace =
-      "java.lang.NullPointerException\nabc.investxa.presentation.controllers.UnixServerJobController.handleRequest(UnixServerJobController.java:66)\norg.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter.handle(SimpleControllerHandlerAdapter.java:48)\norg.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:875)\norg.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:807)\norg.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:571)\norg.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:501)\njavax.servlet.http.HttpServlet.service(HttpServlet.java:690)\njavax.servlet.http.HttpServlet.service(HttpServlet.java:803)\norg.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:96)\norg.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:76)";
 
   /**
    * Setup the GUI

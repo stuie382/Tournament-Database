@@ -1,13 +1,17 @@
 package com.stuart.tourny.view;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +26,8 @@ import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 
 /**
+ * Create the Tournament GUI application.
+ *
  * @author Stuart
  */
 public class TournamentGUI extends JFrame {
@@ -29,27 +35,55 @@ public class TournamentGUI extends JFrame {
   public static final Color BACKGROUND = new Color(0, 204, 51);
   public static final List<Image> ICON_IMAGES = getIcons();
 
+  private static final Logger log = Logger.getLogger(TournamentGUI.class);
+
   /**
    * Launch the application.
    */
   public static void main(String[] args) {
-    EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          TournamentGUI frame = new TournamentGUI();
-          frame.setTitle("Tournament Database");
-          frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-          frame.setSize(800, 400);
-          frame.setResizable(false);
-          frame.setIconImages(ICON_IMAGES);
-          frame.setVisible(true);
-          frame.setLocationRelativeTo(null);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-    });
+    setupLogger();
+    log.info("Tournament GUI started");
+             EventQueue.invokeLater(() -> {
+               try {
+                 TournamentGUI frame = new TournamentGUI();
+                 frame.setTitle("Tournament Database");
+                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                 frame.setSize(800, 400);
+                 frame.setResizable(false);
+                 frame.setIconImages(ICON_IMAGES);
+                 frame.setVisible(true);
+                 frame.setLocationRelativeTo(null);
+               } catch (Exception ex) {
+                 log.error(ex);
+               }
+             });
+  }
+
+  /**
+   * Setup and configure the logger.
+   */
+  private static void setupLogger() {
+    // creates pattern layout
+    PatternLayout layout = new PatternLayout();
+    String conversionPattern = "%-7p %d [%t] %c %x - %m%n";
+    layout.setConversionPattern(conversionPattern);
+
+    // creates console appender
+    ConsoleAppender consoleAppender = new ConsoleAppender();
+    consoleAppender.setLayout(layout);
+    consoleAppender.activateOptions();
+
+    // creates file appender
+    FileAppender fileAppender = new FileAppender();
+    fileAppender.setFile("tourny_log.txt");
+    fileAppender.setLayout(layout);
+    fileAppender.activateOptions();
+
+    // configures the root logger
+    Logger rootLogger = Logger.getRootLogger();
+    rootLogger.setLevel(Level.DEBUG);
+    rootLogger.addAppender(consoleAppender);
+    rootLogger.addAppender(fileAppender);
   }
 
   /**
@@ -69,7 +103,7 @@ public class TournamentGUI extends JFrame {
   /**
    * Create a new instance of the Manage Games dialog and display it.
    */
-  private void btnManageGames_actionPerfomed() {
+  private void btnManageGames_actionPerformed() {
     ManageGamesDialog mgd = new ManageGamesDialog(SwingUtilities.windowForComponent(this));
     mgd.setBackground(BACKGROUND);
     mgd.setIconImages(ICON_IMAGES);
@@ -78,7 +112,7 @@ public class TournamentGUI extends JFrame {
   }
 
   /**
-   * Create a new instance of the Manage Tournaments disalog and display it.
+   * Create a new instance of the Manage Tournaments Dialog and display it.
    */
   private void btnManageTournaments_actionPerformed() {
     ManageTournamentsDialog
@@ -91,7 +125,7 @@ public class TournamentGUI extends JFrame {
   }
 
   /**
-   * Create a new instance of the Manage Players dialog and display it.
+   * Create a new instance of the Manage Players Dialog and display it.
    */
   private void btnManagePlayers_actionPerformed() {
     ManagePlayersDialog mpd = new ManagePlayersDialog(SwingUtilities.windowForComponent(this));
@@ -111,7 +145,6 @@ public class TournamentGUI extends JFrame {
         TournamentGUI.class.getResource("/images/worldcup-icon-small.png"));
     ImageIcon medIcon = new ImageIcon(
         TournamentGUI.class.getResource("/images/worldcup-icon-med.png"));
-    System.out.print(TournamentGUI.class.getResource("/"));
     ImageIcon largeIcon = new ImageIcon(
         TournamentGUI.class.getResource("/images/worldcup-icon-lge.png"));
 
@@ -169,24 +202,14 @@ public class TournamentGUI extends JFrame {
                                                     new Insets(0, 0, 5, 0), 0, 0));
 
     JButton btnManageTournaments = new JButton("Manage Tournaments");
-    btnManageTournaments.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        btnManageTournaments_actionPerformed();
-      }
-    });
+    btnManageTournaments.addActionListener(e -> btnManageTournaments_actionPerformed());
     buttonPanel.add(btnManageTournaments,
                     new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                            GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
 
     JButton btnCloseApp = new JButton("Close App");
     btnCloseApp.setToolTipText("Exit the Application\r\n");
-    btnCloseApp.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        btnCloseApp_actionPerformed();
-      }
-    });
+    btnCloseApp.addActionListener(e -> btnCloseApp_actionPerformed());
 
     JPanel spacerPanel = new JPanel();
     spacerPanel.setBackground(BACKGROUND);
@@ -219,18 +242,8 @@ public class TournamentGUI extends JFrame {
             TournamentGUI.class.getResource("/images/worldCup_open.jpg")));
     welcomeImgPanel.add(lblWelcomeImage);
 
-    btnManagePlayers.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        btnManagePlayers_actionPerformed();
-      }
-    });
+    btnManagePlayers.addActionListener(arg0 -> btnManagePlayers_actionPerformed());
 
-    btnManageGames.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        btnManageGames_actionPerfomed();
-      }
-    });
+    btnManageGames.addActionListener(e -> btnManageGames_actionPerformed());
   }
 }

@@ -9,8 +9,12 @@ public class ManageGamesDialog extends ManageDialog {
   private static final String MANAGE_GAMES = "Manage Games";
   private static final String GAME = "Game";
 
-  private ResultSetTablePanel resultSetTablePanel;
-
+  /**
+   * Create an instance of the ManageGamesDialog.
+   *
+   * @param parent
+   *     - Reference to the parent who owns this Dialog.
+   */
   public ManageGamesDialog(Window parent) {
     super(parent, MANAGE_GAMES);
     getContentPane().setBackground(TournamentGUI.BACKGROUND);
@@ -31,7 +35,7 @@ public class ManageGamesDialog extends ManageDialog {
 
   protected void initGUI() {
     initGUI(MANAGE_GAMES, GAME);
-    resultSetTablePanel = new ResultSetTablePanel();
+    ResultSetTablePanel resultSetTablePanel = new ResultSetTablePanel();
     getContentPane().add(resultSetTablePanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                                                                      GridBagConstraints.CENTER,
                                                                      GridBagConstraints.BOTH,

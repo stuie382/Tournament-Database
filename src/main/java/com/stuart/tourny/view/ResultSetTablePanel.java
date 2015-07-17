@@ -13,13 +13,18 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+/**
+ * Class to display a Result Set as a non-modifiable table. Simply add this as a component to a
+ * panel, then call the populateData method.
+ */
 public class ResultSetTablePanel extends JPanel {
 
   private JScrollPane scrollPane;
-  private TableModel tableModel;
   private JTable dataTable;
-  private ResultSet results;
 
+  /**
+   * Create a ResultSetTablePanel
+   */
   public ResultSetTablePanel() {
     setBackground(TournamentGUI.BACKGROUND);
     initGUI();
@@ -39,19 +44,25 @@ public class ResultSetTablePanel extends JPanel {
     dataTable = new JTable();
   }
 
+  /**
+   * Convert the {@link ResultSet} into a table to display on the screen.
+   *
+   * @param results
+   *     - ResultSet to display
+   */
   public void populateData(ResultSet results) {
-    this.results = results;
-    tableModel = resultSetToTableModel();
+    TableModel tableModel = resultSetToTableModel(results);
     dataTable.setModel(tableModel);
     scrollPane.setViewportView(dataTable);
 
   }
 
-  private TableModel resultSetToTableModel() {
+  private TableModel resultSetToTableModel(ResultSet results) {
     try {
       ResultSetMetaData metaData = results.getMetaData();
       int numberOfColumns = metaData.getColumnCount();
-      Vector<String> columnNames = new Vector<>();
+      Vector<String> columnNames = new Vector<>(numberOfColumns);
+
       // Get the column names
       for (int column = 0; column < numberOfColumns; column++) {
         columnNames.add(metaData.getColumnLabel(column + 1));
@@ -62,8 +73,10 @@ public class ResultSetTablePanel extends JPanel {
       while (results.next()) {
         Vector<Object> newRow = new Vector<>();
         for (int i = 1; i <= numberOfColumns; i++) {
+          // Add each column to the new row...
           newRow.add(results.getObject(i));
         }
+        // Then add each new row to the Vector of rows
         rows.add(newRow);
       }
       return new DefaultTableModel(rows, columnNames);
