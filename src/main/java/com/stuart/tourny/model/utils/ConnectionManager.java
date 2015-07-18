@@ -6,6 +6,9 @@ import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Singleton ConnectionManager to deal with the embedded Derby database.
+ */
 public class ConnectionManager {
 
   private static ConnectionManager connectionManager;

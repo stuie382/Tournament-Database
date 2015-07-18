@@ -15,6 +15,7 @@ import java.awt.Insets;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,20 +44,20 @@ public class TournamentGUI extends JFrame {
   public static void main(String[] args) {
     setupLogger();
     log.info("Tournament GUI started");
-             EventQueue.invokeLater(() -> {
-               try {
-                 TournamentGUI frame = new TournamentGUI();
-                 frame.setTitle("Tournament Database");
-                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                 frame.setSize(800, 400);
-                 frame.setResizable(false);
-                 frame.setIconImages(ICON_IMAGES);
-                 frame.setVisible(true);
-                 frame.setLocationRelativeTo(null);
-               } catch (Exception ex) {
-                 log.error(ex);
-               }
-             });
+    EventQueue.invokeLater(() -> {
+      try {
+        TournamentGUI frame = new TournamentGUI();
+        frame.setTitle("Tournament Database");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setSize(800, 400);
+        frame.setResizable(false);
+        frame.setIconImages(ICON_IMAGES);
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+      } catch (Exception ex) {
+        log.error(ex);
+      }
+    });
   }
 
   /**
@@ -84,6 +85,16 @@ public class TournamentGUI extends JFrame {
     rootLogger.setLevel(Level.DEBUG);
     rootLogger.addAppender(consoleAppender);
     rootLogger.addAppender(fileAppender);
+
+    // Configure the logging for C3P0
+    Logger.getLogger("com.mchange.v2.c3p0").setLevel(Level.WARN);
+    Logger.getLogger("com.mchange.v2").setLevel(Level.WARN);
+
+    Properties p = new Properties(System.getProperties());
+    p.put("com.mchange.v2.log.MLog", "com.mchange.v2.log.log4j.Log4jMLog");
+    p.put("com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL", "INFO");
+
+    System.setProperties(p);
   }
 
   /**

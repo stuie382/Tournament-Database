@@ -50,13 +50,13 @@
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
-            <version>0.9.5-pre10</version>
+            <version>0.9.5.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>mchange-commons-java</artifactId>
-            <version>0.2.8</version>
+            <version>0.2.10</version>
         </dependency>
 
         <dependency>
@@ -68,21 +68,6 @@
     </dependencies>
 
     <build>
-     <!--   <resources>
-            <resource>
-                <directory>${project.basedir}/Tournament</directory>
-                <includes>
-                    <include>**.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>*.jpg</include>
-                    <include>*.png</include>
-                </includes>
-            </resource>
-        </resources> -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
