@@ -28,7 +28,8 @@ public class ManageTournamentsDialog extends ManageDialog {
   }
 
   /**
-   * Setup the GUI
+   * Setup the GUI. Most of the GUI is handled by the abstract parent class, so we can just handle
+   * the tournament specific stuff here.
    */
   private void initGUI() {
     initGUI(MANAGE_TOURNAMENTS, TOURNAMENT);

@@ -8,7 +8,11 @@ import com.stuart.tourny.model.utils.ConnectionManager;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
+/**
+ * <p>Controller class that will manage the {@link Connection} objects used to query against the
+ * GAME table.</p><p> This should handle any commits required and should log at DEBUG/ERROR levels
+ * when a transaction completes/exception occurs.</p>
+ */
 public class GameController {
 
   private GameDbEngine engine;

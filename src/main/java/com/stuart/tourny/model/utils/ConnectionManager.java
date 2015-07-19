@@ -5,6 +5,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Singleton ConnectionManager to deal with the embedded Derby database.
@@ -20,6 +21,10 @@ public class ConnectionManager {
    * will create the connection pool manager connected to the embedded Derby instance.
    */
   private ConnectionManager() throws PropertyVetoException {
+    Properties p = System.getProperties();
+    p.put("derby.language.logStatementText","true");
+    System.setProperties(p);
+
     cpds = new ComboPooledDataSource();
     cpds.setDriverClass("org.apache.derby.jdbc.EmbeddedDataSource");
     cpds.setJdbcUrl(dbURL1);

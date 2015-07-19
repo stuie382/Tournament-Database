@@ -1,4 +1,4 @@
-package com.stuart.tourny.model.utils.dataFixture;
+package base.dataFixture;
 
 import com.stuart.tourny.model.common.dto.DTOPlayer;
 import com.stuart.tourny.model.engines.PlayerDbEngine;

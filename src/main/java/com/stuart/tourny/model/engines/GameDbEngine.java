@@ -18,6 +18,13 @@ import static com.stuart.tourny.model.utils.SqlUtils.getTSFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.makeRowHash;
 import static com.stuart.tourny.model.utils.SqlUtils.maybeNull;
 
+/**
+ * <p>Class to directly handle running CRUD operations against the GAME table.</p><p>All methods
+ * that require a {@link Connection} object to function should be passed the object by the
+ * associated {@link com.stuart.tourny.controller.GameController} class. Similarly no
+ * commits/rollbacks should occur in this class - all transaction management is the responsibility
+ * of the {@link com.stuart.tourny.controller.GameController}.</p>
+ */
 public class GameDbEngine {
 
   private static final String USER_ID = "GameEngine";

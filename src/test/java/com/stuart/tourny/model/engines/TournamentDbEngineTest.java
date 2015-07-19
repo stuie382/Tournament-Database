@@ -3,7 +3,6 @@ package com.stuart.tourny.model.engines;
 import com.stuart.tourny.model.common.dto.DTOTournament;
 import com.stuart.tourny.model.common.key.KeyTournament;
 import com.stuart.tourny.model.utils.ConnectionManager;
-import com.stuart.tourny.model.utils.dataFixture.TournamentFixture;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,10 +16,13 @@ import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import base.TestBase;
+import base.dataFixture.TournamentFixture;
+
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-public class TournamentDbEngineTest {
+public class TournamentDbEngineTest extends TestBase {
 
   private static Connection connTDB;
   private TournamentDbEngine uut;
@@ -53,6 +55,7 @@ public class TournamentDbEngineTest {
 
   /**
    * Add a new fully populated tournament
+   *
    * @throws SQLException
    */
   @Test
@@ -110,6 +113,33 @@ public class TournamentDbEngineTest {
     assertEquals("Wonderkid", updated.getGoldenBoot());
   }
 
+  /**
+   * Try to perform an update on an existing tournament where the row hash has been changed.
+   *
+   * @throws SQLException
+   */
+  @Test
+  public void testUpdateATournament_RowHashProblem() throws SQLException {
+    DTOTournament dtoToUpdate = fixture.addATournament(connTDB, "March 2015", null, null, null, -1);
+    assertNotNull(dtoToUpdate);
+
+    // Intended incremental update
+    dtoToUpdate.setTournamentWinner("Stuart");
+
+    // Break the Row Hash
+    dtoToUpdate.setRowHash("Broken");
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage(
+        "Update Tournament: record changed by another process");
+    uut.updateRecord(connTDB, dtoToUpdate);
+  }
+
+  /**
+   * Simple test to delete a record from the database.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDeleteATournament()
       throws Exception {
@@ -123,5 +153,40 @@ public class TournamentDbEngineTest {
     thrown.expectMessage(
         "Cannot find DTOTournament! KeyTournament{tournamentId=" + tournamentId + "}");
     uut.getTournament(connTDB, new KeyTournament(tournamentId));
+  }
+
+  @Test
+  public void testUpdateATournament_UpdatePrimaryKey() throws SQLException {
+    DTOTournament dtoToUpdate = fixture.addATournament(connTDB, "March 2015", null, null, null, -1);
+    assertNotNull(dtoToUpdate);
+
+    // Intended incremental update
+    dtoToUpdate.setTournamentId(999999);
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage(
+        "Cannot find DTOTournament! KeyTournament{tournamentId=999999}");
+    uut.updateRecord(connTDB, dtoToUpdate);
+  }
+
+  /**
+   * Simple test to show that the system will throw the expected error when the row hash in memory
+   * and on disk are different.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteATournament_RowHashProblem()
+      throws Exception {
+    DTOTournament dto = fixture.addATournament(connTDB, "March 2015", null, null, null, -1);
+    assertNotNull(dto);
+    assertEquals("March 2015", dto.getTournamentName());
+    dto.setRowHash("Broken");
+    // This will now throw an exception as it thinks the in-memory record
+    // and on disk record are different.
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage(
+        "Delete Tournament: record changed by another process");
+    uut.deleteRecord(connTDB, dto);
   }
 }

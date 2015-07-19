@@ -12,6 +12,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +43,19 @@ public class TournamentGUI extends JFrame {
    * Launch the application.
    */
   public static void main(String[] args) {
-    setupLogger();
-    log.info("Tournament GUI started");
+    setupLoggers();
+    log.info("Tournament Database started");
     EventQueue.invokeLater(() -> {
       try {
         TournamentGUI frame = new TournamentGUI();
         frame.setTitle("Tournament Database");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+          public void windowClosing(WindowEvent e) {
+            log.debug("Application closed by WindowClosing event: " + e);
+            System.exit(0);
+          }
+        });
         frame.setSize(800, 400);
         frame.setResizable(false);
         frame.setIconImages(ICON_IMAGES);
@@ -61,9 +68,9 @@ public class TournamentGUI extends JFrame {
   }
 
   /**
-   * Setup and configure the logger.
+   * Setup and configure the loggers.
    */
-  private static void setupLogger() {
+  private static void setupLoggers() {
     // creates pattern layout
     PatternLayout layout = new PatternLayout();
     String conversionPattern = "%-7p %d [%t] %c %x - %m%n";
@@ -93,7 +100,6 @@ public class TournamentGUI extends JFrame {
     Properties p = new Properties(System.getProperties());
     p.put("com.mchange.v2.log.MLog", "com.mchange.v2.log.log4j.Log4jMLog");
     p.put("com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL", "INFO");
-
     System.setProperties(p);
   }
 
@@ -108,6 +114,7 @@ public class TournamentGUI extends JFrame {
    * Tidy up and close things down when close is clicked.
    */
   private void btnCloseApp_actionPerformed() {
+    log.debug("Application closed by the 'Close App' button");
     this.processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
   }
 

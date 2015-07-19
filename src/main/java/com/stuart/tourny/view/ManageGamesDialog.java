@@ -33,7 +33,11 @@ public class ManageGamesDialog extends ManageDialog {
 
   }
 
-  protected void initGUI() {
+  /**
+   * Setup the GUI. Most of the GUI is handled by the abstract parent class, so we can just handle
+   * the games specific stuff here.
+   */
+  private void initGUI() {
     initGUI(MANAGE_GAMES, GAME);
     ResultSetTablePanel resultSetTablePanel = new ResultSetTablePanel();
     getContentPane().add(resultSetTablePanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,

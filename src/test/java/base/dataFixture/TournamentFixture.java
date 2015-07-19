@@ -1,4 +1,4 @@
-package com.stuart.tourny.model.utils.dataFixture;
+package base.dataFixture;
 
 import com.stuart.tourny.model.common.dto.DTOTournament;
 import com.stuart.tourny.model.engines.TournamentDbEngine;

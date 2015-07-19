@@ -4,6 +4,12 @@ public class KeyGame {
 
   private final long gameId;
 
+  /**
+   * An object encapsulating the key fields from the GAME table.
+   *
+   * @param gameId
+   *     The ID of the GAME record
+   */
   public KeyGame(long gameId) {
     this.gameId = gameId;
   }
@@ -14,7 +20,7 @@ public class KeyGame {
 
   @Override
   public String toString() {
-    return "KeyGame{" + "gameId=" + gameId + '}';
+    return "KeyGame{" + "gameId=" + gameId + "}";
   }
 
   @Override

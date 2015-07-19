@@ -4,6 +4,12 @@ public class KeyTournament {
 
   private final long tournamentId;
 
+  /**
+   * An object encapsulating the key fields from the TOURNAMENT table.
+   *
+   * @param tournamentId
+   *     The ID of the TOURNAMENT record
+   */
   public KeyTournament(long tournamentId) {
     this.tournamentId = tournamentId;
   }
@@ -14,7 +20,7 @@ public class KeyTournament {
 
   @Override
   public String toString() {
-    return "KeyTournament{" + "tournamentId=" + tournamentId + '}';
+    return "KeyTournament{" + "tournamentId=" + tournamentId + "}";
   }
 
   @Override

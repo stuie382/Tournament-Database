@@ -9,6 +9,11 @@ import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 
+/**
+ * <p>Controller class that will manage the {@link Connection} objects used to query against the
+ * PLAYER table.</p><p> This should handle any commits required and should log at DEBUG/ERROR levels
+ * when a transaction completes/exception occurs.</p>
+ */
 public class PlayerController {
 
   private static final Logger log = Logger.getLogger(PlayerController.class);
@@ -19,6 +24,16 @@ public class PlayerController {
     engine = new PlayerDbEngine();
   }
 
+  /**
+   * Add a new player record to the database.
+   *
+   * @param dto
+   *     - DTO representing the new Player to add
+   *
+   * @return - DTOPlayer of the newly added record.
+   *
+   * @throws ServerProblem
+   */
   public DTOPlayer addPlayer(DTOPlayer dto) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {

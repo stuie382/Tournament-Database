@@ -14,6 +14,13 @@ import static com.stuart.tourny.model.utils.SqlUtils.getSFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.getTSFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.makeRowHash;
 
+/**
+ * <p>Class to directly handle running CRUD operations against the PLAYER table.</p><p>All methods
+ * that require a {@link Connection} object to function should be passed the object by the
+ * associated {@link com.stuart.tourny.controller.PlayerController} class. Similarly no
+ * commits/rollbacks should occur in this class - all transaction management is the responsibility
+ * of the {@link com.stuart.tourny.controller.PlayerController}.</p>
+ */
 public class PlayerDbEngine {
 
   private static final String USER_ID = "PlayerEngine";
@@ -123,6 +130,9 @@ public class PlayerDbEngine {
     }
   }
 
+  /**
+   * Convert a ResultSet into a DTOPlayer (including creating and setting the RowHash
+   */
   private DTOPlayer getDTOFromResultSet(final ResultSet rs)
       throws SQLException {
     DTOPlayer dto = new DTOPlayer();

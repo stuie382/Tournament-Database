@@ -4,6 +4,12 @@ public class KeyPlayer {
 
   private final String player;
 
+  /**
+   * An object encapsulating the key fields from the PLAYER table.
+   *
+   * @param player
+   *     The name field from the PLAYER record
+   */
   public KeyPlayer(String player) {
     this.player = player;
   }
@@ -26,7 +32,6 @@ public class KeyPlayer {
     if (player != null ? !player.equals(keyPlayer.player) : keyPlayer.player != null) {
       return false;
     }
-
     return true;
   }
 
@@ -37,6 +42,6 @@ public class KeyPlayer {
 
   @Override
   public String toString() {
-    return "KeyPlayer{" + "playerId='" + player + '\'' + '}';
+    return "KeyPlayer{" + "player=" + player + "}";
   }
 }

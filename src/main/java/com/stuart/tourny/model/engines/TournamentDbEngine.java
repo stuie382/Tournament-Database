@@ -17,6 +17,13 @@ import static com.stuart.tourny.model.utils.SqlUtils.getTSFromResults;
 import static com.stuart.tourny.model.utils.SqlUtils.makeRowHash;
 import static com.stuart.tourny.model.utils.SqlUtils.maybeNull;
 
+/**
+ * <p>Class to directly handle running CRUD operations against the TOURNAMENT table.</p><p>All
+ * methods that require a {@link Connection} object to function should be passed the object by the
+ * associated {@link com.stuart.tourny.controller.TournamentController} class. Similarly no
+ * commits/rollbacks should occur in this class - all transaction management is the responsibility
+ * of the {@link com.stuart.tourny.controller.TournamentController}.</p>
+ */
 public class TournamentDbEngine {
 
   private static final String USER_ID = "TournamentEngine";
@@ -117,7 +124,7 @@ public class TournamentDbEngine {
     KeyTournament key = dto.getKey();
     DTOTournament oldRow = getTournament(conn, key);
     if (!oldRow.getRowHash().equals(dto.getRowHash())) {
-      throw new IllegalStateException("update Tournament: record changed by another process");
+      throw new IllegalStateException("Update Tournament: record changed by another process");
     }
     try (PreparedStatement ps = conn.prepareStatement(getUpdateSql())) {
       int col = 1;
@@ -183,7 +190,7 @@ public class TournamentDbEngine {
     KeyTournament key = dto.getKey();
     DTOTournament oldRow = getTournament(conn, key);
     if (!oldRow.getRowHash().equals(dto.getRowHash())) {
-      throw new IllegalStateException("delete Tournament: record changed by another process");
+      throw new IllegalStateException("Delete Tournament: record changed by another process");
     }
     StringBuilder sql = new StringBuilder();
     sql.append(" DELETE FROM tdb.tournament");

@@ -8,12 +8,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import base.TestBase;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 
-public class SqlUtilsTest {
+public class SqlUtilsTest extends TestBase {
 
   @Before
   public void setUp() throws Exception {

@@ -6,6 +6,12 @@ import com.stuart.tourny.model.utils.SqlUtils;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+/**
+ * <p>Data Transfer Object representing a single from the the GAME table. The rowHash is a composite
+ * string created from the all the hashes in the DTO.</p> <p>The RowHash should only be set/checked
+ * by engine methods to ensure that the row has not been changed by another process since it was
+ * loaded into memory.</p>
+ */
 public class DTOGame implements Serializable {
 
   public DTOGame() {

@@ -15,7 +15,9 @@ import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class GameDbEngineTest {
+import base.TestBase;
+
+public class GameDbEngineTest extends TestBase {
 
   private static Connection connTDB;
   private GameDbEngine uut;

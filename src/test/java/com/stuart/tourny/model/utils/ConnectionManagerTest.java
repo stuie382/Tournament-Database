@@ -8,10 +8,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import base.TestBase;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class ConnectionManagerTest {
+public class ConnectionManagerTest extends TestBase {
 
   private Connection conn;
 

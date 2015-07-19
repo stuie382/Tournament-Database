@@ -3,7 +3,6 @@ package com.stuart.tourny.model.engines;
 import com.stuart.tourny.model.common.dto.DTOPlayer;
 import com.stuart.tourny.model.common.key.KeyPlayer;
 import com.stuart.tourny.model.utils.ConnectionManager;
-import com.stuart.tourny.model.utils.dataFixture.PlayerFixture;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,6 +15,8 @@ import org.junit.rules.ExpectedException;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import base.dataFixture.PlayerFixture;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -48,6 +49,10 @@ public class PlayerDbEngineTest {
     connTDB.rollback();
   }
 
+  /**
+   * Rule used to define the class of exception and the exception message we should expect from a
+   * method.
+   */
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
@@ -84,6 +89,8 @@ public class PlayerDbEngineTest {
 
   /**
    * Simple test to delete a player record from the database.
+   *
+   * @throws Exception
    */
   @Test
   public void testDeleteAPlayer()
@@ -100,7 +107,33 @@ public class PlayerDbEngineTest {
 
     // Check the data has been removed by checking for the key
     thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Cannot find DTOPlayer! KeyPlayer{playerId='Stuart'}");
+    thrown.expectMessage("Cannot find DTOPlayer! KeyPlayer{player=Stuart}");
     uut.getPlayer(connTDB, key);
+  }
+
+  /**
+   * Simple test to show that the system will throw the expected error when the row hash in memory
+   * and on disk are different.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteAPlayer_RowHashProblem()
+      throws Exception {
+    // Setup the data
+    playerFixture.addAPlayer(connTDB, "Stuart");
+    KeyPlayer key = new KeyPlayer("Stuart");
+    DTOPlayer dto = uut.getPlayer(connTDB, key);
+    assertNotNull(dto);
+    assertEquals("Stuart", dto.getName());
+
+    dto.setRowHash("Broken");
+
+    // This will now throw an exception as it thinks the in-memory record
+    // and on disk record are different.
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Delete Player failed: record changed by another process");
+    // Delete the data
+    uut.deletePlayer(connTDB, dto);
   }
 }
