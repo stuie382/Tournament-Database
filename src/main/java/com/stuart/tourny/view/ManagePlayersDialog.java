@@ -5,16 +5,21 @@ import com.stuart.tourny.controller.QueryController;
 import com.stuart.tourny.model.common.dto.DTOPlayer;
 import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
+import org.apache.log4j.Logger;
+
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Window;
 import java.sql.ResultSet;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 public class ManagePlayersDialog extends ManageDialog {
 
+  private static final Logger log = Logger.getLogger(ManagePlayersDialog.class);
   private static final String ALPHA_NUMERIC_REGEX = "^[a-zA-Z0-9\\s]*$";
   private static final String MANAGE_PLAYERS = "Manage Players";
   private static final String PLAYER = "Player";
@@ -66,13 +71,22 @@ public class ManagePlayersDialog extends ManageDialog {
                                         "Success!",
                                         JOptionPane.INFORMATION_MESSAGE);
         } catch (ServerProblem sp) {
-          JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                        "<html><h2>Error adding a player</h2>" + "Error details:"
-                                        + sp + "</html>",
-                                        "Error adding new player to the database.",
-                                        JOptionPane.ERROR_MESSAGE);
+          JTextArea errorMessage = new JTextArea();
+          errorMessage.setText("<html><h2>Error adding a player</h2>" + "Error details:"
+                               + sp + "</html>");
+          errorMessage.setWrapStyleWord(true);
+          errorMessage.setLineWrap(true);
+          errorMessage.setEditable(false);
+          errorMessage.setMinimumSize(new Dimension(200, 200));
+          JOptionPane
+              .showMessageDialog(
+                  SwingUtilities.windowForComponent(this),
+                  errorMessage,
+                  "Error adding new player to the database.",
+                  JOptionPane.ERROR_MESSAGE);
         }
       } else {
+        log.info("Tried to add invalid player name: " + userInput);
         JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
                                       "Please use alphanumeric characters only for player names!",
                                       "Oops",

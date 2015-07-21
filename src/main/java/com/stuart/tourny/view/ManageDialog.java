@@ -1,5 +1,7 @@
 package com.stuart.tourny.view;
 
+import org.apache.log4j.Logger;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -22,6 +24,8 @@ import javax.swing.border.BevelBorder;
  * @author Stuart
  */
 public abstract class ManageDialog extends JDialog {
+
+  private static final Logger log = Logger.getLogger(ManageDialog.class);
 
   /* Protected so the implementing classes can add any additional buttons
    * required to the {@code buttonPanel}.
@@ -52,6 +56,7 @@ public abstract class ManageDialog extends JDialog {
    *     - Singular of the title
    */
   protected void initGUI(String title, String type) {
+    log.debug("Creating ManageDialog: " + title + "," + type);
     setSize(400, 400);
     super.setBackground(TournamentGUI.BACKGROUND);
     setModal(true);
@@ -116,6 +121,7 @@ public abstract class ManageDialog extends JDialog {
    * Simply dispose of this Dialog.
    */
   protected void btnClose_actionPerformed() {
+    log.debug("Closing ManageDialog instance.");
     dispose();
   }
 

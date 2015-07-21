@@ -230,7 +230,6 @@ public class GameDbEngine {
       ps.setString(col++, USER_ID);
       // Where
       ps.setLong(col++, maybeNull(dto.getGameId()));
-      ps.setTimestamp(col++, dto.getUpdateDatetime());
 
       if (ps.executeUpdate() == 0) {
         throw new IllegalStateException("Update game failed: " + key.toString());

@@ -28,12 +28,12 @@ import javax.swing.table.TableModel;
  */
 public class ResultSetTablePanel extends JPanel {
 
+  private static final String CHOOSER_TITLE = "Save as...";
+  private static final Logger log = Logger.getLogger(ResultSetTablePanel.class);
+
   private JScrollPane scrollPane;
   private JTable dataTable;
   private ResultSet results;
-
-  private static final String CHOOSER_TITLE = "Save as...";
-  private static final Logger log = Logger.getLogger(ResultSetTablePanel.class);
 
   /**
    * Create a ResultSetTablePanel
@@ -52,17 +52,17 @@ public class ResultSetTablePanel extends JPanel {
     gridBagLayout.rowHeights = new int[]{0, 0, 0};
     gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
     gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-    setLayout(gridBagLayout);
-    scrollPane = new JScrollPane();
-    add(scrollPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+    this.setLayout(gridBagLayout);
+    this.scrollPane = new JScrollPane();
+    this.add(scrollPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                            GridBagConstraints.BOTH,
                                            new Insets(5, 0, 5, 5), 0, 0));
-    dataTable = new JTable();
+    this.dataTable = new JTable();
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem saveItem = new JMenuItem("Save to CSV");
     saveItem.addActionListener(e -> saveResultsToCsv());
     popupMenu.add(saveItem);
-    dataTable.setComponentPopupMenu(popupMenu);
+    this.dataTable.setComponentPopupMenu(popupMenu);
   }
 
   /**
@@ -74,9 +74,9 @@ public class ResultSetTablePanel extends JPanel {
   public void populateData(ResultSet results) {
     this.results = results;
     TableModel tableModel = resultSetToTableModel(this.results);
-    dataTable.setModel(tableModel);
-    scrollPane.setViewportView(dataTable);
-
+    this.dataTable.setModel(tableModel);
+    this.scrollPane.setViewportView(dataTable);
+    log.debug("ResultSet successfully converted to a table.");
   }
 
   private TableModel resultSetToTableModel(ResultSet results) {
@@ -103,7 +103,7 @@ public class ResultSetTablePanel extends JPanel {
       }
       return new DefaultTableModel(rows, columnNames);
     } catch (Exception e) {
-      String error = "Something went wrong! " + e;
+      String error = "Something went wrong converting the ResultSet: " + e;
       log.error(error);
       throw new IllegalStateException(error);
     }
@@ -138,21 +138,22 @@ public class ResultSetTablePanel extends JPanel {
   private void createAndWriteCsv(File fileToSave) {
     log.debug("Attempting to save " + fileToSave.getName());
     try (PrintWriter pw = new PrintWriter(fileToSave)) {
-      results.first();
-      ResultSetMetaData meta = results.getMetaData();
+      this.results.first();
+      ResultSetMetaData meta = this.results.getMetaData();
       int numberOfColumns = meta.getColumnCount();
       String dataHeaders = meta.getColumnName(1);
       for (int i = 2; i < numberOfColumns + 1; i++) {
         dataHeaders += "," + meta.getColumnName(i);
       }
       pw.println(dataHeaders);
-      while (results.next()) {
-        String row = results.getString(1);
+      while (this.results.next()) {
+        String row = this.results.getString(1);
         for (int i = 2; i < numberOfColumns + 1; i++) {
-          row += "," + results.getString(i);
+          row += "," + this.results.getString(i);
         }
         pw.println(row);
       }
+      log.debug("CSV Created!");
     } catch (Exception ex) {
       log.error("Problem creating CSV file: " + ex);
     }

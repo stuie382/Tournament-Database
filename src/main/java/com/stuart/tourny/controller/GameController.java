@@ -4,16 +4,20 @@ import com.stuart.tourny.model.common.dto.DTOGame;
 import com.stuart.tourny.model.common.key.KeyGame;
 import com.stuart.tourny.model.engines.GameDbEngine;
 import com.stuart.tourny.model.utils.ConnectionManager;
+import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
-import java.beans.PropertyVetoException;
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
-import java.sql.SQLException;
+
 /**
  * <p>Controller class that will manage the {@link Connection} objects used to query against the
  * GAME table.</p><p> This should handle any commits required and should log at DEBUG/ERROR levels
  * when a transaction completes/exception occurs.</p>
  */
 public class GameController {
+
+  private static final Logger log = Logger.getLogger(GameController.class);
 
   private GameDbEngine engine;
 
@@ -25,54 +29,80 @@ public class GameController {
    * Add a new Game record to the database. This will commit the connection if the add is
    * successful.
    *
-   * @param dto Record to add to the database
+   * @param dto
+   *     Record to add to the database
    */
-  public void addGame(DTOGame dto) throws PropertyVetoException, SQLException {
+  public void addGame(DTOGame dto) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {
+      log.debug("Attempting to add new GAME: " + dto.toString());
       engine.addGame(connTDB, dto);
       connTDB.commit();
+    } catch (Exception ex) {
+      String error = "Problem encountered during addGame: " + ex;
+      log.error(error);
+      throw new ServerProblem(error);
     }
   }
 
   /**
    * Get an existing Game record from the database.
    *
-   * @param key KeyGame record of the record to fetch
+   * @param key
+   *     KeyGame record of the record to fetch
+   *
    * @return DTOGame record from the database
    */
-  public DTOGame getGame(KeyGame key) throws PropertyVetoException, SQLException {
+  public DTOGame getGame(KeyGame key) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {
+      log.debug("Getting game from database: " + key);
       return engine.getGame(connTDB, key);
+    } catch (Exception ex) {
+      String error = "Problem encountered during getGame: " + ex;
+      log.error(error);
+      throw new ServerProblem(error);
     }
   }
 
   /**
    * Update an existing record with new values.
    *
-   * @param dto Record containing updated information
+   * @param dto
+   *     Record containing updated information
+   *
    * @return Record with updated information from the database
    */
-  public DTOGame updateGame(DTOGame dto) throws SQLException, PropertyVetoException {
+  public DTOGame updateGame(DTOGame dto) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {
+      log.debug("Attempting to update record: " + dto);
       dto = engine.updateGame(connTDB, dto);
       connTDB.commit();
       return dto;
+    } catch (Exception ex) {
+      String error = "Problem encountered during updateGame: " + ex;
+      log.error(error);
+      throw new ServerProblem(error);
     }
   }
 
   /**
    * Delete the row from the database.
    *
-   * @param dto Row to delete
+   * @param dto
+   *     Row to delete
    */
-  public void deleteGame(DTOGame dto) throws SQLException, PropertyVetoException {
+  public void deleteGame(DTOGame dto) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {
+      log.debug("Attempting to delete game: " + dto);
       engine.deleteGame(connTDB, dto);
       connTDB.commit();
+    } catch (Exception ex) {
+      String error = "Problem encountered during deleteGame: " + ex;
+      log.error(error);
+      throw new ServerProblem(error);
     }
   }
 

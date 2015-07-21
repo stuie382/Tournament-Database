@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 public class QueryController {
 
   private static final Logger log = Logger.getLogger(QueryController.class);
+
   private final QueryEngine queryEngine;
 
   public QueryController() {
