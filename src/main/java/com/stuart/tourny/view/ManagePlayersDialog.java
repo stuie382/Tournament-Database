@@ -1,3 +1,15 @@
+/*
+* Copyright (c) Stuart Clark
+*
+* This project by Stuart Clark is free software: you can redistribute it and/or modify it under the terms
+* of the GNU General Public License as published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version. This project is distributed in the hope that it will be
+* useful for educational purposes, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+* or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with this project.
+* If not, please see the GNU website.
+*/
 package com.stuart.tourny.view;
 
 import com.stuart.tourny.controller.PlayerController;
@@ -7,14 +19,12 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
 import org.apache.log4j.Logger;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Window;
 import java.sql.ResultSet;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 public class ManagePlayersDialog extends ManageDialog {
@@ -23,7 +33,10 @@ public class ManagePlayersDialog extends ManageDialog {
   private static final String ALPHA_NUMERIC_REGEX = "^[a-zA-Z0-9\\s]*$";
   private static final String MANAGE_PLAYERS = "Manage Players";
   private static final String PLAYER = "Player";
+  private static final String ERROR_TITLE = "Error getting all players from the database.";
+
   public static final int MAX_LENGTH = 50;
+
 
   private ResultSetTablePanel resultSetTablePanel;
 
@@ -40,10 +53,11 @@ public class ManagePlayersDialog extends ManageDialog {
       ResultSet rs = query.managePlayers_viewAll();
       resultSetTablePanel.populateData(rs);
     } catch (Exception ex) {
+      String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
+                            + "See the log for details.";
       JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                    "<html><h2>Error getting players:</h2> " + "Error details:" + ex
-                                    + "</html>",
-                                    "Error getting all players from the database.",
+                                    errorMessage,
+                                    ERROR_TITLE,
                                     JOptionPane.ERROR_MESSAGE);
     }
   }
@@ -54,7 +68,9 @@ public class ManagePlayersDialog extends ManageDialog {
   @Override
   protected void btnAdd_actionPerformed() {
     String userInput = JOptionPane.showInputDialog(this,
-                                                   "Please enter the full name of the new player. Be careful, as once created it cannot be changed!",
+                                                   "Please enter the full name of the new player."
+                                                   + System.lineSeparator()
+                                                   + "Be careful, as once created it cannot be changed!",
                                                    "Add a new player.",
                                                    JOptionPane.INFORMATION_MESSAGE);
     if (userInput != null) {
@@ -71,13 +87,8 @@ public class ManagePlayersDialog extends ManageDialog {
                                         "Success!",
                                         JOptionPane.INFORMATION_MESSAGE);
         } catch (ServerProblem sp) {
-          JTextArea errorMessage = new JTextArea();
-          errorMessage.setText("<html><h2>Error adding a player</h2>" + "Error details:"
-                               + sp + "</html>");
-          errorMessage.setWrapStyleWord(true);
-          errorMessage.setLineWrap(true);
-          errorMessage.setEditable(false);
-          errorMessage.setMinimumSize(new Dimension(200, 200));
+          String errorMessage = "Error encountered adding a new player." + System.lineSeparator()
+                                + "Please see the log for details.";
           JOptionPane
               .showMessageDialog(
                   SwingUtilities.windowForComponent(this),

@@ -1,7 +1,20 @@
+/*
+* Copyright (c) Stuart Clark
+*
+* This project by Stuart Clark is free software: you can redistribute it and/or modify it under the terms
+* of the GNU General Public License as published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version. This project is distributed in the hope that it will be
+* useful for educational purposes, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+* or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with this project.
+* If not, please see the GNU website.
+*/
 package com.stuart.tourny.view;
 
 import org.apache.log4j.Logger;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,9 +30,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 /**
@@ -53,11 +68,15 @@ public class ResultSetTablePanel extends JPanel {
     gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
     gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
     this.setLayout(gridBagLayout);
+    this.setPreferredSize(new Dimension(400,400));
     this.scrollPane = new JScrollPane();
+    this.scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    this.scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     this.add(scrollPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                                           GridBagConstraints.BOTH,
-                                           new Insets(5, 0, 5, 5), 0, 0));
+                                                GridBagConstraints.BOTH,
+                                                new Insets(5, 0, 5, 5), 0, 0));
     this.dataTable = new JTable();
+    this.dataTable.setMinimumSize(new Dimension(200, 200));
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem saveItem = new JMenuItem("Save to CSV");
     saveItem.addActionListener(e -> saveResultsToCsv());
@@ -75,8 +94,16 @@ public class ResultSetTablePanel extends JPanel {
     this.results = results;
     TableModel tableModel = resultSetToTableModel(this.results);
     this.dataTable.setModel(tableModel);
+    setupColumns(dataTable.getColumnModel());
     this.scrollPane.setViewportView(dataTable);
     log.debug("ResultSet successfully converted to a table.");
+  }
+
+  private void setupColumns(TableColumnModel columnModel) {
+    int columns = columnModel.getColumnCount();
+    for (int i = 0; i < columns; i++) {
+      columnModel.getColumn(i).setMinWidth(100);
+    }
   }
 
   private TableModel resultSetToTableModel(ResultSet results) {

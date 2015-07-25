@@ -1,3 +1,15 @@
+/*
+* Copyright (c) Stuart Clark
+*
+* This project by Stuart Clark is free software: you can redistribute it and/or modify it under the terms
+* of the GNU General Public License as published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version. This project is distributed in the hope that it will be
+* useful for educational purposes, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+* or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with this project.
+* If not, please see the GNU website.
+*/
 package com.stuart.tourny.view;
 
 import org.apache.log4j.Logger;
@@ -56,7 +68,7 @@ public abstract class ManageDialog extends JDialog {
    *     - Singular of the title
    */
   protected void initGUI(String title, String type) {
-    log.debug("Creating ManageDialog: " + title + "," + type);
+    log.debug("Creating ManageDialog: " + title);
     setSize(400, 400);
     super.setBackground(TournamentGUI.BACKGROUND);
     setModal(true);
@@ -91,12 +103,12 @@ public abstract class ManageDialog extends JDialog {
     btnAdd.addActionListener(e -> btnAdd_actionPerformed());
 
     buttonPanel
-        .add(btnAdd, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+        .add(btnViewAll, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                             GridBagConstraints.HORIZONTAL,
                                             new Insets(0, 0, 5, 0), 0, 0));
 
     buttonPanel
-        .add(btnViewAll, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+        .add(btnAdd, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                 GridBagConstraints.HORIZONTAL,
                                                 new Insets(0, 0, 5, 0), 0, 0));
 
