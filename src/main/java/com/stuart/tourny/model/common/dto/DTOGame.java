@@ -46,6 +46,24 @@ public class DTOGame implements Serializable {
   private Timestamp updateDatetime;
   private String updatedUser;
   private String rowHash;
+  private String homeTeam;
+  private String awayTeam;
+
+  public String getHomeTeam() {
+    return homeTeam;
+  }
+
+  public void setHomeTeam(String homeTeam) {
+    this.homeTeam = homeTeam;
+  }
+
+  public String getAwayTeam() {
+    return awayTeam;
+  }
+
+  public void setAwayTeam(String awayTeam) {
+    this.awayTeam = awayTeam;
+  }
 
   public String getRowHash() {
     return rowHash;
@@ -71,7 +89,7 @@ public class DTOGame implements Serializable {
     return awayGoals;
   }
 
-  public boolean getExtraTime() {
+  public boolean isExtraTime() {
     return extraTime;
   }
 
@@ -91,7 +109,7 @@ public class DTOGame implements Serializable {
     return tournamentId;
   }
 
-  public boolean getKnockOut() {
+  public boolean isKnockOut() {
     return knockOut;
   }
 
@@ -162,31 +180,37 @@ public class DTOGame implements Serializable {
 
     DTOGame dtoGame = (DTOGame) o;
 
-    if (awayGoals != dtoGame.awayGoals) {
-      return false;
-    }
-    if (awayPens != dtoGame.awayPens) {
-      return false;
-    }
-    if (extraTime != dtoGame.extraTime) {
-      return false;
-    }
     if (gameId != dtoGame.gameId) {
       return false;
     }
     if (homeGoals != dtoGame.homeGoals) {
       return false;
     }
+    if (awayGoals != dtoGame.awayGoals) {
+      return false;
+    }
+    if (extraTime != dtoGame.extraTime) {
+      return false;
+    }
     if (homePens != dtoGame.homePens) {
       return false;
     }
-    if (knockOut != dtoGame.knockOut) {
+    if (awayPens != dtoGame.awayPens) {
       return false;
     }
     if (tournamentId != dtoGame.tournamentId) {
       return false;
     }
+    if (knockOut != dtoGame.knockOut) {
+      return false;
+    }
+    if (!homePlayer.equals(dtoGame.homePlayer)) {
+      return false;
+    }
     if (!awayPlayer.equals(dtoGame.awayPlayer)) {
+      return false;
+    }
+    if (!winner.equals(dtoGame.winner)) {
       return false;
     }
     if (!createDatetime.equals(dtoGame.createDatetime)) {
@@ -195,23 +219,20 @@ public class DTOGame implements Serializable {
     if (!createdUser.equals(dtoGame.createdUser)) {
       return false;
     }
-    if (!homePlayer.equals(dtoGame.homePlayer)) {
-      return false;
-    }
-    if (!rowHash.equals(dtoGame.rowHash)) {
-      return false;
-    }
     if (!updateDatetime.equals(dtoGame.updateDatetime)) {
       return false;
     }
     if (!updatedUser.equals(dtoGame.updatedUser)) {
       return false;
     }
-    if (!winner.equals(dtoGame.winner)) {
+    if (!rowHash.equals(dtoGame.rowHash)) {
       return false;
     }
+    if (!homeTeam.equals(dtoGame.homeTeam)) {
+      return false;
+    }
+    return awayTeam.equals(dtoGame.awayTeam);
 
-    return true;
   }
 
   @Override
@@ -232,6 +253,8 @@ public class DTOGame implements Serializable {
     result = 31 * result + updateDatetime.hashCode();
     result = 31 * result + updatedUser.hashCode();
     result = 31 * result + rowHash.hashCode();
+    result = 31 * result + homeTeam.hashCode();
+    result = 31 * result + awayTeam.hashCode();
     return result;
   }
 
@@ -267,17 +290,19 @@ public class DTOGame implements Serializable {
     sb.append(", awayPlayer='").append(awayPlayer).append('\'');
     sb.append(", homeGoals=").append(homeGoals);
     sb.append(", awayGoals=").append(awayGoals);
-    sb.append(", extraTime='").append(extraTime).append('\'');
+    sb.append(", extraTime=").append(extraTime);
     sb.append(", homePens=").append(homePens);
     sb.append(", awayPens=").append(awayPens);
     sb.append(", winner='").append(winner).append('\'');
     sb.append(", tournamentId=").append(tournamentId);
-    sb.append(", knockOut='").append(knockOut).append('\'');
+    sb.append(", knockOut=").append(knockOut);
     sb.append(", createDatetime=").append(createDatetime);
     sb.append(", createdUser='").append(createdUser).append('\'');
     sb.append(", updateDatetime=").append(updateDatetime);
     sb.append(", updatedUser='").append(updatedUser).append('\'');
     sb.append(", rowHash='").append(rowHash).append('\'');
+    sb.append(", homeTeam='").append(homeTeam).append('\'');
+    sb.append(", awayTeam='").append(awayTeam).append('\'');
     sb.append('}');
     return sb.toString();
   }

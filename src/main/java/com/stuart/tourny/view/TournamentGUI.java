@@ -170,6 +170,18 @@ public class TournamentGUI extends JFrame {
   }
 
   /**
+   * Create a new instance of the Play Game Dialog and display it.
+   */
+  private void btnPlayGame_actionPerformed() {
+    PlayGameDialog pgd = new PlayGameDialog(SwingUtilities.windowForComponent(this));
+    pgd.setBackground(TournamentGUI.BACKGROUND);
+    pgd.setIconImages(TournamentGUI.ICON_IMAGES);
+    pgd.setLocationRelativeTo(null);
+    pgd.pack();
+    pgd.setVisible(true);
+  }
+
+  /**
    * Static method to load the image icons and store them within the parent frame.
    *
    * @return List of images to use as icons
@@ -217,7 +229,7 @@ public class TournamentGUI extends JFrame {
     gbl_buttonPanel.rowHeights = new int[]{23, 23, 0, 0, 0, 0, 0, 0, 0};
     gbl_buttonPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
     gbl_buttonPanel.rowWeights =
-        new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+        new double[]{0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
     buttonPanel.setLayout(gbl_buttonPanel);
 
     JButton btnManagePlayers = new JButton("Manage Players");
@@ -253,26 +265,27 @@ public class TournamentGUI extends JFrame {
     btnPlayGame.addActionListener(e -> btnPlayGame_actionPerformed());
     buttonPanel
         .add(btnPlayGame, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                                                 GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0,
+                                                 GridBagConstraints.HORIZONTAL,
+                                                 new Insets(0, 0, 5, 0), 0,
                                                  0));
 
     JPanel spacerPanel = new JPanel();
     spacerPanel.setBackground(BACKGROUND);
+   /* GridBagLayout gbl_spacerPanel = new GridBagLayout();
+    gbl_spacerPanel.columnWidths = new int[]{0};
+    gbl_spacerPanel.rowHeights = new int[]{0};
+    gbl_spacerPanel.columnWeights = new double[]{Double.MIN_VALUE};
+    gbl_spacerPanel.rowWeights = new double[]{Double.MIN_VALUE};*/
+    spacerPanel.setLayout(new GridBagLayout());
     buttonPanel
         .add(spacerPanel, new GridBagConstraints(0, 4, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0,
                                                  0));
 
-    GridBagLayout gbl_spacerPanel = new GridBagLayout();
-    gbl_spacerPanel.columnWidths = new int[]{0};
-    gbl_spacerPanel.rowHeights = new int[]{0};
-    gbl_spacerPanel.columnWeights = new double[]{Double.MIN_VALUE};
-    gbl_spacerPanel.rowWeights = new double[]{Double.MIN_VALUE};
-    spacerPanel.setLayout(gbl_spacerPanel);
     buttonPanel
         .add(btnCloseApp, new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.HORIZONTAL,
-                                                 new Insets(0, 0, 0, 0), 0, 0));
+                                                 new Insets(0, 0, 5, 5), 0, 0));
 
     JPanel welcomeImgPanel = new JPanel();
     welcomeImgPanel.setBackground(BACKGROUND);
@@ -290,9 +303,5 @@ public class TournamentGUI extends JFrame {
     btnManagePlayers.addActionListener(arg0 -> btnManagePlayers_actionPerformed());
 
     btnManageGames.addActionListener(e -> btnManageGames_actionPerformed());
-  }
-
-  private void btnPlayGame_actionPerformed() {
-
   }
 }

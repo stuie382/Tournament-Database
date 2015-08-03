@@ -14,6 +14,9 @@
  */
 package com.stuart.tourny.view;
 
+import com.stuart.tourny.controller.GameController;
+import com.stuart.tourny.model.utils.exceptions.ServerProblem;
+
 import org.apache.log4j.Logger;
 
 import java.awt.Font;
@@ -22,9 +25,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
 import java.text.NumberFormat;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -41,15 +46,36 @@ public class PlayGameDialog extends JDialog {
   private static final String TITLE = "Play a Game";
 
   private final ButtonGroup buttonGroup = new ButtonGroup();
+  private JComboBox<String> cmbHomePlayer;
+  private JComboBox<String> cmbAwayPlayer;
+  private JRadioButton rdbtnGroup;
+  private JRadioButton rdbtnKnockOut;
+  private JRadioButton rdbtnFinal;
+  private JFormattedTextField homeGoals;
+  private JFormattedTextField awayGoals;
+  private JFormattedTextField homePenalties;
+  private JFormattedTextField awayPenalties;
+  private JComboBox<String> cmbHomeTeam;
+  private JComboBox<String> cmbAwayTeam;
+  private JComboBox<String> cmbTournamentId;
 
   public PlayGameDialog(Window parent) {
     super(parent, TITLE);
+    getContentPane().setBackground(TournamentGUI.BACKGROUND);
     initGUI();
     populateComponents();
   }
 
   private void populateComponents() {
     log.debug("Attempting to populate components required to " + TITLE);
+    GameController gameController = new GameController();
+    try {
+      List<String> teams = gameController.getTeams();
+      cmbHomeTeam.setModel(new DefaultComboBoxModel(teams.toArray()));
+      cmbAwayTeam.setModel(new DefaultComboBoxModel(teams.toArray()));
+    } catch (ServerProblem sp) {
+      log.error(sp);
+    }
 
 
   }
@@ -88,6 +114,7 @@ public class PlayGameDialog extends JDialog {
     getContentPane().setLayout(gridBagLayout);
 
     final JPanel titlePanel = new JPanel();
+    titlePanel.setOpaque(false);
     getContentPane()
         .add(titlePanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                 GridBagConstraints.HORIZONTAL,
@@ -99,7 +126,7 @@ public class PlayGameDialog extends JDialog {
     gbl_titlePanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
     titlePanel.setLayout(gbl_titlePanel);
 
-    final JComboBox<String> cmbHomePlayer = new JComboBox<>();
+    cmbHomePlayer = new JComboBox<>();
     titlePanel
         .add(cmbHomePlayer, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                    GridBagConstraints.HORIZONTAL,
@@ -111,19 +138,21 @@ public class PlayGameDialog extends JDialog {
                                                  GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0,
                                                  0));
 
-    final JComboBox<String> cmbAwayPlayer = new JComboBox<>();
+    cmbAwayPlayer = new JComboBox<>();
     titlePanel
         .add(cmbAwayPlayer, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                    GridBagConstraints.HORIZONTAL,
                                                    new Insets(0, 0, 5, 5), 0, 0));
 
     final JPanel holderPanel = new JPanel();
+    holderPanel.setOpaque(false);
     getContentPane()
         .add(holderPanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.HORIZONTAL,
                                                  new Insets(0, 0, 5, 0), 0, 0));
 
     final JPanel rdoPanel = new JPanel();
+    rdoPanel.setOpaque(false);
     rdoPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
     holderPanel.add(rdoPanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                                                      GridBagConstraints.NONE,
@@ -136,14 +165,16 @@ public class PlayGameDialog extends JDialog {
     rdoPanel.setLayout(gbl_rdoPanel);
     rdoPanel.setBorder(BorderFactory.createTitledBorder("Game Type"));
 
-    final JRadioButton rdbtnGroup = new JRadioButton("Group");
+    rdbtnGroup = new JRadioButton("Group");
+    rdbtnGroup.setOpaque(false);
     rdbtnGroup.addActionListener(e -> rdbtnGroup_actionPerformed());
     rdoPanel.add(rdbtnGroup, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                                                     GridBagConstraints.NONE, new Insets(0, 0, 5, 0),
                                                     0, 0));
     buttonGroup.add(rdbtnGroup);
 
-    final JRadioButton rdbtnKnockOut = new JRadioButton("Knock Out");
+    rdbtnKnockOut = new JRadioButton("Knock Out");
+    rdbtnKnockOut.setOpaque(false);
     rdbtnKnockOut.addActionListener(e -> rdbtnKnockOut_actionPerformed());
     rdoPanel
         .add(rdbtnKnockOut, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -151,7 +182,8 @@ public class PlayGameDialog extends JDialog {
                                                    0, 0));
     buttonGroup.add(rdbtnKnockOut);
 
-    final JRadioButton rdbtnFinal = new JRadioButton("Final");
+    rdbtnFinal = new JRadioButton("Final");
+    rdbtnFinal.setOpaque(false);
     rdbtnFinal.addActionListener(e -> rdbtnFinal_actionPerformed());
     rdoPanel.add(rdbtnFinal, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                                                     GridBagConstraints.NONE, new Insets(0, 0, 0, 0),
@@ -159,6 +191,7 @@ public class PlayGameDialog extends JDialog {
     buttonGroup.add(rdbtnFinal);
 
     final JPanel scoresPanel = new JPanel();
+    scoresPanel.setOpaque(false);
     holderPanel
         .add(scoresPanel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0,
@@ -184,7 +217,7 @@ public class PlayGameDialog extends JDialog {
                                                  GridBagConstraints.HORIZONTAL,
                                                  new Insets(0, 0, 5, 5), 0, 0));
 
-    final JFormattedTextField
+
         homeGoals =
         new JFormattedTextField(NumberFormat.getIntegerInstance());
     scoresPanel
@@ -198,13 +231,13 @@ public class PlayGameDialog extends JDialog {
                                               GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0,
                                               0));
 
-    final JFormattedTextField awayGoals = new JFormattedTextField();
+    awayGoals = new JFormattedTextField();
     scoresPanel
         .add(awayGoals, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                GridBagConstraints.HORIZONTAL,
                                                new Insets(0, 0, 5, 5), 0, 0));
 
-    final JFormattedTextField
+
         homePenalties =
         new JFormattedTextField(NumberFormat.getIntegerInstance());
     scoresPanel
@@ -218,13 +251,13 @@ public class PlayGameDialog extends JDialog {
                                                   GridBagConstraints.NONE, new Insets(0, 0, 5, 5),
                                                   0, 0));
 
-    final JFormattedTextField awayPenalties = new JFormattedTextField();
+     awayPenalties = new JFormattedTextField();
     scoresPanel
         .add(awayPenalties, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                    GridBagConstraints.HORIZONTAL,
                                                    new Insets(0, 0, 5, 5), 0, 0));
 
-    final JComboBox<String> cmbHomeTeam = new JComboBox<>();
+     cmbHomeTeam = new JComboBox<>();
     scoresPanel
         .add(cmbHomeTeam, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.HORIZONTAL,
@@ -235,13 +268,14 @@ public class PlayGameDialog extends JDialog {
                                                     GridBagConstraints.NONE, new Insets(0, 0, 0, 5),
                                                     0, 0));
 
-    final JComboBox<String> cmbAwayTeam = new JComboBox<>();
+     cmbAwayTeam = new JComboBox<>();
     scoresPanel
         .add(cmbAwayTeam, new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.HORIZONTAL,
                                                  new Insets(0, 0, 5, 5), 0, 0));
 
     final JPanel tournamentPanel = new JPanel();
+    tournamentPanel.setOpaque(false);
     getContentPane().add(tournamentPanel,
                          new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                 GridBagConstraints.HORIZONTAL,
@@ -260,13 +294,14 @@ public class PlayGameDialog extends JDialog {
                                                      GridBagConstraints.NONE,
                                                      new Insets(0, 0, 0, 5), 0, 0));
 
-    final JComboBox<String> cmbTournamentId = new JComboBox<>();
+    cmbTournamentId = new JComboBox<>();
     tournamentPanel
         .add(cmbTournamentId, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                                                      GridBagConstraints.NONE,
                                                      new Insets(0, 0, 0, 0), 0, 0));
 
     final JPanel controlPanel = new JPanel();
+    controlPanel.setOpaque(false);
     getContentPane().add(controlPanel,
                          new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHEAST,
                                                 GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0,

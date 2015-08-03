@@ -15,11 +15,14 @@ package com.stuart.tourny.model.engines;
 import com.stuart.tourny.model.common.dto.DTOGame;
 import com.stuart.tourny.model.common.key.KeyGame;
 
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.stuart.tourny.model.utils.SqlUtils.bts;
@@ -39,6 +42,7 @@ import static com.stuart.tourny.model.utils.SqlUtils.maybeNull;
  */
 public class GameDbEngine {
 
+  private static final Logger log = Logger.getLogger(GameDbEngine.class);
   private static final String USER_ID = "GameEngine";
 
   public GameDbEngine() {
@@ -66,7 +70,9 @@ public class GameDbEngine {
     sql.append("        g.updated_by_user_id,");
     sql.append("        g.update_datetime,");
     sql.append("        g.created_by_user_id,");
-    sql.append("        g.create_datetime");
+    sql.append("        g.create_datetime,");
+    sql.append("        g.home_team, ");
+    sql.append("        g.away_team");
     return sql.toString();
   }
 
@@ -86,9 +92,11 @@ public class GameDbEngine {
     sql.append("            updated_by_user_id,");
     sql.append("            update_datetime,");
     sql.append("            created_by_user_id,");
-    sql.append("            create_datetime");
+    sql.append("            create_datetime,");
+    sql.append("            home_team,");
+    sql.append("            away_team");
     sql.append(
-        ") VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP)");
+        ") VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?, ?)");
     return sql.toString();
   }
 
@@ -106,7 +114,9 @@ public class GameDbEngine {
     sql.append("        tournament_id = ? ,");
     sql.append("        knock_out = ? ,");
     sql.append("        updated_by_user_id = ? ,");
-    sql.append("        update_datetime = CURRENT_TIMESTAMP ");
+    sql.append("        update_datetime = CURRENT_TIMESTAMP , ");
+    sql.append("        home_team = ? ,");
+    sql.append("        away_team = ? ");
     sql.append("  WHERE game_id = ? ");
     return sql.toString();
   }
@@ -171,6 +181,8 @@ public class GameDbEngine {
     dto.setUpdateDatetime(getTSFromResults(results, col++));
     dto.setCreatedUser(getSFromResults(results, col++));
     dto.setCreateDatetime(getTSFromResults(results, col++));
+    dto.setHomeTeam(getSFromResults(results, col++));
+    dto.setAwayTeam(getSFromResults(results, col++));
     return dto;
   }
 
@@ -194,14 +206,16 @@ public class GameDbEngine {
       ps.setString(col++, dto.getAwayPlayer());
       ps.setLong(col++, maybeNull(dto.getHomeGoals()));
       ps.setLong(col++, maybeNull(dto.getAwayGoals()));
-      ps.setString(col++, bts(dto.getExtraTime()));
+      ps.setString(col++, bts(dto.isExtraTime()));
       ps.setLong(col++, maybeNull(dto.getHomePens()));
       ps.setLong(col++, maybeNull(dto.getAwayPens()));
       ps.setString(col++, dto.getWinner());
       ps.setLong(col++, maybeNull(dto.getTournamentId()));
-      ps.setString(col++, bts(dto.getKnockOut()));
+      ps.setString(col++, bts(dto.isKnockOut()));
       ps.setString(col++, USER_ID);
       ps.setString(col++, USER_ID);
+      ps.setString(col++, dto.getHomeTeam());
+      ps.setString(col++, dto.getAwayTeam());
 
       ps.executeUpdate();
       try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -238,13 +252,15 @@ public class GameDbEngine {
       ps.setString(col++, dto.getAwayPlayer());
       ps.setLong(col++, maybeNull(dto.getHomeGoals()));
       ps.setLong(col++, maybeNull(dto.getAwayGoals()));
-      ps.setString(col++, bts(dto.getExtraTime()));
+      ps.setString(col++, bts(dto.isExtraTime()));
       ps.setLong(col++, maybeNull(dto.getHomePens()));
       ps.setLong(col++, maybeNull(dto.getAwayPens()));
       ps.setString(col++, dto.getWinner());
       ps.setLong(col++, maybeNull(dto.getTournamentId()));
-      ps.setString(col++, bts(dto.getKnockOut()));
+      ps.setString(col++, bts(dto.isKnockOut()));
       ps.setString(col++, USER_ID);
+      ps.setString(col++, dto.getHomeTeam());
+      ps.setString(col++, dto.getAwayTeam());
       // Where
       ps.setLong(col++, maybeNull(dto.getGameId()));
 
@@ -279,6 +295,35 @@ public class GameDbEngine {
       ps.setLong(col++, key.getGameId());
       ps.executeUpdate();
     }
+  }
+
+  /**
+   * Return an ordered set of all the countries that can be selected by the player.
+   *
+   * @param connTDB - The connection to the database
+   *
+   * @return - Set of String representing the countries available to play.
+   *
+   * @throws SQLException
+   */
+  public List<String> getTeams(final Connection connTDB) throws SQLException {
+    List<String> results = new ArrayList<>(50);
+    StringBuilder sql = new StringBuilder();
+    sql.append("   SELECT country ");
+    sql.append("     FROM tdb.countries ");
+    sql.append(" ORDER BY country ");
+    try (PreparedStatement ps = connTDB.prepareStatement(sql.toString()); ResultSet rs = ps
+        .executeQuery()) {
+      while (rs.next()) {
+        results.add(rs.getString(1));
+      }
+    }
+    if (results.isEmpty()) {
+      String error = "No countries found";
+      log.error(error);
+      throw new IllegalStateException(error);
+    }
+    return results;
   }
 
 }

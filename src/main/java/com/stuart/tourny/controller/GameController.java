@@ -21,6 +21,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
+import java.util.List;
 
 /**
  * <p>Controller class that will manage the {@link Connection} objects used to query against the
@@ -113,6 +114,25 @@ public class GameController {
       connTDB.commit();
     } catch (Exception ex) {
       String error = "Problem encountered during deleteGame: " + ex;
+      log.error(error);
+      throw new ServerProblem(error);
+    }
+  }
+
+  /**
+   * Get all the teams from the database for the users to select.
+   *
+   * @return - List of all teams
+   *
+   * @throws ServerProblem
+   */
+  public List<String> getTeams() throws ServerProblem {
+    try (Connection connTDB = ConnectionManager.getInstance()
+        .getConnection()) {
+      log.debug("Attempting to get all the teams");
+      return engine.getTeams(connTDB);
+    } catch (Exception ex) {
+      String error = "Problem encountered during getTeams: " + ex;
       log.error(error);
       throw new ServerProblem(error);
     }

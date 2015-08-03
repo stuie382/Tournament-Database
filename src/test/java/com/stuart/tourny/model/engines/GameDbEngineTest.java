@@ -28,12 +28,14 @@ import org.junit.rules.ExpectedException;
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import base.TestBase;
 import base.dataFixture.GameFixture;
 import base.dataFixture.PlayerFixture;
 import base.dataFixture.TournamentFixture;
 
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -111,11 +113,11 @@ public class GameDbEngineTest extends TestBase {
     assertEquals(dtoTournament.getTournamentId(), game.getTournamentId());
     assertEquals(2, game.getHomeGoals());
     assertEquals(1, game.getAwayGoals());
-    assertEquals(false, game.getExtraTime());
+    assertEquals(false, game.isExtraTime());
     assertEquals(0, game.getHomePens());
     assertEquals(0, game.getAwayPens());
     assertEquals(PLAYER_1, game.getWinner());
-    assertEquals(false, game.getKnockOut());
+    assertEquals(false, game.isKnockOut());
     assertEquals("GameEngine", game.getCreatedUser());
     assertEquals("GameEngine", game.getUpdatedUser());
 
@@ -135,12 +137,16 @@ public class GameDbEngineTest extends TestBase {
     game.setHomePens(4);
     game.setAwayPens(5);
     game.setWinner(PLAYER_2);
+    game.setHomeTeam("England");
+    game.setAwayTeam("Spain");
 
     DTOGame updated = uut.updateGame(connTDB, game);
-    assertEquals(true, updated.getExtraTime());
+    assertEquals(true, updated.isExtraTime());
     assertEquals(2, updated.getAwayGoals());
     assertEquals(4, updated.getHomePens());
     assertEquals(5, updated.getAwayPens());
+    assertEquals("England", updated.getHomeTeam());
+    assertEquals("Spain", updated.getAwayTeam());
     assertEquals(PLAYER_2, updated.getWinner());
 
   }
@@ -209,5 +215,20 @@ public class GameDbEngineTest extends TestBase {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("delete Game: record changed by another process");
     uut.deleteGame(connTDB, game);
+  }
+
+  /**
+   * Check that the expected number of teams is present in the COUNTRIES table, and that the first
+   * and last elements are as expected.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetTeams() throws Exception {
+    List<String> results = uut.getTeams(connTDB);
+    assertTrue(!results.isEmpty());
+    assertEquals(47, results.size());
+    assertEquals("Argentina", results.get(0));
+    assertEquals("Wales", results.get(46));
   }
 }
