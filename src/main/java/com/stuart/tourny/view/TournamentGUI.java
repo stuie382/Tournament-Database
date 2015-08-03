@@ -71,8 +71,9 @@ public class TournamentGUI extends JFrame {
         frame.setSize(800, 400);
         frame.setResizable(false);
         frame.setIconImages(ICON_IMAGES);
-        frame.setVisible(true);
         frame.setLocationRelativeTo(null);
+        frame.pack();
+        frame.setVisible(true);
       } catch (Exception ex) {
         log.error(ex);
       }
@@ -138,6 +139,7 @@ public class TournamentGUI extends JFrame {
     mgd.setBackground(BACKGROUND);
     mgd.setIconImages(ICON_IMAGES);
     mgd.setLocationRelativeTo(null);
+    mgd.pack();
     mgd.setVisible(true);
   }
 
@@ -151,6 +153,7 @@ public class TournamentGUI extends JFrame {
     mtd.setBackground(BACKGROUND);
     mtd.setIconImages(ICON_IMAGES);
     mtd.setLocationRelativeTo(null);
+    mtd.pack();
     mtd.setVisible(true);
   }
 
@@ -162,6 +165,7 @@ public class TournamentGUI extends JFrame {
     mpd.setBackground(BACKGROUND);
     mpd.setIconImages(ICON_IMAGES);
     mpd.setLocationRelativeTo(null);
+    mpd.pack();
     mpd.setVisible(true);
   }
 
@@ -225,6 +229,7 @@ public class TournamentGUI extends JFrame {
                                            0));
 
     JButton btnManageGames = new JButton("Manage Games");
+    btnManageGames.setToolTipText("View Games and related queries");
     btnManageGames.setHorizontalAlignment(JButton.CENTER);
     buttonPanel
         .add(btnManageGames, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -232,19 +237,29 @@ public class TournamentGUI extends JFrame {
                                                     new Insets(0, 0, 5, 0), 0, 0));
 
     JButton btnManageTournaments = new JButton("Manage Tournaments");
+    btnManageTournaments.setToolTipText("View Tournaments and related queries");
     btnManageTournaments.addActionListener(e -> btnManageTournaments_actionPerformed());
     buttonPanel.add(btnManageTournaments,
                     new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                                           GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
+                                           GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0,
+                                           0));
 
     JButton btnCloseApp = new JButton("Close App");
     btnCloseApp.setToolTipText("Exit the Application\r\n");
     btnCloseApp.addActionListener(e -> btnCloseApp_actionPerformed());
 
+    JButton btnPlayGame = new JButton("Play a Game");
+    btnPlayGame.setToolTipText("Play a game, requires a Tournament to exist.");
+    btnPlayGame.addActionListener(e -> btnPlayGame_actionPerformed());
+    buttonPanel
+        .add(btnPlayGame, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                                                 GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0,
+                                                 0));
+
     JPanel spacerPanel = new JPanel();
     spacerPanel.setBackground(BACKGROUND);
     buttonPanel
-        .add(spacerPanel, new GridBagConstraints(0, 3, 1, 4, 0.0, 0.0, GridBagConstraints.CENTER,
+        .add(spacerPanel, new GridBagConstraints(0, 4, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0,
                                                  0));
 
@@ -275,5 +290,9 @@ public class TournamentGUI extends JFrame {
     btnManagePlayers.addActionListener(arg0 -> btnManagePlayers_actionPerformed());
 
     btnManageGames.addActionListener(e -> btnManageGames_actionPerformed());
+  }
+
+  private void btnPlayGame_actionPerformed() {
+
   }
 }

@@ -19,6 +19,7 @@ package com.stuart.tourny.model.utils.exceptions;
 public class ServerProblem extends Exception {
 
   public ServerProblem() {
+    super();
   }
 
   public ServerProblem(String message) {

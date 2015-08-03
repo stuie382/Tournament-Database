@@ -67,21 +67,30 @@ public class ResultSetTablePanel extends JPanel {
     gridBagLayout.rowHeights = new int[]{0, 0, 0};
     gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
     gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-    this.setLayout(gridBagLayout);
-    this.setPreferredSize(new Dimension(400,400));
-    this.scrollPane = new JScrollPane();
-    this.scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    this.scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-    this.add(scrollPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                                                GridBagConstraints.BOTH,
-                                                new Insets(5, 0, 5, 5), 0, 0));
-    this.dataTable = new JTable();
-    this.dataTable.setMinimumSize(new Dimension(200, 200));
+    setLayout(gridBagLayout);
+    setPreferredSize(new Dimension(400, 400));
+    setMinimumSize(new Dimension(400, 400));
+    setMaximumSize(new Dimension(400, 400));
+
+    dataTable = new JTable();
+    dataTable.setMinimumSize(new Dimension(200, 300));
+    dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+    scrollPane =
+        new JScrollPane(dataTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setMinimumSize(new Dimension(200, 200));
+    scrollPane.setPreferredSize(new Dimension(200, 200));
+    scrollPane.setViewportView(dataTable);
+
+    add(scrollPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                                           GridBagConstraints.BOTH,
+                                           new Insets(5, 0, 5, 5), 0, 0));
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem saveItem = new JMenuItem("Save to CSV");
     saveItem.addActionListener(e -> saveResultsToCsv());
     popupMenu.add(saveItem);
-    this.dataTable.setComponentPopupMenu(popupMenu);
+    dataTable.setComponentPopupMenu(popupMenu);
   }
 
   /**
@@ -93,16 +102,16 @@ public class ResultSetTablePanel extends JPanel {
   public void populateData(ResultSet results) {
     this.results = results;
     TableModel tableModel = resultSetToTableModel(this.results);
-    this.dataTable.setModel(tableModel);
+    dataTable.setModel(tableModel);
     setupColumns(dataTable.getColumnModel());
-    this.scrollPane.setViewportView(dataTable);
+    scrollPane.setViewportView(dataTable);
     log.debug("ResultSet successfully converted to a table.");
   }
 
   private void setupColumns(TableColumnModel columnModel) {
     int columns = columnModel.getColumnCount();
     for (int i = 0; i < columns; i++) {
-      columnModel.getColumn(i).setMinWidth(100);
+      columnModel.getColumn(i).setPreferredWidth(100);
     }
   }
 

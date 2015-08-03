@@ -58,7 +58,7 @@ public class QueryEngine {
   }
 
   /**
-   * Return all games played across all tournaments, ordered by tournament name, then player name.
+   * Return all games played across all tournaments, ordered by tournament ID, then game ID.
    *
    * @param connTDB
    *     - The connection to the database
@@ -71,8 +71,9 @@ public class QueryEngine {
     CachedRowSet rowSet = new CachedRowSetImpl();
     StringBuilder sql = new StringBuilder();
     sql.append(GameDbEngine.getSelectSql());
-    sql.append("   FROM tdb.game g ");
-    sql.append("  ORDER BY g.home_player ");
+    sql.append("      FROM tdb.game g ");
+    sql.append("  ORDER BY g.tournament_id, ");
+    sql.append("           g.game_id ");
     try (PreparedStatement ps = connTDB.prepareStatement(sql.toString());
          ResultSet rs = ps.executeQuery()) {
       rowSet.populate(rs);

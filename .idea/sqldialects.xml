@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_010_player.sql" dialect="Derby" />
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_020_tournament.sql" dialect="Derby" />
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_030_game.sql" dialect="Derby" />
+    <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_040_countries.sql" dialect="Derby" />
   </component>
 </project>

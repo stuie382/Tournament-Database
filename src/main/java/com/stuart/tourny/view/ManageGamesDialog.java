@@ -47,8 +47,14 @@ public class ManageGamesDialog extends ManageDialog {
 
   @Override
   protected void btnAdd_actionPerformed() {
-    // TODO Auto-generated method stub
-
+    PlayGameDialog
+        pgd =
+        new PlayGameDialog(SwingUtilities.windowForComponent(this));
+    pgd.setBackground(TournamentGUI.BACKGROUND);
+    pgd.setIconImages(TournamentGUI.ICON_IMAGES);
+    pgd.setLocationRelativeTo(null);
+    pgd.pack();
+    pgd.setVisible(true);
   }
 
   @Override
