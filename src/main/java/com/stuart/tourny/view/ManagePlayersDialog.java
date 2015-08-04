@@ -30,13 +30,9 @@ import javax.swing.SwingUtilities;
 public class ManagePlayersDialog extends ManageDialog {
 
   private static final Logger log = Logger.getLogger(ManagePlayersDialog.class);
-  private static final String ALPHA_NUMERIC_REGEX = "^[a-zA-Z0-9\\s]*$";
   private static final String MANAGE_PLAYERS = "Manage Players";
   private static final String PLAYER = "Player";
   private static final String ERROR_TITLE = "Error getting all players from the database.";
-
-  public static final int MAX_LENGTH = 50;
-
 
   private ResultSetTablePanel resultSetTablePanel;
 
@@ -104,20 +100,6 @@ public class ManagePlayersDialog extends ManageDialog {
                                       JOptionPane.INFORMATION_MESSAGE);
       }
     }
-  }
-
-  /**
-   * Checks that the user has provided a name that only contains alphanumeric characters and is no
-   * longer than 50 characters.
-   *
-   * @param userInput
-   *     - User name taken from the input.
-   *
-   * @return true if both conditions are met
-   */
-  private boolean isUserInputValid(String userInput) {
-    return userInput.matches(ALPHA_NUMERIC_REGEX)
-           && userInput.length() <= MAX_LENGTH;
   }
 
   /**

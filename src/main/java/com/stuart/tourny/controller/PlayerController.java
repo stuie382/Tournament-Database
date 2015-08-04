@@ -20,6 +20,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
+import java.util.List;
 
 /**
  * <p>Controller class that will manage the {@link Connection} objects used to query against the
@@ -55,6 +56,27 @@ public class PlayerController {
       return dto;
     } catch (Exception ex) {
       String error = "Problem encountered adding a player: " + ex;
+      log.error(error);
+      throw new ServerProblem(error);
+    }
+  }
+
+  /**
+   * Get all players from the database.
+   *
+   * @return - List of all players
+   *
+   * @throws ServerProblem
+   */
+  public List<String> getAllPlayers() throws ServerProblem {
+    try (Connection connTDB = ConnectionManager.getInstance()
+        .getConnection()) {
+      log.debug("Getting all players");
+      List<String> results = engine.getAllPlayers(connTDB);
+      log.debug("Players found in the database: " + results);
+      return results;
+    } catch (Exception ex) {
+      String error = "Problem encountered getting all players: " + ex;
       log.error(error);
       throw new ServerProblem(error);
     }

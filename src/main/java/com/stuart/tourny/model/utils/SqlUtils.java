@@ -218,7 +218,7 @@ public final class SqlUtils {
    */
   public static long maybeNull(final Long input) {
     if (input == null) {
-      return 0;
+      return -1;
     }
     return input;
   }

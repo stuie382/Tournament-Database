@@ -63,4 +63,14 @@ public class QueryController {
     }
   }
 
+  public ResultSet manageTournaments_viewAll() throws ServerProblem {
+    try (Connection connTDB = ConnectionManager.getInstance().getConnection()){
+      log.debug("Attempting to run manageTournaments_viewAll...");
+      return queryEngine.manageTournaments_viewAll(connTDB);
+    } catch (Exception ex) {
+      String error = "Problem running Manage Tournaments View All query." + System.lineSeparator() + Constants.LOG_DETAILS;
+      log.error(error, ex);
+      throw new ServerProblem(error);
+    }
+  }
 }

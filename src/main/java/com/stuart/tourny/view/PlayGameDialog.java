@@ -15,6 +15,11 @@
 package com.stuart.tourny.view;
 
 import com.stuart.tourny.controller.GameController;
+import com.stuart.tourny.controller.PlayerController;
+import com.stuart.tourny.controller.TournamentController;
+import com.stuart.tourny.model.common.dto.DTOGame;
+import com.stuart.tourny.model.common.dto.DTOTournament;
+import com.stuart.tourny.model.utils.Constants;
 import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
 import org.apache.log4j.Logger;
@@ -35,10 +40,13 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.text.NumberFormatter;
 
 public class PlayGameDialog extends JDialog {
 
@@ -57,53 +65,332 @@ public class PlayGameDialog extends JDialog {
   private JFormattedTextField awayPenalties;
   private JComboBox<String> cmbHomeTeam;
   private JComboBox<String> cmbAwayTeam;
-  private JComboBox<String> cmbTournamentId;
+  private JComboBox<String> cmbTournaments;
 
   public PlayGameDialog(Window parent) {
     super(parent, TITLE);
     getContentPane().setBackground(TournamentGUI.BACKGROUND);
     initGUI();
     populateComponents();
+    setActiveComponents(GameType.INITIAL);
   }
 
+  /**
+   * This will query the database to populate the different combo boxes from the database.
+   */
   private void populateComponents() {
     log.debug("Attempting to populate components required to " + TITLE);
     GameController gameController = new GameController();
+    PlayerController playerController = new PlayerController();
+    TournamentController tournamentController = new TournamentController();
     try {
       List<String> teams = gameController.getTeams();
       cmbHomeTeam.setModel(new DefaultComboBoxModel(teams.toArray()));
       cmbAwayTeam.setModel(new DefaultComboBoxModel(teams.toArray()));
+      List<String> players = playerController.getAllPlayers();
+      cmbHomePlayer.setModel(new DefaultComboBoxModel(players.toArray()));
+      cmbAwayPlayer.setModel(new DefaultComboBoxModel(players.toArray()));
+      List<String> tournaments = tournamentController.getTournaments();
+      if (tournaments.isEmpty()) {
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                      "Please create a tournament before trying to Play a Game!",
+                                      "Error, no Tournaments exist!",
+                                      JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      cmbTournaments.setModel(new DefaultComboBoxModel(tournaments.toArray()));
     } catch (ServerProblem sp) {
       log.error(sp);
+      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                    Constants.LOG_DETAILS,
+                                    "Error populating components",
+                                    JOptionPane.ERROR_MESSAGE);
+      throw new IllegalStateException(sp);
     }
-
-
   }
 
   private void btnCancel_actionPerformed() {
-    dispose();
+    log.debug("Close clicked");
+    int option = JOptionPane.showConfirmDialog(
+        SwingUtilities.windowForComponent(this),
+        "Do you wish to cancel this screen?" + System.lineSeparator()
+        + "Unsaved changes will be lost!",
+        "Please decide.",
+        JOptionPane.YES_NO_OPTION);
+    if (JOptionPane.YES_OPTION == option) {
+      log.debug("User confirmed close");
+      dispose();
+    } else {
+      log.debug("User cancelled close");
+    }
   }
 
   private void btnSaveGame_actionPerformed() {
+    boolean isOk = validateGameInformation();
+    if (isOk) {
+      try {
+        TournamentController tournamentController = new TournamentController();
+        DTOTournament
+            dtoTournament =
+            tournamentController
+                .getDTOTournamentFromName((String) cmbTournaments.getSelectedItem());
+        int homeGoalsValue = (int) homeGoals.getValue();
+        int homePenaltyValue = (int) homePenalties.getValue();
+        int totalHomeScore = homeGoalsValue + homePenaltyValue;
 
+        int awayGoalsValue = (int) awayGoals.getValue();
+        int awayPenaltyValue = (int) awayPenalties.getValue();
+        int totalAwayScore = awayGoalsValue + awayPenaltyValue;
+
+        DTOGame newGame = new DTOGame();
+        newGame.setHomePlayer((String) cmbHomePlayer.getSelectedItem());
+        newGame.setAwayPlayer((String) cmbAwayPlayer.getSelectedItem());
+        newGame.setHomeGoals(homeGoalsValue);
+        newGame.setAwayGoals(awayGoalsValue);
+        newGame.setTournamentId(dtoTournament.getTournamentId());
+        newGame.setKnockOut("N");
+
+        newGame.setWinner(findWinner(totalHomeScore, totalAwayScore, newGame.getHomePlayer(),
+                                     newGame.getAwayPlayer()));
+        if (rdbtnKnockOut.isSelected() || rdbtnFinal.isSelected()) {
+          if (Constants.DRAW.equals(newGame.getWinner())) {
+            log.error("Knock out game cannot end in a draw");
+            JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                          "Knock out game cannot end in a draw! Please re-check the scores.",
+                                          "Error Saving New Game",
+                                          JOptionPane.ERROR_MESSAGE);
+            return;
+          }
+        }
+
+        if (rdbtnKnockOut.isSelected()) {
+          newGame.setKnockOut("Y");
+          newGame.setHomePens(homePenaltyValue);
+          newGame.setAwayPens(awayPenaltyValue);
+        }
+        if (rdbtnFinal.isSelected()) {
+          newGame.setKnockOut("Y");
+          newGame.setHomePens(homePenaltyValue);
+          newGame.setAwayPens(awayPenaltyValue);
+          newGame.setHomeTeam((String) cmbHomeTeam.getSelectedItem());
+          newGame.setAwayTeam((String) cmbAwayTeam.getSelectedItem());
+        }
+        log.debug(newGame);
+      } catch (Exception ex) {
+        log.error("Problem saving new game: " + ex);
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                      Constants.LOG_DETAILS,
+                                      "Error Saving New Game",
+                                      JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+    }
   }
 
+  private String findWinner(int totalHomeScore, int totalAwayScore, String homePlayer,
+                            String awayPlayer) {
+    String winningPlayer = null;
+    if (totalHomeScore > totalAwayScore) {
+      winningPlayer = homePlayer;
+    } else if (totalAwayScore > totalHomeScore) {
+      winningPlayer = awayPlayer;
+    } else {
+      winningPlayer = Constants.DRAW;
+    }
+    return winningPlayer;
+  }
+
+  /**
+   * Check that: <ul><li>A game does not have the same two players</li> <li>Home/Away goals are
+   * populated</li> <li>For knock out games, the penalties are populated</li> <li>For the final,
+   * penalties and teams are populated and correct (could be the same team for both
+   * players)</li></ul>
+   *
+   * @return
+   */
+  private boolean validateGameInformation() {
+    if (cmbHomePlayer.getSelectedItem().equals(cmbAwayPlayer.getSelectedItem())) {
+      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                    "Players cannot play themselves, please choose different players.",
+                                    "Invalid data",
+                                    JOptionPane.WARNING_MESSAGE);
+      return false;
+    }
+    if (homeGoals.getValue() == null || awayGoals.getValue() == null) {
+      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                    "Games need both home and away scores populated.",
+                                    "Invalid data",
+                                    JOptionPane.WARNING_MESSAGE);
+      return false;
+    }
+    if (rdbtnKnockOut.isSelected()) {
+      if (homePenalties.getValue() == null || awayPenalties.getValue() == null) {
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                      "Knock Out games need penalties populated, even if they are zero.",
+                                      "Invalid data",
+                                      JOptionPane.WARNING_MESSAGE);
+        return false;
+      }
+    }
+    if (rdbtnFinal.isSelected()) {
+      if (homePenalties.getValue() == null || awayPenalties.getValue() == null) {
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                      "The Final needs penalties populated, even if they are zero.",
+                                      "Invalid data",
+                                      JOptionPane.WARNING_MESSAGE);
+        return false;
+      }
+      if (cmbHomeTeam.getSelectedItem().equals(cmbAwayTeam.getSelectedItem())) {
+        int option = JOptionPane.showConfirmDialog(
+            SwingUtilities.windowForComponent(this),
+            "Both players have the same team selected!" + System.lineSeparator()
+            + "Is this correct?",
+            "Please decide.",
+            JOptionPane.YES_NO_OPTION);
+        if (JOptionPane.YES_OPTION != option) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Reset all components back to a default state
+   */
   private void btnReset_actionPerformed() {
-
+    int option = JOptionPane.showConfirmDialog(
+        SwingUtilities.windowForComponent(this),
+        "Do you wish to reset this screen?" + System.lineSeparator()
+        + "Unsaved changes will be lost!",
+        "Please decide.",
+        JOptionPane.YES_NO_OPTION);
+    if (JOptionPane.YES_OPTION == option) {
+      log.debug("User confirmed reset");
+      resetAllComponents();
+    } else {
+      log.debug("User cancelled reset");
+    }
   }
 
+  /**
+   * Set all user editable components back to their initial state.
+   */
+  private void resetAllComponents() {
+    buttonGroup.clearSelection();
+    setActiveComponents(GameType.INITIAL);
+    homeGoals.setText(Constants.EMPTY_STRING);
+    homePenalties.setText(Constants.EMPTY_STRING);
+    cmbHomeTeam.setSelectedIndex(0);
+    cmbHomePlayer.setSelectedIndex(0);
+    awayGoals.setText(Constants.EMPTY_STRING);
+    awayPenalties.setText(Constants.EMPTY_STRING);
+    cmbAwayTeam.setSelectedIndex(0);
+    cmbAwayPlayer.setSelectedIndex(0);
+    cmbTournaments.setSelectedIndex(0);
+  }
+
+  /**
+   * Set the required components for the final match.
+   */
   private void rdbtnFinal_actionPerformed() {
-
+    setActiveComponents(GameType.FINAL);
   }
 
+  /**
+   * Set the required components for a knock out match.
+   */
   private void rdbtnKnockOut_actionPerformed() {
-
+    setActiveComponents(GameType.KNOCK_OUT);
   }
 
+  /**
+   * Set the required components for a group match.
+   */
   private void rdbtnGroup_actionPerformed() {
-
+    setActiveComponents(GameType.GROUP);
   }
 
+  /**
+   * Set the required components active based on the type of game passed in. In this context, the
+   * state of 'INITIAL' is also considered a game type, and is used on first entry and on reset.
+   *
+   * @param type
+   *     - The type of game we are playing
+   */
+  private void setActiveComponents(GameType type) {
+    if (GameType.GROUP.equals(type)) {
+      homeGoals.setEnabled(true);
+      homePenalties.setEnabled(false);
+      cmbHomeTeam.setEnabled(false);
+      awayGoals.setEnabled(true);
+      awayPenalties.setEnabled(false);
+      cmbAwayTeam.setEnabled(false);
+
+      String toolTip = "Available to different game types.";
+      homeGoals.setToolTipText(null);
+      homePenalties.setToolTipText(toolTip);
+      cmbHomeTeam.setToolTipText(toolTip);
+      awayGoals.setToolTipText(null);
+      awayPenalties.setToolTipText(toolTip);
+      cmbAwayTeam.setToolTipText(toolTip);
+    } else if (GameType.KNOCK_OUT.equals(type)) {
+      homeGoals.setEnabled(true);
+      homePenalties.setEnabled(true);
+      cmbHomeTeam.setEnabled(false);
+      awayGoals.setEnabled(true);
+      awayPenalties.setEnabled(true);
+      cmbAwayTeam.setEnabled(false);
+
+      String toolTip = "Available to different game types.";
+      homeGoals.setToolTipText(null);
+      homePenalties.setToolTipText(null);
+      cmbHomeTeam.setToolTipText(toolTip);
+      awayGoals.setToolTipText(null);
+      awayPenalties.setToolTipText(null);
+      cmbAwayTeam.setToolTipText(toolTip);
+    } else if (GameType.FINAL.equals(type)) {
+      homeGoals.setEnabled(true);
+      homePenalties.setEnabled(true);
+      cmbHomeTeam.setEnabled(true);
+      awayGoals.setEnabled(true);
+      awayPenalties.setEnabled(true);
+      cmbAwayTeam.setEnabled(true);
+
+      homeGoals.setToolTipText(null);
+      homePenalties.setToolTipText(null);
+      cmbHomeTeam.setToolTipText(null);
+      awayGoals.setToolTipText(null);
+      awayPenalties.setToolTipText(null);
+      cmbAwayTeam.setToolTipText(null);
+    } else if (GameType.INITIAL.equals(type)) {
+      homeGoals.setEnabled(false);
+      homePenalties.setEnabled(false);
+      cmbHomeTeam.setEnabled(false);
+      awayGoals.setEnabled(false);
+      awayPenalties.setEnabled(false);
+      cmbAwayTeam.setEnabled(false);
+
+      String toolTip = "Please select a Game Type to continue.";
+      homeGoals.setToolTipText(toolTip);
+      homePenalties.setToolTipText(toolTip);
+      cmbHomeTeam.setToolTipText(toolTip);
+      awayGoals.setToolTipText(toolTip);
+      awayPenalties.setToolTipText(toolTip);
+      cmbAwayTeam.setToolTipText(toolTip);
+    }
+  }
+
+  /**
+   * Used to determine which components are enabled/disabled at any one time.
+   */
+  public enum GameType {
+    GROUP, KNOCK_OUT, FINAL, INITIAL
+  }
+
+  /**
+   * Setup the GUI components
+   */
   private void initGUI() {
     log.debug("Creating " + TITLE);
     GridBagLayout gridBagLayout = new GridBagLayout();
@@ -217,9 +504,16 @@ public class PlayGameDialog extends JDialog {
                                                  GridBagConstraints.HORIZONTAL,
                                                  new Insets(0, 0, 5, 5), 0, 0));
 
+    NumberFormat longFormat = NumberFormat.getIntegerInstance();
+    NumberFormatter nf = new NumberFormatter(longFormat);
+    nf.setValueClass(Integer.class);
+    nf.setMinimum(0);
+    nf.setMaximum(Integer.MAX_VALUE);
+    nf.setCommitsOnValidEdit(true);
+    nf.setAllowsInvalid(false);
+    homeGoals =
+        new JFormattedTextField(nf);
 
-        homeGoals =
-        new JFormattedTextField(NumberFormat.getIntegerInstance());
     scoresPanel
         .add(homeGoals, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                GridBagConstraints.HORIZONTAL,
@@ -231,15 +525,14 @@ public class PlayGameDialog extends JDialog {
                                               GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0,
                                               0));
 
-    awayGoals = new JFormattedTextField();
+    awayGoals = new JFormattedTextField(nf);
     scoresPanel
         .add(awayGoals, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                GridBagConstraints.HORIZONTAL,
                                                new Insets(0, 0, 5, 5), 0, 0));
 
-
-        homePenalties =
-        new JFormattedTextField(NumberFormat.getIntegerInstance());
+    homePenalties =
+        new JFormattedTextField(nf);
     scoresPanel
         .add(homePenalties, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                    GridBagConstraints.HORIZONTAL,
@@ -251,13 +544,13 @@ public class PlayGameDialog extends JDialog {
                                                   GridBagConstraints.NONE, new Insets(0, 0, 5, 5),
                                                   0, 0));
 
-     awayPenalties = new JFormattedTextField();
+    awayPenalties = new JFormattedTextField(nf);
     scoresPanel
         .add(awayPenalties, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                    GridBagConstraints.HORIZONTAL,
                                                    new Insets(0, 0, 5, 5), 0, 0));
 
-     cmbHomeTeam = new JComboBox<>();
+    cmbHomeTeam = new JComboBox<>();
     scoresPanel
         .add(cmbHomeTeam, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.HORIZONTAL,
@@ -268,7 +561,7 @@ public class PlayGameDialog extends JDialog {
                                                     GridBagConstraints.NONE, new Insets(0, 0, 0, 5),
                                                     0, 0));
 
-     cmbAwayTeam = new JComboBox<>();
+    cmbAwayTeam = new JComboBox<>();
     scoresPanel
         .add(cmbAwayTeam, new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                  GridBagConstraints.HORIZONTAL,
@@ -294,11 +587,11 @@ public class PlayGameDialog extends JDialog {
                                                      GridBagConstraints.NONE,
                                                      new Insets(0, 0, 0, 5), 0, 0));
 
-    cmbTournamentId = new JComboBox<>();
+    cmbTournaments = new JComboBox<>();
     tournamentPanel
-        .add(cmbTournamentId, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-                                                     GridBagConstraints.NONE,
-                                                     new Insets(0, 0, 0, 0), 0, 0));
+        .add(cmbTournaments, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                    GridBagConstraints.NONE,
+                                                    new Insets(0, 0, 0, 0), 0, 0));
 
     final JPanel controlPanel = new JPanel();
     controlPanel.setOpaque(false);
@@ -328,11 +621,11 @@ public class PlayGameDialog extends JDialog {
                                                  0));
 
     final JButton btnCancel = new JButton("Cancel");
+    btnCancel.setToolTipText("Cancel and exit this screen without saving any information.");
     btnCancel.addActionListener(e -> btnCancel_actionPerformed());
     controlPanel
         .add(btnCancel, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                                                GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0,
                                                0));
   }
-
 }

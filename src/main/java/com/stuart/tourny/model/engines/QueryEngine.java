@@ -80,4 +80,17 @@ public class QueryEngine {
       return rowSet;
     }
   }
+
+  public ResultSet manageTournaments_viewAll(Connection connTDB) throws SQLException {
+    CachedRowSet rowSet = new CachedRowSetImpl();
+    StringBuilder sql = new StringBuilder();
+    sql.append(TournamentDbEngine.getSelectSQL());
+    sql.append("      FROM tdb.tournament t ");
+    sql.append("  ORDER BY t.tournament_name ");
+    try (PreparedStatement ps = connTDB.prepareStatement(sql.toString());
+         ResultSet rs = ps.executeQuery()) {
+      rowSet.populate(rs);
+      return rowSet;
+    }
+  }
 }

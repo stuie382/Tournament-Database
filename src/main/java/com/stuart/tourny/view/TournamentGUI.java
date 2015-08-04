@@ -271,11 +271,6 @@ public class TournamentGUI extends JFrame {
 
     JPanel spacerPanel = new JPanel();
     spacerPanel.setBackground(BACKGROUND);
-   /* GridBagLayout gbl_spacerPanel = new GridBagLayout();
-    gbl_spacerPanel.columnWidths = new int[]{0};
-    gbl_spacerPanel.rowHeights = new int[]{0};
-    gbl_spacerPanel.columnWeights = new double[]{Double.MIN_VALUE};
-    gbl_spacerPanel.rowWeights = new double[]{Double.MIN_VALUE};*/
     spacerPanel.setLayout(new GridBagLayout());
     buttonPanel
         .add(spacerPanel, new GridBagConstraints(0, 4, 1, 3, 0.0, 0.0, GridBagConstraints.CENTER,

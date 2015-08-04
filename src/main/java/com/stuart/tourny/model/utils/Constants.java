@@ -24,4 +24,5 @@ public class Constants {
   /* Utility constants */
   public static final String EMPTY_STRING = "";
   public static final String LOG_DETAILS = "Please see the log for details.";
+  public static final String DRAW = "DRAW";
 }

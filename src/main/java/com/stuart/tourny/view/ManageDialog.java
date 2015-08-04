@@ -38,6 +38,8 @@ import javax.swing.border.BevelBorder;
 public abstract class ManageDialog extends JDialog {
 
   private static final Logger log = Logger.getLogger(ManageDialog.class);
+  private static final String ALPHA_NUMERIC_REGEX = "^[a-zA-Z0-9\\s]*$";
+  public static final int MAX_LENGTH = 50;
 
   /* Protected so the implementing classes can add any additional buttons
    * required to the {@code buttonPanel}.
@@ -141,4 +143,17 @@ public abstract class ManageDialog extends JDialog {
 
   protected abstract void btnViewAll_actionPerformed();
 
+  /**
+   * Checks that the user has provided a name that only contains alphanumeric characters and is no
+   * longer than 50 characters.
+   *
+   * @param userInput
+   *     - User name taken from the input.
+   *
+   * @return true if both conditions are met
+   */
+  protected static boolean isUserInputValid(String userInput) {
+    return userInput.matches(ALPHA_NUMERIC_REGEX)
+           && userInput.length() <= MAX_LENGTH;
+  }
 }

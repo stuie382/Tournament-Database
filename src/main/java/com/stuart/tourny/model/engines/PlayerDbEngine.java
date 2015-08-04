@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.stuart.tourny.model.utils.SqlUtils.getListFromResultSet;
@@ -158,4 +159,30 @@ public class PlayerDbEngine {
     dto.setUpdatedByUserId(getSFromResults(results, col++));
     return dto;
   }
+
+  /**
+   * Get a list of all the players in the database.
+   *
+   * @param connTDB
+   *     - The connection to the database
+   *
+   * @return - List containing all the player names in the database
+   *
+   * @throws SQLException
+   */
+  public List<String> getAllPlayers(final Connection connTDB) throws SQLException {
+    List<String> results = new ArrayList<>();
+    StringBuilder sql = new StringBuilder();
+    sql.append("   SELECT name ");
+    sql.append("     FROM tdb.player ");
+    sql.append(" ORDER BY name ");
+    try (PreparedStatement ps = connTDB.prepareStatement(sql.toString()); ResultSet rs = ps
+        .executeQuery()) {
+      while (rs.next()) {
+        results.add(rs.getString(1));
+      }
+    }
+    return results;
+  }
+
 }

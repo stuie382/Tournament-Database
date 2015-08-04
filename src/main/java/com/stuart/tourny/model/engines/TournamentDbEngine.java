@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.stuart.tourny.model.utils.SqlUtils.getListFromResultSet;
@@ -44,7 +45,7 @@ public class TournamentDbEngine {
     // Empty constructor
   }
 
-  private static String getSelectSQL() {
+  static String getSelectSQL() {
     StringBuilder sql = new StringBuilder();
     sql.append(" SELECT t.tournament_id, ");
     sql.append("        t.tournament_name,  ");
@@ -229,6 +230,64 @@ public class TournamentDbEngine {
     dto.setCreatedByUserId(getSFromResults(results, col++));
     dto.setUpdateDatetime(getTSFromResults(results, col++));
     dto.setUpdatedByUserId(getSFromResults(results, col++));
+    return dto;
+  }
+
+  /**
+   * Get a list of all tournament names
+   *
+   * @param connTDB
+   *     - The connection to the database
+   *
+   * @return - List of all tournament names
+   *
+   * @throws SQLException
+   */
+  public List<String> getTournaments(final Connection connTDB) throws SQLException {
+    List<String> results = new ArrayList<>();
+    StringBuilder sql = new StringBuilder();
+    sql.append("   SELECT tournament_name ");
+    sql.append("     FROM tdb.tournament ");
+    sql.append(" ORDER BY create_datetime DESC ");
+    try (PreparedStatement ps = connTDB.prepareStatement(sql.toString());
+         ResultSet rs = ps.executeQuery()) {
+      while (rs.next()) {
+        results.add(rs.getString(1));
+      }
+    }
+    return results;
+  }
+
+  /**
+   * For the given tournament name, find the ID of that tournament.
+   *
+   * @param connTDB
+   *     - The connection to the database
+   * @param tournamentName
+   *     - The name of the tournament we want the ID for
+   *
+   * @return - Long representing the unique ID of the tournament
+   *
+   * @throws SQLException
+   */
+  public DTOTournament getDTOTournamentFromName(Connection connTDB, String tournamentName)
+      throws SQLException {
+    DTOTournament dto = null;
+    StringBuilder sql = new StringBuilder();
+    sql.append(getSelectSQL());
+    sql.append("   FROM tdb.tournament t ");
+    sql.append("  WHERE t.tournament_name = ? ");
+    try (PreparedStatement ps = connTDB.prepareStatement(sql.toString())) {
+      ps.setString(1, tournamentName);
+      try (ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+          dto = getDTOFromResultsSet(rs);
+        }
+      }
+    }
+    if (dto == null) {
+      throw new IllegalStateException("Cannot find DTOTournament! " + tournamentName);
+    }
     return dto;
   }
 }
