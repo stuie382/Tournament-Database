@@ -21,7 +21,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.stuart.tourny.model.utils.SqlUtils.getListFromResultSet;
 import static com.stuart.tourny.model.utils.SqlUtils.getLongFromResults;
@@ -248,7 +251,7 @@ public class TournamentDbEngine {
     StringBuilder sql = new StringBuilder();
     sql.append("   SELECT tournament_name ");
     sql.append("     FROM tdb.tournament ");
-    sql.append(" ORDER BY create_datetime DESC ");
+    sql.append(" ORDER BY create_datetime DESC NULLS LAST ");
     try (PreparedStatement ps = connTDB.prepareStatement(sql.toString());
          ResultSet rs = ps.executeQuery()) {
       while (rs.next()) {
@@ -290,5 +293,94 @@ public class TournamentDbEngine {
     }
     return dto;
   }
-}
 
+  /**
+   * For a given tournament ID, find out the number of goals scored in a tournament (excluding
+   * penalty shoot out goals) by each player. The results will be sorted in descending order
+   * (highest goals scored first). Then find out which player/s scored the most and return a new map
+   * of the golden goal amount and the player/s who scored that amount.
+   *
+   * @param connTDB
+   *     - The connection to the database
+   * @param tournamentId
+   *     - The tournament we want to know the golden goal winner for
+   *
+   * @return - Map of the golden goal amount and the player/s who won
+   *
+   * @throws SQLException
+   */
+  public Map<Long, String> calculateGoldenBootForTournament(Connection connTDB,
+                                                            long tournamentId)
+      throws SQLException {
+    Map<Long, List<String>> results = new LinkedHashMap<>();
+    StringBuilder sql = new StringBuilder();
+    sql.append("   SELECT sum(r.goals), ");
+    sql.append("          r.player ");
+    sql.append("     FROM (  ");
+    sql.append("          SELECT sum(g1.home_goals) goals, ");
+    sql.append("                 g1.home_player     player ");
+    sql.append("            FROM tdb.game g1 ");
+    sql.append("           WHERE g1.tournament_id = ? ");
+    sql.append("        GROUP BY g1.home_player ");
+    sql.append("       UNION ALL ");
+    sql.append("          SELECT sum(g2.away_goals) goals, ");
+    sql.append("                 g2.away_player     player ");
+    sql.append("            FROM tdb.game g2 ");
+    sql.append("           WHERE g2.tournament_id = ? ");
+    sql.append("        GROUP BY g2.away_player) AS r ");
+    sql.append(" GROUP BY r.player ");
+    sql.append(" ORDER BY sum(r.goals) DESC ");
+    try (PreparedStatement ps = connTDB.prepareStatement(sql.toString())) {
+      int col = 1;
+      ps.setLong(col++, tournamentId);
+      ps.setLong(col++, tournamentId);
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          long goals = rs.getLong(1);
+          String player = rs.getString(2);
+          if (results.containsKey(goals)) {
+            results.get(goals).add(player);
+          } else {
+            results.put(goals, new ArrayList<>());
+            results.get(goals).add(player);
+          }
+        }
+      }
+    }
+    Map<Long, String> goldenBootAndPlayer = findGoldenBootAndPlayer(results);
+    return goldenBootAndPlayer;
+  }
+
+  /**
+   * The input map is sorted into descending numerical order based on goals scored during a given
+   * tournament. For the first key in the map (highest amount of goals scored), we need to create a
+   * new map of the highest goals scored and the player or players who scored that amount.
+   *
+   * @param results
+   *     - Map of goals scored and the players who scored that amount
+   *
+   * @return - Map of the highest number of goals scored and the player/s who scored it
+   */
+  private Map<Long, String> findGoldenBootAndPlayer(Map<Long, List<String>> results) {
+    Map<Long, String> goldenBootAndPlayer = new HashMap<>();
+    long key = results.keySet().iterator().next();
+    List<String> players = results.get(key);
+    if (players.size() == 1) {
+      goldenBootAndPlayer.put(key, players.get(0));
+    } else {
+      StringBuilder goldenPlayers = new StringBuilder("TIE:");
+      boolean first = true;
+      for (String player : players) {
+        if (first) {
+          first = false;
+          goldenPlayers.append(player);
+        } else {
+          goldenPlayers.append(", ").append(player);
+        }
+      }
+      goldenBootAndPlayer.put(key, goldenPlayers.toString());
+    }
+    return goldenBootAndPlayer;
+  }
+
+}

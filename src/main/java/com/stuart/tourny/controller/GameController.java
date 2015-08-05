@@ -45,12 +45,14 @@ public class GameController {
    * @param dto
    *     Record to add to the database
    */
-  public void addGame(DTOGame dto) throws ServerProblem {
+  public DTOGame addGame(DTOGame dto) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance()
         .getConnection()) {
       log.debug("Attempting to add new GAME: " + dto.toString());
-      engine.addGame(connTDB, dto);
+      DTOGame newGame = engine.addGame(connTDB, dto);
       connTDB.commit();
+      log.debug("Game added:" + newGame);
+      return newGame;
     } catch (Exception ex) {
       String error = "Problem encountered during addGame: " + ex;
       log.error(error);

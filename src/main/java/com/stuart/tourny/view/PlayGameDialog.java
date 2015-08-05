@@ -31,6 +31,7 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -109,6 +110,9 @@ public class PlayGameDialog extends JDialog {
     }
   }
 
+  /**
+   * Cancel the screen, giving the user the chance to go back if it has been clicked in error.
+   */
   private void btnCancel_actionPerformed() {
     log.debug("Close clicked");
     int option = JOptionPane.showConfirmDialog(
@@ -125,6 +129,11 @@ public class PlayGameDialog extends JDialog {
     }
   }
 
+  /**
+   * Save a game. Will convert all the screen input into a DTOGame record. If the game is marked as
+   * the final, then it should update the tournament with the winner and loser of the final, and
+   * calculate the golden boot.
+   */
   private void btnSaveGame_actionPerformed() {
     boolean isOk = validateGameInformation();
     if (isOk) {
@@ -162,7 +171,6 @@ public class PlayGameDialog extends JDialog {
             return;
           }
         }
-
         if (rdbtnKnockOut.isSelected()) {
           newGame.setKnockOut("Y");
           newGame.setHomePens(homePenaltyValue);
@@ -174,10 +182,52 @@ public class PlayGameDialog extends JDialog {
           newGame.setAwayPens(awayPenaltyValue);
           newGame.setHomeTeam((String) cmbHomeTeam.getSelectedItem());
           newGame.setAwayTeam((String) cmbAwayTeam.getSelectedItem());
+
         }
-        log.debug(newGame);
+        GameController gameController = new GameController();
+        log.debug("Game to save:" + newGame);
+        newGame = gameController.addGame(newGame);
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                      "New game added!",
+                                      "Success!",
+                                      JOptionPane.INFORMATION_MESSAGE);
+        if (rdbtnFinal.isSelected()) {
+          JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                        "About to finalise the tournament...",
+                                        "Congratulations to all players!",
+                                        JOptionPane.INFORMATION_MESSAGE);
+          Map<Long, String>
+              goldenBoot =
+              tournamentController
+                  .calculateGoldenBootForTournament(dtoTournament.getTournamentId());
+          dtoTournament.setGoldenBootGoals(goldenBoot.keySet().iterator().next());
+          dtoTournament.setGoldenBoot(goldenBoot.get(dtoTournament.getGoldenBootGoals()));
+          dtoTournament.setTournamentWinner(newGame.getWinner());
+          String
+              runnerUp =
+              newGame.getWinner().equals(newGame.getHomePlayer()) ? newGame.getHomePlayer()
+                                                                  : newGame.getAwayPlayer();
+          dtoTournament.setWoodenSpoon(runnerUp);
+          dtoTournament = tournamentController.updateTournament(dtoTournament);
+          StringBuilder message = new StringBuilder();
+          message.append("Tournament has been Won:");
+          message.append(System.lineSeparator());
+          message.append("Winner: ").append(dtoTournament.getTournamentWinner());
+          message.append(System.lineSeparator());
+          message.append("Runner Up: ").append(dtoTournament.getWoodenSpoon());
+          message.append(System.lineSeparator());
+          message.append("Golden Boot: ").append(dtoTournament.getGoldenBoot());
+          message.append(System.lineSeparator());
+          message.append("Golden Boot Goals: ").append(dtoTournament.getGoldenBootGoals());
+          JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+                                        message,
+                                        "Congratulations to all players!",
+                                        JOptionPane.INFORMATION_MESSAGE);
+          dispose();
+        }
+        resetAllComponents();
       } catch (Exception ex) {
-        log.error("Problem saving new game: " + ex);
+        log.error("Problem saving new game: " + ex.getMessage());
         JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
                                       Constants.LOG_DETAILS,
                                       "Error Saving New Game",
@@ -187,8 +237,8 @@ public class PlayGameDialog extends JDialog {
     }
   }
 
-  private String findWinner(int totalHomeScore, int totalAwayScore, String homePlayer,
-                            String awayPlayer) {
+  private static String findWinner(int totalHomeScore, int totalAwayScore, String homePlayer,
+                                   String awayPlayer) {
     String winningPlayer = null;
     if (totalHomeScore > totalAwayScore) {
       winningPlayer = homePlayer;
@@ -279,15 +329,14 @@ public class PlayGameDialog extends JDialog {
   private void resetAllComponents() {
     buttonGroup.clearSelection();
     setActiveComponents(GameType.INITIAL);
-    homeGoals.setText(Constants.EMPTY_STRING);
-    homePenalties.setText(Constants.EMPTY_STRING);
+    homeGoals.setValue(0);
+    homePenalties.setValue(0);
     cmbHomeTeam.setSelectedIndex(0);
     cmbHomePlayer.setSelectedIndex(0);
-    awayGoals.setText(Constants.EMPTY_STRING);
-    awayPenalties.setText(Constants.EMPTY_STRING);
+    awayGoals.setValue(0);
+    awayPenalties.setValue(0);
     cmbAwayTeam.setSelectedIndex(0);
     cmbAwayPlayer.setSelectedIndex(0);
-    cmbTournaments.setSelectedIndex(0);
   }
 
   /**
@@ -365,10 +414,14 @@ public class PlayGameDialog extends JDialog {
       cmbAwayTeam.setToolTipText(null);
     } else if (GameType.INITIAL.equals(type)) {
       homeGoals.setEnabled(false);
+      homeGoals.setValue(0);
       homePenalties.setEnabled(false);
+      homePenalties.setValue(0);
       cmbHomeTeam.setEnabled(false);
       awayGoals.setEnabled(false);
+      awayGoals.setValue(0);
       awayPenalties.setEnabled(false);
+      awayPenalties.setValue(0);
       cmbAwayTeam.setEnabled(false);
 
       String toolTip = "Please select a Game Type to continue.";

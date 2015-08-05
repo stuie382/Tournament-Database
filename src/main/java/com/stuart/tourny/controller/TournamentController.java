@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Controller class that will manage the {@link Connection} objects used to query against the
@@ -48,6 +49,17 @@ public class TournamentController {
       String error = "Problem encountered adding a tournament: " + ex;
       log.error(error);
       throw new ServerProblem(error);
+    }
+  }
+
+  public DTOTournament updateTournament(DTOTournament dto ) throws ServerProblem {
+    try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
+      log.debug("Attempting to update this tournament: " + dto);
+      DTOTournament updatedDto = engine.updateRecord(connTDB,dto);
+      return updatedDto;
+    } catch (Exception ex) {
+      log.error("Problem updating tournament: " + ex.getMessage());
+      throw new ServerProblem("Problem updating tournament: ", ex);
     }
   }
 
@@ -87,6 +99,32 @@ public class TournamentController {
     } catch (Exception ex) {
       log.error(ex);
       throw new ServerProblem("Problem getting tournament ID: " + ex);
+    }
+  }
+
+  /**
+   * For a given tournament ID, find out the number of goals scored in a tournament (excluding
+   * penalty shoot out goals) by each player. The results will be sorted in descending order
+   * (highest goals scored first). Then find out which player/s scored the most and return a new map
+   * of the golden goal amount and the player/s who scored that amount.
+   *
+   * @param tournamentId
+   *     - The tournament we want to know the golden goal winner for
+   *
+   * @return - Map of the golden goal amount and the player/s who won
+   *
+   * @throws ServerProblem
+   */
+  public Map<Long, String> calculateGoldenBootForTournament(final long tournamentId)
+      throws ServerProblem {
+    try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
+      log.debug("Attempting to calculate the golden boot winner");
+      Map<Long, String> results = engine.calculateGoldenBootForTournament(connTDB, tournamentId);
+      log.debug("Golden boot winner: " + results);
+      return results;
+    } catch (Exception ex) {
+      log.error("Problem calculating golden boot: " + ex.getMessage());
+      throw new ServerProblem("Problem getting golden boot: " + ex);
     }
   }
 

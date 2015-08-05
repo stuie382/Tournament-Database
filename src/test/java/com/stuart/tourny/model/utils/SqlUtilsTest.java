@@ -195,6 +195,6 @@ public class SqlUtilsTest extends TestBase {
   @Test
   public void testMaybeNull() throws Exception {
     long result = SqlUtils.maybeNull(null);
-    assertEquals(0, result);
+    assertEquals(-1, result);
   }
 }

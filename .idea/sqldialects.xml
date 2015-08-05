@@ -2,6 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_010_player.sql" dialect="Derby" />
+    <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_011_player.sql" dialect="Derby" />
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_020_tournament.sql" dialect="Derby" />
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_030_game.sql" dialect="Derby" />
     <file url="file://$PROJECT_DIR$/src/main/scripts/tournament_031_game.sql" dialect="Derby" />
