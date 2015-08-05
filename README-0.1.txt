@@ -15,12 +15,15 @@ As this is an alpha release, expect that things will be broken/unimplemented/not
 This is expected.
 
 Any issues that are found, please go here https://github.com/stuie382/Tournament-Database/issues
-and log your issue. Ideally I would like to know: 
+and log your issue (requires free sign up). Ideally I would like to know:
   What action you were doing
   What you think the application should of done
   What the application actually did
-If you could please email a copy of the tourny_log.txt and the derby.log files, using the same
-subject text as the issue raised on the above website link, that would be very much appreciated!
+When submitting an issue, please add an appropriate label (right hand side -> labels), and
+select the '0.1 Alpha Release' milestone (right hand side -> milestones).
+Finally if you could please email a copy of the tourny_log.txt and the derby.log files, using the
+same subject text as the issue raised on the above website link, that would be very much
+appreciated!
 <stu382@hotmail.co.uk>
 
 The two log files are safe to delete before each new session of using the application. Assuming no
