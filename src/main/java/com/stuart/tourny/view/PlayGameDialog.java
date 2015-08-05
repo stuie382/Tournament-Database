@@ -205,8 +205,8 @@ public class PlayGameDialog extends JDialog {
           dtoTournament.setTournamentWinner(newGame.getWinner());
           String
               runnerUp =
-              newGame.getWinner().equals(newGame.getHomePlayer()) ? newGame.getHomePlayer()
-                                                                  : newGame.getAwayPlayer();
+              newGame.getWinner().equals(newGame.getHomePlayer()) ? newGame.getAwayPlayer()
+                                                                  : newGame.getHomePlayer();
           dtoTournament.setWoodenSpoon(runnerUp);
           dtoTournament = tournamentController.updateTournament(dtoTournament);
           StringBuilder message = new StringBuilder();

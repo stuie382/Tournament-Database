@@ -52,10 +52,11 @@ public class TournamentController {
     }
   }
 
-  public DTOTournament updateTournament(DTOTournament dto ) throws ServerProblem {
+  public DTOTournament updateTournament(final DTOTournament dto ) throws ServerProblem {
     try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
       log.debug("Attempting to update this tournament: " + dto);
       DTOTournament updatedDto = engine.updateRecord(connTDB,dto);
+      connTDB.commit();
       return updatedDto;
     } catch (Exception ex) {
       log.error("Problem updating tournament: " + ex.getMessage());

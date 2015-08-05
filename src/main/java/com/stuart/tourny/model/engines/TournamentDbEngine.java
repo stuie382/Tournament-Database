@@ -150,6 +150,7 @@ public class TournamentDbEngine {
       ps.setString(col++, dto.getGoldenBoot());
       ps.setLong(col++, maybeNull(dto.getGoldenBootGoals()));
       ps.setString(col++, USER_ID);
+      // Where
       ps.setLong(col++, dto.getTournamentId());
 
       if (ps.executeUpdate() == 0) {
