@@ -10,6 +10,9 @@ The Tournament directory is the embedded database. DO NOT MODIFY THIS FILE
 The README.txt is what you are currently reading (before clicking anything else, as you are a 
 sensible person).
 
+Do not move the files from this folder - they expect each other to exist within the same directory,
+if you move either or both of them, it probably won't work.
+
 As this is an alpha release, expect that things will be broken/unimplemented/not work properly.
 
 This is expected.
