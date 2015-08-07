@@ -86,11 +86,13 @@ public class PlayGameDialog extends JDialog {
     TournamentController tournamentController = new TournamentController();
     try {
       List<String> teams = gameController.getTeams();
-      cmbHomeTeam.setModel(new DefaultComboBoxModel(teams.toArray()));
-      cmbAwayTeam.setModel(new DefaultComboBoxModel(teams.toArray()));
+      cmbHomeTeam.setModel(new DefaultComboBoxModel<>(teams.toArray(new String[teams.size()])));
+      cmbAwayTeam.setModel(new DefaultComboBoxModel<>(teams.toArray(new String[teams.size()])));
       List<String> players = playerController.getAllPlayers();
-      cmbHomePlayer.setModel(new DefaultComboBoxModel(players.toArray()));
-      cmbAwayPlayer.setModel(new DefaultComboBoxModel(players.toArray()));
+      cmbHomePlayer
+          .setModel(new DefaultComboBoxModel<>(players.toArray(new String[players.size()])));
+      cmbAwayPlayer
+          .setModel(new DefaultComboBoxModel<>(players.toArray(new String[players.size()])));
       List<String> tournaments = tournamentController.getTournaments();
       if (tournaments.isEmpty()) {
         JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
@@ -99,7 +101,8 @@ public class PlayGameDialog extends JDialog {
                                       JOptionPane.ERROR_MESSAGE);
         return;
       }
-      cmbTournaments.setModel(new DefaultComboBoxModel(tournaments.toArray()));
+      cmbTournaments.setModel(
+          new DefaultComboBoxModel<>(tournaments.toArray(new String[tournaments.size()])));
     } catch (ServerProblem sp) {
       log.error(sp);
       JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
