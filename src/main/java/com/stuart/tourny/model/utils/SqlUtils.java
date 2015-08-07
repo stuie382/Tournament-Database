@@ -76,12 +76,11 @@ public final class SqlUtils {
       if (item == null) {
         sb.append(SEPARATOR);
       } else {
-        if (item instanceof Clob || (item instanceof Blob)) {
-          // Can't hash code so skip it
-        } else {
+        if (!(item instanceof Clob) && (!(item instanceof Blob))) {
           sb.append(item.hashCode());
           sb.append(SEPARATOR);
         }
+        // Can't hash code so skip it
       }
     }
     return sb.toString();

@@ -348,8 +348,7 @@ public class TournamentDbEngine {
         }
       }
     }
-    Map<Long, String> goldenBootAndPlayer = findGoldenBootAndPlayer(results);
-    return goldenBootAndPlayer;
+    return findGoldenBootAndPlayer(results);
   }
 
   /**

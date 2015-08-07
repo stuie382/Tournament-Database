@@ -41,10 +41,7 @@ public class KeyPlayer {
 
     KeyPlayer keyPlayer = (KeyPlayer) o;
 
-    if (player != null ? !player.equals(keyPlayer.player) : keyPlayer.player != null) {
-      return false;
-    }
-    return true;
+    return !(player != null ? !player.equals(keyPlayer.player) : keyPlayer.player != null);
   }
 
   @Override

@@ -14,8 +14,6 @@ package com.stuart.tourny.view;
 
 import com.stuart.tourny.controller.QueryController;
 
-import org.apache.log4j.Logger;
-
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Window;
@@ -26,7 +24,6 @@ import javax.swing.SwingUtilities;
 
 public class ManageGamesDialog extends ManageDialog {
 
-  private static final Logger log = Logger.getLogger(ManageGamesDialog.class);
   private static final String MANAGE_GAMES = "Manage Games";
   private static final String GAME = "Game";
   private static final String ERROR_TITLE = "Error getting all games from the database.";

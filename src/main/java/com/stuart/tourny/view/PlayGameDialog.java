@@ -235,14 +235,13 @@ public class PlayGameDialog extends JDialog {
                                       Constants.LOG_DETAILS,
                                       "Error Saving New Game",
                                       JOptionPane.ERROR_MESSAGE);
-        return;
       }
     }
   }
 
   private static String findWinner(int totalHomeScore, int totalAwayScore, String homePlayer,
                                    String awayPlayer) {
-    String winningPlayer = null;
+    String winningPlayer;
     if (totalHomeScore > totalAwayScore) {
       winningPlayer = homePlayer;
     } else if (totalAwayScore > totalHomeScore) {
@@ -259,7 +258,7 @@ public class PlayGameDialog extends JDialog {
    * penalties and teams are populated and correct (could be the same team for both
    * players)</li></ul>
    *
-   * @return
+   * @return true if user provided information is valid
    */
   private boolean validateGameInformation() {
     if (cmbHomePlayer.getSelectedItem().equals(cmbAwayPlayer.getSelectedItem())) {
