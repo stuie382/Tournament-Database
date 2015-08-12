@@ -38,5 +38,6 @@ to delete when the application is not running, but should be helpful for trackin
 # :soccer: Current Extension plans
 * Allow users to create and run custom SQL queries through the GUI
 * Allow users to save and recall custom queries
+* Improve installation so that developers would not need to run the SQL files themselves
 
 
