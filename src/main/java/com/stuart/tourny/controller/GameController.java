@@ -56,7 +56,7 @@ public class GameController {
     } catch (Exception ex) {
       String error = "Problem encountered during addGame: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -76,7 +76,7 @@ public class GameController {
     } catch (Exception ex) {
       String error = "Problem encountered during getGame: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -98,7 +98,7 @@ public class GameController {
     } catch (Exception ex) {
       String error = "Problem encountered during updateGame: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -117,7 +117,7 @@ public class GameController {
     } catch (Exception ex) {
       String error = "Problem encountered during deleteGame: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -136,7 +136,7 @@ public class GameController {
     } catch (Exception ex) {
       String error = "Problem encountered during getTeams: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 

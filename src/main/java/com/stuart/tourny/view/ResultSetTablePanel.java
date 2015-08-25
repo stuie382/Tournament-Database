@@ -54,7 +54,7 @@ public class ResultSetTablePanel extends JPanel {
    * Create a ResultSetTablePanel
    */
   public ResultSetTablePanel() {
-    setBackground(TournamentGUI.BACKGROUND);
+    setBackground(TournamentGUI.getBackgroundColour());
     initGUI();
   }
 

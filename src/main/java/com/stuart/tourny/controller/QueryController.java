@@ -48,7 +48,7 @@ public class QueryController {
     } catch (Exception ex) {
       String error = "Problem running Manage Players View All query: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -59,7 +59,7 @@ public class QueryController {
     } catch (Exception ex) {
       String error = "Problem running Manage Games View All query." + System.lineSeparator() + Constants.LOG_DETAILS;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -70,7 +70,7 @@ public class QueryController {
     } catch (Exception ex) {
       String error = "Problem running Manage Tournaments View All query." + System.lineSeparator() + Constants.LOG_DETAILS;
       log.error(error, ex);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error,ex);
     }
   }
 }

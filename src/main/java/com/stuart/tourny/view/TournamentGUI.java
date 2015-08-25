@@ -46,8 +46,8 @@ import javax.swing.border.BevelBorder;
  */
 public class TournamentGUI extends JFrame {
 
-  public static final Color BACKGROUND = new Color(0, 204, 51);
-  public static final List<Image> ICON_IMAGES = getIcons();
+  private static final Color BACKGROUND = new Color(0, 204, 51);
+  private static final List<Image> ICON_IMAGES = loadIcons();
 
   private static final Logger log = Logger.getLogger(TournamentGUI.class);
 
@@ -80,6 +80,23 @@ public class TournamentGUI extends JFrame {
     });
   }
 
+  /**
+   * Get the standard background window colour.
+   *
+   * @return The standard background colour.
+   */
+  public static final Color getBackgroundColour() {
+    return BACKGROUND;
+  }
+
+  /**
+   * Get the icon images for the GUI, contains 3 different sizes.
+   *
+   * @return The list of icon images
+   */
+  public static final List<Image> getIcons() {
+    return ICON_IMAGES;
+  }
   /**
    * Setup and configure the loggers.
    */
@@ -187,7 +204,7 @@ public class TournamentGUI extends JFrame {
    *
    * @return List of images to use as icons
    */
-  private static List<Image> getIcons() {
+  private static List<Image> loadIcons() {
     ImageIcon smallIcon = new ImageIcon(
         TournamentGUI.class.getResource("/images/worldcup-icon-small.png"));
     ImageIcon medIcon = new ImageIcon(

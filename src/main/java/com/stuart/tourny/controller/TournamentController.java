@@ -48,7 +48,7 @@ public class TournamentController {
     } catch (Exception ex) {
       String error = "Problem encountered adding a tournament: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -78,7 +78,7 @@ public class TournamentController {
       return engine.getTournaments(connTDB);
     } catch (Exception ex) {
       log.error(ex);
-      throw new ServerProblem("Problem getting tournaments: " + ex);
+      throw new ServerProblem("Problem getting tournaments.", ex);
     }
   }
 
@@ -99,7 +99,7 @@ public class TournamentController {
       return engine.getDTOTournamentFromName(connTDB, tournamentName);
     } catch (Exception ex) {
       log.error(ex);
-      throw new ServerProblem("Problem getting tournament ID: " + ex);
+      throw new ServerProblem("Problem getting tournament ID ", ex);
     }
   }
 
@@ -125,7 +125,7 @@ public class TournamentController {
       return results;
     } catch (Exception ex) {
       log.error("Problem calculating golden boot: " + ex.getMessage());
-      throw new ServerProblem("Problem getting golden boot: " + ex);
+      throw new ServerProblem("Problem getting golden boot", ex);
     }
   }
 

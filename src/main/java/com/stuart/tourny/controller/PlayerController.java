@@ -57,7 +57,7 @@ public class PlayerController {
     } catch (Exception ex) {
       String error = "Problem encountered adding a player: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 
@@ -78,7 +78,7 @@ public class PlayerController {
     } catch (Exception ex) {
       String error = "Problem encountered getting all players: " + ex;
       log.error(error);
-      throw new ServerProblem(error);
+      throw new ServerProblem(error, ex);
     }
   }
 

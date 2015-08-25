@@ -72,7 +72,7 @@ public abstract class ManageDialog extends JDialog {
   protected void initGUI(String title, String type) {
     log.debug("Creating ManageDialog: " + title);
     setSize(400, 400);
-    super.setBackground(TournamentGUI.BACKGROUND);
+    super.setBackground(TournamentGUI.getBackgroundColour());
     setModal(true);
     GridBagLayout gridBagLayout = new GridBagLayout();
     gridBagLayout.columnWidths = new int[]{99, 0, 0};
@@ -83,7 +83,7 @@ public abstract class ManageDialog extends JDialog {
 
     // Buttons panel
     buttonPanel = new JPanel();
-    buttonPanel.setBackground(TournamentGUI.BACKGROUND);
+    buttonPanel.setBackground(TournamentGUI.getBackgroundColour());
     buttonPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
     getContentPane()
         .add(buttonPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,

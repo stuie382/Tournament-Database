@@ -25,7 +25,7 @@ import java.util.Properties;
 public class ConnectionManager {
 
   private static ConnectionManager connectionManager;
-  private static ComboPooledDataSource cpds;
+  private static ComboPooledDataSource dataSource;
   private static final String dbURL1 = "jdbc:derby:Tournament/db1;create=true";
 
   /**
@@ -37,12 +37,12 @@ public class ConnectionManager {
     p.put("derby.language.logStatementText","true");
     System.setProperties(p);
 
-    cpds = new ComboPooledDataSource();
-    cpds.setDriverClass("org.apache.derby.jdbc.EmbeddedDataSource");
-    cpds.setJdbcUrl(dbURL1);
-    cpds.setMaxStatements(0);
-    cpds.setInitialPoolSize(5);
-    cpds.setAutoCommitOnClose(false);
+    dataSource = new ComboPooledDataSource();
+    dataSource.setDriverClass("org.apache.derby.jdbc.EmbeddedDataSource");
+    dataSource.setJdbcUrl(dbURL1);
+    dataSource.setMaxStatements(0);
+    dataSource.setInitialPoolSize(5);
+    dataSource.setAutoCommitOnClose(false);
   }
 
   /**
@@ -66,7 +66,7 @@ public class ConnectionManager {
    * @return New connection with auto commit off!
    */
   public Connection getConnection() throws SQLException {
-    Connection con = cpds.getConnection();
+    Connection con = dataSource.getConnection();
     con.setAutoCommit(false);
     return con;
   }

@@ -38,7 +38,7 @@ public class ManagePlayersDialog extends ManageDialog {
 
   public ManagePlayersDialog(Window parent) {
     super(parent, MANAGE_PLAYERS);
-    getContentPane().setBackground(TournamentGUI.BACKGROUND);
+    getContentPane().setBackground(TournamentGUI.getBackgroundColour());
     initGUI();
   }
 

@@ -70,7 +70,7 @@ public class PlayGameDialog extends JDialog {
 
   public PlayGameDialog(Window parent) {
     super(parent, TITLE);
-    getContentPane().setBackground(TournamentGUI.BACKGROUND);
+    getContentPane().setBackground(TournamentGUI.getBackgroundColour());
     initGUI();
     populateComponents();
     setActiveComponents(GameType.INITIAL);
