@@ -12,106 +12,96 @@
 */
 package com.stuart.tourny.view;
 
-import com.stuart.tourny.controller.PlayerController;
-import com.stuart.tourny.controller.QueryController;
-import com.stuart.tourny.model.common.dto.DTOPlayer;
-import com.stuart.tourny.model.utils.exceptions.ServerProblem;
-
-import org.apache.log4j.Logger;
-
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Window;
 import java.sql.ResultSet;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
+import com.stuart.tourny.controller.PlayerController;
+import com.stuart.tourny.controller.QueryController;
+import com.stuart.tourny.model.common.dto.DTOPlayer;
+import com.stuart.tourny.model.utils.exceptions.ServerProblem;
+
 public class ManagePlayersDialog extends ManageDialog {
 
-  private static final Logger log = Logger.getLogger(ManagePlayersDialog.class);
-  private static final String MANAGE_PLAYERS = "Manage Players";
-  private static final String PLAYER = "Player";
-  private static final String ERROR_TITLE = "Error getting all players from the database.";
+    private static final Logger log = Logger.getLogger(ManagePlayersDialog.class);
+    private static final String MANAGE_PLAYERS = "Manage Players";
+    private static final String PLAYER = "Player";
+    private static final String ERROR_TITLE = "Error getting all players from the database.";
 
-  private ResultSetTablePanel resultSetTablePanel;
+    private ResultSetTablePanel resultSetTablePanel;
+    private JDialog manageDialog;
 
-  public ManagePlayersDialog(Window parent) {
-    super(parent, MANAGE_PLAYERS);
-    getContentPane().setBackground(TournamentGUI.getBackgroundColour());
-    initGUI();
-  }
-
-  @Override
-  protected void btnViewAll_actionPerformed() {
-    try {
-      QueryController query = new QueryController();
-      ResultSet rs = query.managePlayers_viewAll();
-      resultSetTablePanel.populateData(rs);
-    } catch (Exception ex) {
-      String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
-                            + "See the log for details.";
-      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                    errorMessage,
-                                    ERROR_TITLE,
-                                    JOptionPane.ERROR_MESSAGE);
+    public ManagePlayersDialog(Window parent) {
+	super(parent, MANAGE_PLAYERS);
+	manageDialog = this.getDialog();
+	manageDialog.getContentPane().setBackground(TournamentGUI.getBackgroundColour());
+	initGUI();
     }
-  }
 
-  /**
-   * Get the input from the user, so we can add a new player to the database.
-   */
-  @Override
-  protected void btnAdd_actionPerformed() {
-    String userInput = JOptionPane.showInputDialog(this,
-                                                   "Please enter the full name of the new player."
-                                                   + System.lineSeparator()
-                                                   + "Be careful, as once created it cannot be changed!",
-                                                   "Add a new player.",
-                                                   JOptionPane.INFORMATION_MESSAGE);
-    if (userInput != null) {
-      // OK so the user has entered something. Need to make sure it is
-      // valid.
-      if (isUserInputValid(userInput)) {
-        try {
-          PlayerController controller = new PlayerController();
-          DTOPlayer dto = new DTOPlayer();
-          dto.setName(userInput);
-          dto = controller.addPlayer(dto);
-          JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                        "New player added - " + dto.getName(),
-                                        "Success!",
-                                        JOptionPane.INFORMATION_MESSAGE);
-        } catch (ServerProblem sp) {
-          String errorMessage = "Error encountered adding a new player." + System.lineSeparator()
-                                + "Please see the log for details.";
-          JOptionPane
-              .showMessageDialog(
-                  SwingUtilities.windowForComponent(this),
-                  errorMessage,
-                  "Error adding new player to the database.",
-                  JOptionPane.ERROR_MESSAGE);
-        }
-      } else {
-        log.info("Tried to add invalid player name: " + userInput);
-        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                      "Please use alphanumeric characters only for player names!",
-                                      "Oops",
-                                      JOptionPane.INFORMATION_MESSAGE);
-      }
+    @Override
+    protected void btnViewAll_actionPerformed() {
+	try {
+	    QueryController query = new QueryController();
+	    ResultSet rs = query.managePlayers_viewAll();
+	    resultSetTablePanel.populateData(rs);
+	} catch (Exception ex) {
+	    String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
+		    + "See the log for details.";
+	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage, ERROR_TITLE,
+		    JOptionPane.ERROR_MESSAGE);
+	}
     }
-  }
 
-  /**
-   * Setup the GUI. Most of the GUI is handled by the abstract parent class, so we can just handle
-   * the player specific stuff here.
-   */
-  private void initGUI() {
-    initGUI(MANAGE_PLAYERS, PLAYER);
-    resultSetTablePanel = new ResultSetTablePanel();
-    getContentPane().add(resultSetTablePanel,
-                         new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                                                GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0,
-                                                0));
-  }
+    /**
+     * Get the input from the user, so we can add a new player to the database.
+     */
+    @Override
+    protected void btnAdd_actionPerformed() {
+	String userInput = JOptionPane.showInputDialog(manageDialog,
+		"Please enter the full name of the new player." + System.lineSeparator()
+			+ "Be careful, as once created it cannot be changed!",
+		"Add a new player.", JOptionPane.INFORMATION_MESSAGE);
+	if (userInput != null) {
+	    // OK so the user has entered something. Need to make sure it is
+	    // valid.
+	    if (isUserInputValid(userInput)) {
+		try {
+		    PlayerController controller = new PlayerController();
+		    DTOPlayer dto = new DTOPlayer();
+		    dto.setName(userInput);
+		    dto = controller.addPlayer(dto);
+		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog),
+			    "New player added - " + dto.getName(), "Success!", JOptionPane.INFORMATION_MESSAGE);
+		} catch (ServerProblem sp) {
+		    String errorMessage = "Error encountered adding a new player." + System.lineSeparator()
+			    + "Please see the log for details.";
+		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage,
+			    "Error adding new player to the database.", JOptionPane.ERROR_MESSAGE);
+		}
+	    } else {
+		log.info("Tried to add invalid player name: " + userInput);
+		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog),
+			"Please use alphanumeric characters only for player names!", "Oops",
+			JOptionPane.INFORMATION_MESSAGE);
+	    }
+	}
+    }
+
+    /**
+     * Setup the GUI. Most of the GUI is handled by the abstract parent class,
+     * so we can just handle the player specific stuff here.
+     */
+    private void initGUI() {
+	initGUI(MANAGE_PLAYERS, PLAYER);
+	resultSetTablePanel = new ResultSetTablePanel();
+	manageDialog.getContentPane().add(resultSetTablePanel.getPanel(), new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+		GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+    }
 }

@@ -12,107 +12,96 @@
 */
 package com.stuart.tourny.view;
 
-import com.stuart.tourny.controller.QueryController;
-import com.stuart.tourny.controller.TournamentController;
-import com.stuart.tourny.model.common.dto.DTOTournament;
-import com.stuart.tourny.model.utils.exceptions.ServerProblem;
-
-import org.apache.log4j.Logger;
-
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Window;
 import java.sql.ResultSet;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
+import com.stuart.tourny.controller.QueryController;
+import com.stuart.tourny.controller.TournamentController;
+import com.stuart.tourny.model.common.dto.DTOTournament;
+import com.stuart.tourny.model.utils.exceptions.ServerProblem;
+
 public class ManageTournamentsDialog extends ManageDialog {
 
-  private static final Logger log = Logger.getLogger(ManageTournamentsDialog.class);
-  private static final String MANAGE_TOURNAMENTS = "Manage Tournaments";
-  private static final String TOURNAMENT = "Tournament";
+    private static final Logger log = Logger.getLogger(ManageTournamentsDialog.class);
+    private static final String MANAGE_TOURNAMENTS = "Manage Tournaments";
+    private static final String TOURNAMENT = "Tournament";
 
-  private ResultSetTablePanel resultSetTablePanel;
+    private ResultSetTablePanel resultSetTablePanel;
+    private JDialog manageDialog;
 
-  public ManageTournamentsDialog(Window parent) {
-    super(parent, MANAGE_TOURNAMENTS);
-    getContentPane().setBackground(TournamentGUI.getBackgroundColour());
-    initGUI();
-  }
-
-  @Override
-  protected void btnViewAll_actionPerformed() {
-    try {
-      QueryController query = new QueryController();
-      ResultSet rs = query.manageTournaments_viewAll();
-      resultSetTablePanel.populateData(rs);
-    } catch (Exception ex) {
-      String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
-                            + "See the log for details.";
-      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                    errorMessage,
-                                    "Error getting all Tournaments from the database",
-                                    JOptionPane.ERROR_MESSAGE);
+    public ManageTournamentsDialog(Window parent) {
+	super(parent, MANAGE_TOURNAMENTS);
+	manageDialog = this.getDialog();
+	manageDialog.getContentPane().setBackground(TournamentGUI.getBackgroundColour());
+	initGUI();
     }
 
-  }
+    @Override
+    protected void btnViewAll_actionPerformed() {
+	try {
+	    QueryController query = new QueryController();
+	    ResultSet rs = query.manageTournaments_viewAll();
+	    resultSetTablePanel.populateData(rs);
+	} catch (Exception ex) {
+	    String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
+		    + "See the log for details.";
+	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage,
+		    "Error getting all Tournaments from the database", JOptionPane.ERROR_MESSAGE);
+	}
 
-  @Override
-  protected void btnAdd_actionPerformed() {
-    String userInput = JOptionPane.showInputDialog(this,
-                                                   "Please enter the full name of the new tournament."
-                                                   + System.lineSeparator()
-                                                   + "Be careful, as once created it cannot be changed!",
-                                                   "Add a new Tournament.",
-                                                   JOptionPane.INFORMATION_MESSAGE);
-    if (userInput != null) {
-      // OK so the user has entered something. Need to make sure it is
-      // valid.
-      if (isUserInputValid(userInput)) {
-        try {
-          TournamentController controller = new TournamentController();
-          DTOTournament dto = new DTOTournament();
-          dto.setTournamentName(userInput);
-          dto = controller.addTournament(dto);
-          JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                        "New Tournament added - " + dto.getTournamentName(),
-                                        "Success!",
-                                        JOptionPane.INFORMATION_MESSAGE);
-        } catch (ServerProblem sp) {
-          String
-              errorMessage =
-              "Error encountered adding a new Tournament." + System.lineSeparator()
-              + "Please see the log for details.";
-          JOptionPane
-              .showMessageDialog(
-                  SwingUtilities.windowForComponent(this),
-                  errorMessage,
-                  "Error adding new Tournament to the database.",
-                  JOptionPane.ERROR_MESSAGE);
-        }
-      } else {
-        log.info("Tried to add invalid Tournament name: " + userInput);
-        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                                      "Please use alphanumeric characters only for Tournament names!",
-                                      "Oops",
-                                      JOptionPane.INFORMATION_MESSAGE);
-      }
     }
 
-  }
+    @Override
+    protected void btnAdd_actionPerformed() {
+	String userInput = JOptionPane.showInputDialog(manageDialog,
+		"Please enter the full name of the new tournament." + System.lineSeparator()
+			+ "Be careful, as once created it cannot be changed!",
+		"Add a new Tournament.", JOptionPane.INFORMATION_MESSAGE);
+	if (userInput != null) {
+	    // OK so the user has entered something. Need to make sure it is
+	    // valid.
+	    if (isUserInputValid(userInput)) {
+		try {
+		    TournamentController controller = new TournamentController();
+		    DTOTournament dto = new DTOTournament();
+		    dto.setTournamentName(userInput);
+		    dto = controller.addTournament(dto);
+		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog),
+			    "New Tournament added - " + dto.getTournamentName(), "Success!",
+			    JOptionPane.INFORMATION_MESSAGE);
+		} catch (ServerProblem sp) {
+		    String errorMessage = "Error encountered adding a new Tournament." + System.lineSeparator()
+			    + "Please see the log for details.";
+		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage,
+			    "Error adding new Tournament to the database.", JOptionPane.ERROR_MESSAGE);
+		}
+	    } else {
+		log.info("Tried to add invalid Tournament name: " + userInput);
+		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog),
+			"Please use alphanumeric characters only for Tournament names!", "Oops",
+			JOptionPane.INFORMATION_MESSAGE);
+	    }
+	}
 
-  /**
-   * Setup the GUI. Most of the GUI is handled by the abstract parent class, so we can just handle
-   * the tournament specific stuff here.
-   */
-  private void initGUI() {
-    initGUI(MANAGE_TOURNAMENTS, TOURNAMENT);
-    resultSetTablePanel = new ResultSetTablePanel();
-    getContentPane().add(resultSetTablePanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                                                                     GridBagConstraints.CENTER,
-                                                                     GridBagConstraints.BOTH,
-                                                                     new Insets(0, 0, 0, 0), 0, 0));
-  }
+    }
+
+    /**
+     * Setup the GUI. Most of the GUI is handled by the abstract parent class,
+     * so we can just handle the tournament specific stuff here.
+     */
+    private void initGUI() {
+	initGUI(MANAGE_TOURNAMENTS, TOURNAMENT);
+	resultSetTablePanel = new ResultSetTablePanel();
+	manageDialog.getContentPane().add(resultSetTablePanel.getPanel(), new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+		GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+    }
 
 }

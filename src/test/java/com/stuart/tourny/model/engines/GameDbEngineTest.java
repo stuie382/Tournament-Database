@@ -35,9 +35,7 @@ import base.dataFixture.GameFixture;
 import base.dataFixture.PlayerFixture;
 import base.dataFixture.TournamentFixture;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 
 public class GameDbEngineTest extends TestBase {

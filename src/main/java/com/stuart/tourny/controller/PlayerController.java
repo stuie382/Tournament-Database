@@ -12,75 +12,77 @@
 */
 package com.stuart.tourny.controller;
 
+import java.sql.Connection;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import com.stuart.tourny.model.common.dto.DTOPlayer;
 import com.stuart.tourny.model.engines.PlayerDbEngine;
 import com.stuart.tourny.model.utils.ConnectionManager;
 import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
-import org.apache.log4j.Logger;
-
-import java.sql.Connection;
-import java.util.List;
-
 /**
- * <p>Controller class that will manage the {@link Connection} objects used to query against the
- * PLAYER table.</p><p> This should handle any commits required and should log at DEBUG/ERROR levels
- * when a transaction completes/exception occurs.</p>
+ * <p>
+ * Controller class that will manage the {@link Connection} objects used to
+ * query against the PLAYER table.
+ * </p>
+ * <p>
+ * This should handle any commits required and should log at DEBUG/ERROR levels
+ * when a transaction completes/exception occurs.
+ * </p>
  */
 public class PlayerController {
 
-  private static final Logger log = Logger.getLogger(PlayerController.class);
+    private static final Logger log = Logger.getLogger(PlayerController.class);
 
-  private final PlayerDbEngine engine;
+    private final PlayerDbEngine engine;
 
-  public PlayerController() {
-    engine = new PlayerDbEngine();
-  }
-
-  /**
-   * Add a new player record to the database.
-   *
-   * @param dto
-   *     - DTO representing the new Player to add
-   *
-   * @return - DTOPlayer of the newly added record.
-   *
-   * @throws ServerProblem
-   */
-  public DTOPlayer addPlayer(DTOPlayer dto) throws ServerProblem {
-    try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection()) {
-      dto = engine.addPlayer(connTDB, dto);
-      connTDB.commit();
-      log.debug("Added new Player: " + dto);
-      return dto;
-    } catch (Exception ex) {
-      String error = "Problem encountered adding a player: " + ex;
-      log.error(error);
-      throw new ServerProblem(error, ex);
+    public PlayerController() {
+	engine = new PlayerDbEngine();
     }
-  }
 
-  /**
-   * Get all players from the database.
-   *
-   * @return - List of all players
-   *
-   * @throws ServerProblem
-   */
-  public List<String> getAllPlayers() throws ServerProblem {
-    try (Connection connTDB = ConnectionManager.getInstance()
-        .getConnection()) {
-      log.debug("Getting all players");
-      List<String> results = engine.getAllPlayers(connTDB);
-      log.debug("Players found in the database: " + results);
-      return results;
-    } catch (Exception ex) {
-      String error = "Problem encountered getting all players: " + ex;
-      log.error(error);
-      throw new ServerProblem(error, ex);
+    /**
+     * Add a new player record to the database.
+     *
+     * @param dto
+     *            - DTO representing the new Player to add
+     *
+     * @return - DTOPlayer of the newly added record.
+     *
+     * @throws ServerProblem
+     */
+    public DTOPlayer addPlayer(DTOPlayer dto) throws ServerProblem {
+	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
+	    DTOPlayer newDto = engine.addPlayer(connTDB, dto);
+	    connTDB.commit();
+	    log.debug("Added new Player: " + newDto);
+	    return newDto;
+	} catch (Exception ex) {
+	    String error = "Problem encountered adding a player: " + ex;
+	    log.error(error);
+	    throw new ServerProblem(error, ex);
+	}
     }
-  }
 
+    /**
+     * Get all players from the database.
+     *
+     * @return - List of all players
+     *
+     * @throws ServerProblem
+     */
+    public List<String> getAllPlayers() throws ServerProblem {
+	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
+	    log.debug("Getting all players");
+	    List<String> results = engine.getAllPlayers(connTDB);
+	    log.debug("Players found in the database: " + results);
+	    return results;
+	} catch (Exception ex) {
+	    String error = "Problem encountered getting all players: " + ex;
+	    log.error(error);
+	    throw new ServerProblem(error, ex);
+	}
+    }
 
 }

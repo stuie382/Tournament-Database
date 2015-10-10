@@ -17,12 +17,12 @@ package com.stuart.tourny.model.utils;
  */
 public class Constants {
 
-  /* DB Column types */
-  public static final String DATE = "DATE";
-  public static final String TIMESTAMP = "TIMESTAMP";
+    /* DB Column types */
+    public static final String DATE = "DATE";
+    public static final String TIMESTAMP = "TIMESTAMP";
 
-  /* Utility constants */
-  public static final String EMPTY_STRING = "";
-  public static final String LOG_DETAILS = "Please see the log for details.";
-  public static final String DRAW = "DRAW";
+    /* Utility constants */
+    public static final String EMPTY_STRING = "";
+    public static final String LOG_DETAILS = "Please see the log for details.";
+    public static final String DRAW = "DRAW";
 }
