@@ -12,10 +12,10 @@
 */
 package com.stuart.tourny.model.common.dto;
 
-import com.stuart.tourny.model.common.key.KeyTournament;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
+
+import com.stuart.tourny.model.common.key.KeyTournament;
 
 /**
  * <p>
@@ -29,10 +29,6 @@ import java.sql.Timestamp;
  */
 public class DTOTournament implements Serializable {
 
-    public DTOTournament() {
-	// Empty constructor
-    }
-
     private long tournamentId;
     private String tournamentName;
     private String tournamentWinner;
@@ -44,6 +40,10 @@ public class DTOTournament implements Serializable {
     private String createdByUserId;
     private String updatedByUserId;
     private String rowHash;
+
+    public DTOTournament() {
+	// Empty constructor
+    }
 
     public long getTournamentId() {
 	return tournamentId;
@@ -203,16 +203,16 @@ public class DTOTournament implements Serializable {
     @Override
     public int hashCode() {
 	int result = (int) (tournamentId ^ (tournamentId >>> 32));
-	result = 31 * result + (tournamentName != null ? tournamentName.hashCode() : 0);
-	result = 31 * result + (tournamentWinner != null ? tournamentWinner.hashCode() : 0);
-	result = 31 * result + (woodenSpoon != null ? woodenSpoon.hashCode() : 0);
-	result = 31 * result + (goldenBoot != null ? goldenBoot.hashCode() : 0);
-	result = 31 * result + (int) (goldenBootGoals ^ (goldenBootGoals >>> 32));
-	result = 31 * result + (createDatetime != null ? createDatetime.hashCode() : 0);
-	result = 31 * result + (updateDatetime != null ? updateDatetime.hashCode() : 0);
-	result = 31 * result + (createdByUserId != null ? createdByUserId.hashCode() : 0);
-	result = 31 * result + (updatedByUserId != null ? updatedByUserId.hashCode() : 0);
-	result = 31 * result + (rowHash != null ? rowHash.hashCode() : 0);
+	result = (31 * result) + (tournamentName != null ? tournamentName.hashCode() : 0);
+	result = (31 * result) + (tournamentWinner != null ? tournamentWinner.hashCode() : 0);
+	result = (31 * result) + (woodenSpoon != null ? woodenSpoon.hashCode() : 0);
+	result = (31 * result) + (goldenBoot != null ? goldenBoot.hashCode() : 0);
+	result = (31 * result) + (int) (goldenBootGoals ^ (goldenBootGoals >>> 32));
+	result = (31 * result) + (createDatetime != null ? createDatetime.hashCode() : 0);
+	result = (31 * result) + (updateDatetime != null ? updateDatetime.hashCode() : 0);
+	result = (31 * result) + (createdByUserId != null ? createdByUserId.hashCode() : 0);
+	result = (31 * result) + (updatedByUserId != null ? updatedByUserId.hashCode() : 0);
+	result = (31 * result) + (rowHash != null ? rowHash.hashCode() : 0);
 	return result;
     }
 

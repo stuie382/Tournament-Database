@@ -15,7 +15,11 @@ package com.stuart.tourny.model.utils;
 /**
  * Constants class.
  */
-public class Constants {
+public final class Constants {
+
+    private Constants() {
+	// Private constructor to prevent instantiation.
+    }
 
     /* DB Column types */
     public static final String DATE = "DATE";

@@ -51,7 +51,9 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
 public class PlayGameDialog extends JDialog {
 
-    private static final Logger log = Logger.getLogger(PlayGameDialog.class);
+    private static final String INVALID_DATA = "Invalid data";
+    private static final String PLEASE_DECIDE = "Please decide.";
+    private static final Logger LOGGER = Logger.getLogger(PlayGameDialog.class);
     private static final String TITLE = "Play a Game";
 
     private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -81,7 +83,7 @@ public class PlayGameDialog extends JDialog {
      * the database.
      */
     private void populateComponents() {
-	log.debug("Attempting to populate components required to " + TITLE);
+	LOGGER.debug("Attempting to populate components required to " + TITLE);
 	try {
 	    List<String> teams = new GameController().getTeams();
 	    List<String> tournaments = new TournamentController().getTournaments();
@@ -92,7 +94,7 @@ public class PlayGameDialog extends JDialog {
 	    cmbAwayPlayer.setModel(new DefaultComboBoxModel<>(players.toArray(new String[players.size()])));
 	    cmbTournaments.setModel(new DefaultComboBoxModel<>(tournaments.toArray(new String[tournaments.size()])));
 	} catch (ServerProblem sp) {
-	    log.error(sp);
+	    LOGGER.error(sp);
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this), Constants.LOG_DETAILS,
 		    "Error populating components", JOptionPane.ERROR_MESSAGE);
 	    throw new IllegalStateException(sp);
@@ -103,16 +105,16 @@ public class PlayGameDialog extends JDialog {
      * Cancel the screen, giving the user the chance to go back if it has been
      * clicked in error.
      */
-    private void btnCancel_actionPerformed() {
-	log.debug("Close clicked");
+    private void btnCancelActionPerformed() {
+	LOGGER.debug("Close clicked");
 	int option = JOptionPane.showConfirmDialog(SwingUtilities.windowForComponent(this),
 		"Do you wish to cancel this screen?" + System.lineSeparator() + "Unsaved changes will be lost!",
-		"Please decide.", JOptionPane.YES_NO_OPTION);
+		PLEASE_DECIDE, JOptionPane.YES_NO_OPTION);
 	if (JOptionPane.YES_OPTION == option) {
-	    log.debug("User confirmed close");
+	    LOGGER.debug("User confirmed close");
 	    dispose();
 	} else {
-	    log.debug("User cancelled close");
+	    LOGGER.debug("User cancelled close");
 	}
     }
 
@@ -121,7 +123,7 @@ public class PlayGameDialog extends JDialog {
      * the game is marked as the final, then it should update the tournament
      * with the winner and loser of the final, and calculate the golden boot.
      */
-    private void btnSaveGame_actionPerformed() {
+    private void btnSaveGameActionPerformed() {
 	boolean isOk = validateGameInformation();
 	if (isOk) {
 	    try {
@@ -146,14 +148,15 @@ public class PlayGameDialog extends JDialog {
 
 		newGame.setWinner(
 			findWinner(totalHomeScore, totalAwayScore, newGame.getHomePlayer(), newGame.getAwayPlayer()));
-		if (rdbtnKnockOut.isSelected() || rdbtnFinal.isSelected()) {
-		    if (Constants.DRAW.equals(newGame.getWinner())) {
-			log.error("Knock out game cannot end in a draw");
-			JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-				"Knock out game cannot end in a draw! Please re-check the scores.",
-				"Error Saving New Game", JOptionPane.ERROR_MESSAGE);
-			return;
-		    }
+		if ((rdbtnKnockOut.isSelected() || rdbtnFinal.isSelected())
+			&& Constants.DRAW.equals(newGame.getWinner())) {
+
+		    LOGGER.error("Knock out game cannot end in a draw");
+		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
+			    "Knock out game cannot end in a draw! Please re-check the scores.", "Error Saving New Game",
+			    JOptionPane.ERROR_MESSAGE);
+		    return;
+
 		}
 		if (rdbtnKnockOut.isSelected()) {
 		    newGame.setKnockOut("Y");
@@ -169,7 +172,7 @@ public class PlayGameDialog extends JDialog {
 
 		}
 		GameController gameController = new GameController();
-		log.debug("Game to save:" + newGame);
+		LOGGER.debug("Game to save:" + newGame);
 		newGame = gameController.addGame(newGame);
 		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this), "New game added!", "Success!",
 			JOptionPane.INFORMATION_MESSAGE);
@@ -202,11 +205,12 @@ public class PlayGameDialog extends JDialog {
 		}
 		resetAllComponents();
 	    } catch (Exception ex) {
-		log.error("Problem saving new game: " + ex.getMessage());
+		LOGGER.error("Problem saving new game: ", ex);
 		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this), Constants.LOG_DETAILS,
 			"Error Saving New Game", JOptionPane.ERROR_MESSAGE);
 	    }
 	}
+
     }
 
     private static String findWinner(int totalHomeScore, int totalAwayScore, String homePlayer, String awayPlayer) {
@@ -236,34 +240,32 @@ public class PlayGameDialog extends JDialog {
     private boolean validateGameInformation() {
 	if (cmbHomePlayer.getSelectedItem().equals(cmbAwayPlayer.getSelectedItem())) {
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-		    "Players cannot play themselves, please choose different players.", "Invalid data",
+		    "Players cannot play themselves, please choose different players.", INVALID_DATA,
 		    JOptionPane.WARNING_MESSAGE);
 	    return false;
 	}
 	if ((homeGoals.getValue() == null) || (awayGoals.getValue() == null)) {
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-		    "Games need both home and away scores populated.", "Invalid data", JOptionPane.WARNING_MESSAGE);
+		    "Games need both home and away scores populated.", INVALID_DATA, JOptionPane.WARNING_MESSAGE);
 	    return false;
 	}
-	if (rdbtnKnockOut.isSelected()) {
-	    if ((homePenalties.getValue() == null) || (awayPenalties.getValue() == null)) {
+	if (rdbtnKnockOut.isSelected() && ((homePenalties.getValue() == null) || (awayPenalties.getValue() == null))) {
 		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-			"Knock Out games need penalties populated, even if they are zero.", "Invalid data",
+		    "Knock Out games need penalties populated, even if they are zero.", INVALID_DATA,
 			JOptionPane.WARNING_MESSAGE);
 		return false;
-	    }
 	}
 	if (rdbtnFinal.isSelected()) {
 	    if ((homePenalties.getValue() == null) || (awayPenalties.getValue() == null)) {
 		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-			"The Final needs penalties populated, even if they are zero.", "Invalid data",
+			"The Final needs penalties populated, even if they are zero.", INVALID_DATA,
 			JOptionPane.WARNING_MESSAGE);
 		return false;
 	    }
 	    if (cmbHomeTeam.getSelectedItem().equals(cmbAwayTeam.getSelectedItem())) {
 		int option = JOptionPane.showConfirmDialog(SwingUtilities.windowForComponent(this),
 			"Both players have the same team selected!" + System.lineSeparator() + "Is this correct?",
-			"Please decide.", JOptionPane.YES_NO_OPTION);
+			PLEASE_DECIDE, JOptionPane.YES_NO_OPTION);
 		if (JOptionPane.YES_OPTION != option) {
 		    return false;
 		}
@@ -275,15 +277,15 @@ public class PlayGameDialog extends JDialog {
     /**
      * Reset all components back to a default state
      */
-    private void btnReset_actionPerformed() {
+    private void btnResetActionPerformed() {
 	int option = JOptionPane.showConfirmDialog(SwingUtilities.windowForComponent(this),
 		"Do you wish to reset this screen?" + System.lineSeparator() + "Unsaved changes will be lost!",
-		"Please decide.", JOptionPane.YES_NO_OPTION);
+		PLEASE_DECIDE, JOptionPane.YES_NO_OPTION);
 	if (JOptionPane.YES_OPTION == option) {
-	    log.debug("User confirmed reset");
+	    LOGGER.debug("User confirmed reset");
 	    resetAllComponents();
 	} else {
-	    log.debug("User cancelled reset");
+	    LOGGER.debug("User cancelled reset");
 	}
     }
 
@@ -306,14 +308,14 @@ public class PlayGameDialog extends JDialog {
     /**
      * Set the required components for the final match.
      */
-    private void rdbtnFinal_actionPerformed() {
+    private void rdbtnFinalActionPerformed() {
 	setActiveComponents(GameType.FINAL);
     }
 
     /**
      * Set the required components for a knock out match.
      */
-    private void rdbtnKnockOut_actionPerformed() {
+    private void rdbtnKnockOutActionPerformed() {
 	setActiveComponents(GameType.KNOCK_OUT);
     }
 
@@ -410,7 +412,7 @@ public class PlayGameDialog extends JDialog {
      * Setup the GUI components
      */
     private void initGUI() {
-	log.debug("Creating " + TITLE);
+	LOGGER.debug("Creating " + TITLE);
 	GridBagLayout gridBagLayout = new GridBagLayout();
 	gridBagLayout.columnWidths = new int[] { 21, 0 };
 	gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0 };
@@ -422,12 +424,12 @@ public class PlayGameDialog extends JDialog {
 	titlePanel.setOpaque(false);
 	getContentPane().add(titlePanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-	GridBagLayout gbl_titlePanel = new GridBagLayout();
-	gbl_titlePanel.columnWidths = new int[] { 0, 0, 0, 0 };
-	gbl_titlePanel.rowHeights = new int[] { 0, 0 };
-	gbl_titlePanel.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
-	gbl_titlePanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-	titlePanel.setLayout(gbl_titlePanel);
+	GridBagLayout gblTitlePanel = new GridBagLayout();
+	gblTitlePanel.columnWidths = new int[] { 0, 0, 0, 0 };
+	gblTitlePanel.rowHeights = new int[] { 0, 0 };
+	gblTitlePanel.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
+	gblTitlePanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+	titlePanel.setLayout(gblTitlePanel);
 
 	cmbHomePlayer = new JComboBox<>();
 	titlePanel.add(cmbHomePlayer, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -452,12 +454,12 @@ public class PlayGameDialog extends JDialog {
 	rdoPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 	holderPanel.add(rdoPanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
-	GridBagLayout gbl_rdoPanel = new GridBagLayout();
-	gbl_rdoPanel.columnWidths = new int[] { 0, 0 };
-	gbl_rdoPanel.rowHeights = new int[] { 0, 0, 0, 0 };
-	gbl_rdoPanel.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
-	gbl_rdoPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
-	rdoPanel.setLayout(gbl_rdoPanel);
+	GridBagLayout gblRdoPanel = new GridBagLayout();
+	gblRdoPanel.columnWidths = new int[] { 0, 0 };
+	gblRdoPanel.rowHeights = new int[] { 0, 0, 0, 0 };
+	gblRdoPanel.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+	gblRdoPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+	rdoPanel.setLayout(gblRdoPanel);
 	rdoPanel.setBorder(BorderFactory.createTitledBorder("Game Type"));
 
 	rdbtnGroup = new JRadioButton("Group");
@@ -469,14 +471,14 @@ public class PlayGameDialog extends JDialog {
 
 	rdbtnKnockOut = new JRadioButton("Knock Out");
 	rdbtnKnockOut.setOpaque(false);
-	rdbtnKnockOut.addActionListener(e -> rdbtnKnockOut_actionPerformed());
+	rdbtnKnockOut.addActionListener(e -> rdbtnKnockOutActionPerformed());
 	rdoPanel.add(rdbtnKnockOut, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
 	buttonGroup.add(rdbtnKnockOut);
 
 	rdbtnFinal = new JRadioButton("Final");
 	rdbtnFinal.setOpaque(false);
-	rdbtnFinal.addActionListener(e -> rdbtnFinal_actionPerformed());
+	rdbtnFinal.addActionListener(e -> rdbtnFinalActionPerformed());
 	rdoPanel.add(rdbtnFinal, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 	buttonGroup.add(rdbtnFinal);
@@ -485,12 +487,12 @@ public class PlayGameDialog extends JDialog {
 	scoresPanel.setOpaque(false);
 	holderPanel.add(scoresPanel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
-	GridBagLayout gbl_scoresPanel = new GridBagLayout();
-	gbl_scoresPanel.columnWidths = new int[] { 0, 0, 0, 0 };
-	gbl_scoresPanel.rowHeights = new int[] { 0, 0, 0, 0, 0 };
-	gbl_scoresPanel.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
-	gbl_scoresPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-	scoresPanel.setLayout(gbl_scoresPanel);
+	GridBagLayout gblScoresPanel = new GridBagLayout();
+	gblScoresPanel.columnWidths = new int[] { 0, 0, 0, 0 };
+	gblScoresPanel.rowHeights = new int[] { 0, 0, 0, 0, 0 };
+	gblScoresPanel.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
+	gblScoresPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+	scoresPanel.setLayout(gblScoresPanel);
 
 	final JLabel lblHomeTeam = new JLabel("Home Team");
 	lblHomeTeam.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -550,12 +552,12 @@ public class PlayGameDialog extends JDialog {
 	tournamentPanel.setOpaque(false);
 	getContentPane().add(tournamentPanel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-	GridBagLayout gbl_tournamentPanel = new GridBagLayout();
-	gbl_tournamentPanel.columnWidths = new int[] { 0, 0, 0 };
-	gbl_tournamentPanel.rowHeights = new int[] { 0, 0 };
-	gbl_tournamentPanel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-	gbl_tournamentPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-	tournamentPanel.setLayout(gbl_tournamentPanel);
+	GridBagLayout gblTournamentPanel = new GridBagLayout();
+	gblTournamentPanel.columnWidths = new int[] { 0, 0, 0 };
+	gblTournamentPanel.rowHeights = new int[] { 0, 0 };
+	gblTournamentPanel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+	gblTournamentPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+	tournamentPanel.setLayout(gblTournamentPanel);
 
 	final JLabel lblTournamentId = new JLabel("Tournament ID:");
 	lblTournamentId.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -570,26 +572,26 @@ public class PlayGameDialog extends JDialog {
 	controlPanel.setOpaque(false);
 	getContentPane().add(controlPanel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHEAST,
 		GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-	GridBagLayout gbl_controlPanel = new GridBagLayout();
-	gbl_controlPanel.columnWidths = new int[] { 0, 0, 0, 0 };
-	gbl_controlPanel.rowHeights = new int[] { 0, 0 };
-	gbl_controlPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
-	gbl_controlPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-	controlPanel.setLayout(gbl_controlPanel);
+	GridBagLayout gblControlPanel = new GridBagLayout();
+	gblControlPanel.columnWidths = new int[] { 0, 0, 0, 0 };
+	gblControlPanel.rowHeights = new int[] { 0, 0 };
+	gblControlPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+	gblControlPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+	controlPanel.setLayout(gblControlPanel);
 
 	final JButton btnReset = new JButton("Reset");
-	btnReset.addActionListener(arg0 -> btnReset_actionPerformed());
+	btnReset.addActionListener(arg0 -> btnResetActionPerformed());
 	controlPanel.add(btnReset, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
 
 	final JButton btnSaveGame = new JButton("Save Game");
-	btnSaveGame.addActionListener(e -> btnSaveGame_actionPerformed());
+	btnSaveGame.addActionListener(e -> btnSaveGameActionPerformed());
 	controlPanel.add(btnSaveGame, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
 
 	final JButton btnCancel = new JButton("Cancel");
 	btnCancel.setToolTipText("Cancel and exit this screen without saving any information.");
-	btnCancel.addActionListener(e -> btnCancel_actionPerformed());
+	btnCancel.addActionListener(e -> btnCancelActionPerformed());
 	controlPanel.add(btnCancel, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
     }

@@ -28,6 +28,10 @@ import java.util.List;
  */
 public final class SqlUtils {
 
+    private SqlUtils() {
+	// Private constructor to prevent instantiation.
+    }
+
     /**
      * If the input is 'Y' then return true, else return false. Will also return
      * false if a null string is passed in.
@@ -39,7 +43,7 @@ public final class SqlUtils {
      */
     public static boolean stb(final String input) {
 	boolean result = false;
-	if ((input != null) && (input.equalsIgnoreCase("Y"))) {
+	if ((input != null) && ("Y".equalsIgnoreCase(input))) {
 	    result = true;
 	}
 	return result;
@@ -70,15 +74,15 @@ public final class SqlUtils {
 	if (inputList.isEmpty()) {
 	    return Constants.EMPTY_STRING;
 	}
-	final String SEPARATOR = "~";
+	final String separator = "~";
 	StringBuilder sb = new StringBuilder();
 	for (Object item : inputList) {
 	    if (item == null) {
-		sb.append(SEPARATOR);
+		sb.append(separator);
 	    } else {
 		if (!(item instanceof Clob) && (!(item instanceof Blob))) {
 		    sb.append(item.hashCode());
-		    sb.append(SEPARATOR);
+		    sb.append(separator);
 		}
 		// Can't hash code so skip it
 	    }
@@ -205,7 +209,7 @@ public final class SqlUtils {
      */
     public static boolean getBoolFromResults(final List<Object> in, final int loc) {
 	String str = getSFromResults(in, loc);
-	return (str != null) && str.equalsIgnoreCase("Y");
+	return (str != null) && "Y".equalsIgnoreCase(str);
     }
 
     /**

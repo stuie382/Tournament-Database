@@ -26,7 +26,7 @@ public class ConnectionManager {
 
     private static ConnectionManager connectionManager;
     private static ComboPooledDataSource dataSource;
-    private static final String dbURL1 = "jdbc:derby:Tournament/db1;create=true";
+    private static final String DB_URL = "jdbc:derby:Tournament/db1;create=true";
 
     /**
      * Private constructor that is run the first time that the
@@ -40,7 +40,7 @@ public class ConnectionManager {
 
 	dataSource = new ComboPooledDataSource();
 	dataSource.setDriverClass("org.apache.derby.jdbc.EmbeddedDataSource");
-	dataSource.setJdbcUrl(dbURL1);
+	dataSource.setJdbcUrl(DB_URL);
 	dataSource.setMaxStatements(0);
 	dataSource.setInitialPoolSize(5);
 	dataSource.setAutoCommitOnClose(false);
@@ -51,8 +51,9 @@ public class ConnectionManager {
      * does not already exist.
      *
      * @return - Connection manager
+     * @throws PropertyVetoException
      */
-    public static ConnectionManager getInstance() throws SQLException, PropertyVetoException {
+    public static ConnectionManager getInstance() throws PropertyVetoException {
 	if (connectionManager == null) {
 	    connectionManager = new ConnectionManager();
 	    return connectionManager;

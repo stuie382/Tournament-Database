@@ -51,7 +51,7 @@ public class QueryEngine {
      *
      * @throws SQLException
      */
-    public CachedRowSet managePlayers_viewAll(Connection connTDB) throws SQLException {
+    public CachedRowSet managePlayersViewAll(Connection connTDB) throws SQLException {
 	CachedRowSet rowSet = new CachedRowSetImpl();
 	StringBuilder sql = new StringBuilder();
 	sql.append(" SELECT p.name ");
@@ -74,7 +74,7 @@ public class QueryEngine {
      *
      * @throws SQLException
      */
-    public CachedRowSet manageGames_viewAll(Connection connTDB) throws SQLException {
+    public CachedRowSet manageGamesViewAll(Connection connTDB) throws SQLException {
 	CachedRowSet rowSet = new CachedRowSetImpl();
 	StringBuilder sql = new StringBuilder();
 	sql.append(GameDbEngine.getSelectSql());
@@ -87,7 +87,7 @@ public class QueryEngine {
 	}
     }
 
-    public ResultSet manageTournaments_viewAll(Connection connTDB) throws SQLException {
+    public ResultSet manageTournamentsViewAll(Connection connTDB) throws SQLException {
 	CachedRowSet rowSet = new CachedRowSetImpl();
 	StringBuilder sql = new StringBuilder();
 	sql.append(TournamentDbEngine.getSelectSQL());

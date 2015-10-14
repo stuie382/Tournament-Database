@@ -34,7 +34,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
  */
 public class PlayerController {
 
-    private static final Logger log = Logger.getLogger(PlayerController.class);
+    private static final Logger LOGGER = Logger.getLogger(PlayerController.class);
 
     private final PlayerDbEngine engine;
 
@@ -56,11 +56,11 @@ public class PlayerController {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
 	    DTOPlayer newDto = engine.addPlayer(connTDB, dto);
 	    connTDB.commit();
-	    log.debug("Added new Player: " + newDto);
+	    LOGGER.debug("Added new Player: " + newDto);
 	    return newDto;
 	} catch (Exception ex) {
 	    String error = "Problem encountered adding a player: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
@@ -74,13 +74,13 @@ public class PlayerController {
      */
     public List<String> getAllPlayers() throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Getting all players");
+	    LOGGER.debug("Getting all players");
 	    List<String> results = engine.getAllPlayers(connTDB);
-	    log.debug("Players found in the database: " + results);
+	    LOGGER.debug("Players found in the database: " + results);
 	    return results;
 	} catch (Exception ex) {
 	    String error = "Problem encountered getting all players: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }

@@ -30,7 +30,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
 public class ManagePlayersDialog extends ManageDialog {
 
-    private static final Logger log = Logger.getLogger(ManagePlayersDialog.class);
+    private static final Logger LOGGER = Logger.getLogger(ManagePlayersDialog.class);
     private static final String MANAGE_PLAYERS = "Manage Players";
     private static final String PLAYER = "Player";
     private static final String ERROR_TITLE = "Error getting all players from the database.";
@@ -46,14 +46,15 @@ public class ManagePlayersDialog extends ManageDialog {
     }
 
     @Override
-    protected void btnViewAll_actionPerformed() {
+    protected void btnViewAllActionPerformed() {
 	try {
 	    QueryController query = new QueryController();
-	    ResultSet rs = query.managePlayers_viewAll();
+	    ResultSet rs = query.managePlayersViewAll();
 	    resultSetTablePanel.populateData(rs);
 	} catch (Exception ex) {
 	    String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
 		    + "See the log for details.";
+	    LOGGER.error("Viewing all players: ", ex);
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage, ERROR_TITLE,
 		    JOptionPane.ERROR_MESSAGE);
 	}
@@ -63,7 +64,7 @@ public class ManagePlayersDialog extends ManageDialog {
      * Get the input from the user, so we can add a new player to the database.
      */
     @Override
-    protected void btnAdd_actionPerformed() {
+    protected void btnAddActionPerformed() {
 	String userInput = JOptionPane.showInputDialog(manageDialog,
 		"Please enter the full name of the new player." + System.lineSeparator()
 			+ "Be careful, as once created it cannot be changed!",
@@ -82,11 +83,12 @@ public class ManagePlayersDialog extends ManageDialog {
 		} catch (ServerProblem sp) {
 		    String errorMessage = "Error encountered adding a new player." + System.lineSeparator()
 			    + "Please see the log for details.";
+		    LOGGER.error("Adding new player: ", sp);
 		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage,
 			    "Error adding new player to the database.", JOptionPane.ERROR_MESSAGE);
 		}
 	    } else {
-		log.info("Tried to add invalid player name: " + userInput);
+		LOGGER.info("Tried to add invalid player name: " + userInput);
 		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog),
 			"Please use alphanumeric characters only for player names!", "Oops",
 			JOptionPane.INFORMATION_MESSAGE);

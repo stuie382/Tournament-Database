@@ -40,7 +40,7 @@ public abstract class ManageDialog {
 
     public static final int MAX_LENGTH = 50;
 
-    private static final Logger log = Logger.getLogger(ManageDialog.class);
+    private static final Logger LOGGER = Logger.getLogger(ManageDialog.class);
     private static final String ALPHA_NUMERIC_REGEX = "^[a-zA-Z0-9\\s]*$";
 
     private JDialog manageJDialog;
@@ -83,7 +83,7 @@ public abstract class ManageDialog {
      *            - Singular of the title
      */
     protected void initGUI(String title, String type) {
-	log.debug("Creating ManageDialog: " + title);
+	LOGGER.debug("Creating ManageDialog: " + title);
 	manageJDialog.setSize(400, 400);
 	manageJDialog.setBackground(TournamentGUI.getBackgroundColour());
 	manageJDialog.setModal(true);
@@ -100,20 +100,20 @@ public abstract class ManageDialog {
 	buttonPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 	manageJDialog.getContentPane().add(buttonPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
 		GridBagConstraints.WEST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 5), 0, 0));
-	GridBagLayout gbl_buttonPanel = new GridBagLayout();
-	gbl_buttonPanel.columnWidths = new int[] { 85, 0 };
-	gbl_buttonPanel.rowHeights = new int[] { 23, 0, 0, 0, 0 };
-	gbl_buttonPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-	gbl_buttonPanel.rowWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-	buttonPanel.setLayout(gbl_buttonPanel);
+	GridBagLayout gblButtonPanel = new GridBagLayout();
+	gblButtonPanel.columnWidths = new int[] { 85, 0 };
+	gblButtonPanel.rowHeights = new int[] { 23, 0, 0, 0, 0 };
+	gblButtonPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+	gblButtonPanel.rowWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+	buttonPanel.setLayout(gblButtonPanel);
 
 	JButton btnViewAll = new JButton("View All");
 	btnViewAll.setToolTipText("Show all " + type + "s that exist.");
-	btnViewAll.addActionListener(e -> btnViewAll_actionPerformed());
+	btnViewAll.addActionListener(e -> btnViewAllActionPerformed());
 
 	JButton btnAdd = new JButton("Add " + type);
 	btnAdd.setToolTipText("Add a new " + type + " to the database.");
-	btnAdd.addActionListener(e -> btnAdd_actionPerformed());
+	btnAdd.addActionListener(e -> btnAddActionPerformed());
 
 	buttonPanel.add(btnViewAll, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
@@ -129,7 +129,7 @@ public abstract class ManageDialog {
 
 	JButton btnClose = new JButton("Close");
 	btnClose.setToolTipText("Close the " + title + " window.");
-	btnClose.addActionListener(e -> btnClose_actionPerformed());
+	btnClose.addActionListener(e -> btnCloseActionPerformed());
 	buttonPanel.add(btnClose, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
     }
@@ -137,14 +137,14 @@ public abstract class ManageDialog {
     /**
      * Simply dispose of this Dialog.
      */
-    protected void btnClose_actionPerformed() {
-	log.debug("Closing ManageDialog instance.");
+    protected void btnCloseActionPerformed() {
+	LOGGER.debug("Closing ManageDialog instance.");
 	manageJDialog.dispose();
     }
 
-    protected abstract void btnAdd_actionPerformed();
+    protected abstract void btnAddActionPerformed();
 
-    protected abstract void btnViewAll_actionPerformed();
+    protected abstract void btnViewAllActionPerformed();
 
     /**
      * Checks that the user has provided a name that only contains alphanumeric

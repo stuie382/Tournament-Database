@@ -12,11 +12,11 @@
 */
 package com.stuart.tourny.model.common.dto;
 
-import com.stuart.tourny.model.common.key.KeyGame;
-import com.stuart.tourny.model.utils.SqlUtils;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
+
+import com.stuart.tourny.model.common.key.KeyGame;
+import com.stuart.tourny.model.utils.SqlUtils;
 
 /**
  * <p>
@@ -29,10 +29,6 @@ import java.sql.Timestamp;
  * </p>
  */
 public class DTOGame implements Serializable {
-
-    public DTOGame() {
-	// Empty constructor
-    }
 
     private long gameId;
     private String homePlayer;
@@ -52,6 +48,10 @@ public class DTOGame implements Serializable {
     private String rowHash;
     private String homeTeam;
     private String awayTeam;
+
+    public DTOGame() {
+	// Empty constructor
+    }
 
     public String getHomeTeam() {
 	return homeTeam;
@@ -242,23 +242,23 @@ public class DTOGame implements Serializable {
     @Override
     public int hashCode() {
 	int result = (int) (gameId ^ (gameId >>> 32));
-	result = 31 * result + homePlayer.hashCode();
-	result = 31 * result + awayPlayer.hashCode();
-	result = 31 * result + (int) (homeGoals ^ (homeGoals >>> 32));
-	result = 31 * result + (int) (awayGoals ^ (awayGoals >>> 32));
-	result = 31 * result + (extraTime ? 1 : 0);
-	result = 31 * result + (int) (homePens ^ (homePens >>> 32));
-	result = 31 * result + (int) (awayPens ^ (awayPens >>> 32));
-	result = 31 * result + winner.hashCode();
-	result = 31 * result + (int) (tournamentId ^ (tournamentId >>> 32));
-	result = 31 * result + (knockOut ? 1 : 0);
-	result = 31 * result + createDatetime.hashCode();
-	result = 31 * result + createdUser.hashCode();
-	result = 31 * result + updateDatetime.hashCode();
-	result = 31 * result + updatedUser.hashCode();
-	result = 31 * result + rowHash.hashCode();
-	result = 31 * result + homeTeam.hashCode();
-	result = 31 * result + awayTeam.hashCode();
+	result = (31 * result) + homePlayer.hashCode();
+	result = (31 * result) + awayPlayer.hashCode();
+	result = (31 * result) + (int) (homeGoals ^ (homeGoals >>> 32));
+	result = (31 * result) + (int) (awayGoals ^ (awayGoals >>> 32));
+	result = (31 * result) + (extraTime ? 1 : 0);
+	result = (31 * result) + (int) (homePens ^ (homePens >>> 32));
+	result = (31 * result) + (int) (awayPens ^ (awayPens >>> 32));
+	result = (31 * result) + winner.hashCode();
+	result = (31 * result) + (int) (tournamentId ^ (tournamentId >>> 32));
+	result = (31 * result) + (knockOut ? 1 : 0);
+	result = (31 * result) + createDatetime.hashCode();
+	result = (31 * result) + createdUser.hashCode();
+	result = (31 * result) + updateDatetime.hashCode();
+	result = (31 * result) + updatedUser.hashCode();
+	result = (31 * result) + rowHash.hashCode();
+	result = (31 * result) + homeTeam.hashCode();
+	result = (31 * result) + awayTeam.hashCode();
 	return result;
     }
 

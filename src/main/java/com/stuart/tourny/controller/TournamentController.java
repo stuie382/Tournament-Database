@@ -35,7 +35,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
  */
 public class TournamentController {
 
-    private static final Logger log = Logger.getLogger(TournamentController.class);
+    private static final Logger LOGGER = Logger.getLogger(TournamentController.class);
 
     private final TournamentDbEngine engine;
 
@@ -47,23 +47,23 @@ public class TournamentController {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
 	    DTOTournament newDto = engine.addRecord(connTDB, dto);
 	    connTDB.commit();
-	    log.debug("Added new Tournament: " + newDto);
+	    LOGGER.debug("Added new Tournament: " + newDto);
 	    return newDto;
 	} catch (Exception ex) {
 	    String error = "Problem encountered adding a tournament: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
 
     public DTOTournament updateTournament(final DTOTournament dto) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to update this tournament: " + dto);
+	    LOGGER.debug("Attempting to update this tournament: " + dto);
 	    DTOTournament updatedDto = engine.updateRecord(connTDB, dto);
 	    connTDB.commit();
 	    return updatedDto;
 	} catch (Exception ex) {
-	    log.error("Problem updating tournament: " + ex.getMessage());
+	    LOGGER.error("Problem updating tournament: " + ex.getMessage());
 	    throw new ServerProblem("Problem updating tournament: ", ex);
 	}
     }
@@ -77,10 +77,10 @@ public class TournamentController {
      */
     public List<String> getTournaments() throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to get all the tournament names");
+	    LOGGER.debug("Attempting to get all the tournament names");
 	    return engine.getTournaments(connTDB);
 	} catch (Exception ex) {
-	    log.error(ex);
+	    LOGGER.error(ex);
 	    throw new ServerProblem("Problem getting tournaments.", ex);
 	}
     }
@@ -97,10 +97,10 @@ public class TournamentController {
      */
     public DTOTournament getDTOTournamentFromName(final String tournamentName) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to get the tournament ID from the name");
+	    LOGGER.debug("Attempting to get the tournament ID from the name");
 	    return engine.getDTOTournamentFromName(connTDB, tournamentName);
 	} catch (Exception ex) {
-	    log.error(ex);
+	    LOGGER.error(ex);
 	    throw new ServerProblem("Problem getting tournament ID ", ex);
 	}
     }
@@ -121,12 +121,12 @@ public class TournamentController {
      */
     public Map<Long, String> calculateGoldenBootForTournament(final long tournamentId) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to calculate the golden boot winner");
+	    LOGGER.debug("Attempting to calculate the golden boot winner");
 	    Map<Long, String> results = engine.calculateGoldenBootForTournament(connTDB, tournamentId);
-	    log.debug("Golden boot winner: " + results);
+	    LOGGER.debug("Golden boot winner: " + results);
 	    return results;
 	} catch (Exception ex) {
-	    log.error("Problem calculating golden boot: " + ex.getMessage());
+	    LOGGER.error("Problem calculating golden boot: " + ex.getMessage());
 	    throw new ServerProblem("Problem getting golden boot", ex);
 	}
     }

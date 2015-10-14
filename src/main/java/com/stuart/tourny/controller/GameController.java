@@ -35,7 +35,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
  */
 public class GameController {
 
-    private static final Logger log = Logger.getLogger(GameController.class);
+    private static final Logger LOGGER = Logger.getLogger(GameController.class);
 
     private GameDbEngine engine;
 
@@ -52,14 +52,14 @@ public class GameController {
      */
     public DTOGame addGame(DTOGame dto) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to add new GAME: " + dto.toString());
+	    LOGGER.debug("Attempting to add new GAME: " + dto.toString());
 	    DTOGame newGame = engine.addGame(connTDB, dto);
 	    connTDB.commit();
-	    log.debug("Game added:" + newGame);
+	    LOGGER.debug("Game added:" + newGame);
 	    return newGame;
 	} catch (Exception ex) {
 	    String error = "Problem encountered during addGame: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
@@ -74,11 +74,11 @@ public class GameController {
      */
     public DTOGame getGame(KeyGame key) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Getting game from database: " + key);
+	    LOGGER.debug("Getting game from database: " + key);
 	    return engine.getGame(connTDB, key);
 	} catch (Exception ex) {
 	    String error = "Problem encountered during getGame: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
@@ -93,13 +93,13 @@ public class GameController {
      */
     public DTOGame updateGame(DTOGame dto) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to update record: " + dto);
+	    LOGGER.debug("Attempting to update record: " + dto);
 	    DTOGame newDto = engine.updateGame(connTDB, dto);
 	    connTDB.commit();
 	    return newDto;
 	} catch (Exception ex) {
 	    String error = "Problem encountered during updateGame: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
@@ -112,12 +112,12 @@ public class GameController {
      */
     public void deleteGame(DTOGame dto) throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to delete game: " + dto);
+	    LOGGER.debug("Attempting to delete game: " + dto);
 	    engine.deleteGame(connTDB, dto);
 	    connTDB.commit();
 	} catch (Exception ex) {
 	    String error = "Problem encountered during deleteGame: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
@@ -131,11 +131,11 @@ public class GameController {
      */
     public List<String> getTeams() throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to get all the teams");
+	    LOGGER.debug("Attempting to get all the teams");
 	    return engine.getTeams(connTDB);
 	} catch (Exception ex) {
 	    String error = "Problem encountered during getTeams: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }

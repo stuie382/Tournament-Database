@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 public class ResultSetTablePanel {
 
     private static final String CHOOSER_TITLE = "Save as...";
-    private static final Logger log = Logger.getLogger(ResultSetTablePanel.class);
+    private static final Logger LOGGER = Logger.getLogger(ResultSetTablePanel.class);
 
     private JScrollPane scrollPane;
     private JTable dataTable;
@@ -109,7 +109,7 @@ public class ResultSetTablePanel {
 	dataTable.setModel(tableModel);
 	setupColumns(dataTable.getColumnModel());
 	scrollPane.setViewportView(dataTable);
-	log.debug("ResultSet successfully converted to a table.");
+	LOGGER.debug("ResultSet successfully converted to a table.");
     }
 
     private static void setupColumns(TableColumnModel columnModel) {
@@ -144,7 +144,7 @@ public class ResultSetTablePanel {
 	    return new DefaultTableModel(rows, columnNames);
 	} catch (Exception e) {
 	    String error = "Something went wrong converting the ResultSet: " + e;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new IllegalStateException(error);
 	}
     }
@@ -177,7 +177,7 @@ public class ResultSetTablePanel {
      *            - File to save
      */
     private void createAndWriteCsv(File fileToSave) {
-	log.debug("Attempting to save " + fileToSave.getName());
+	LOGGER.debug("Attempting to save " + fileToSave.getName());
 	try (PrintWriter pw = new PrintWriter(fileToSave)) {
 	    this.results.first();
 	    ResultSetMetaData meta = this.results.getMetaData();
@@ -194,9 +194,9 @@ public class ResultSetTablePanel {
 		}
 		pw.println(row);
 	    }
-	    log.debug("CSV Created!");
+	    LOGGER.debug("CSV Created!");
 	} catch (Exception ex) {
-	    log.error("Problem creating CSV file: " + ex);
+	    LOGGER.error("Problem creating CSV file: " + ex);
 	}
     }
 

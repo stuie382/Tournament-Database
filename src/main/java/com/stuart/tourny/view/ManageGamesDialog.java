@@ -21,10 +21,13 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 import com.stuart.tourny.controller.QueryController;
 
 public class ManageGamesDialog extends ManageDialog {
 
+    private static final Logger LOGGER = Logger.getLogger(ManageGamesDialog.class);
     private static final String MANAGE_GAMES = "Manage Games";
     private static final String GAME = "Game";
     private static final String ERROR_TITLE = "Error getting all games from the database.";
@@ -46,18 +49,20 @@ public class ManageGamesDialog extends ManageDialog {
     }
 
     @Override
-    protected void btnAdd_actionPerformed() {
+    protected void btnAddActionPerformed() {
+	// Method required by interface but non-functional in this context.
     }
 
     @Override
-    protected void btnViewAll_actionPerformed() {
+    protected void btnViewAllActionPerformed() {
 	try {
 	    QueryController query = new QueryController();
-	    ResultSet rs = query.manageGames_viewAll();
+	    ResultSet rs = query.manageGamesViewAll();
 	    resultSetTablePanel.populateData(rs);
 	} catch (Exception ex) {
 	    String errorMessage = "Error encountered getting all Games.." + System.lineSeparator()
 		    + "See the log for details.";
+	    LOGGER.error("Getting all games:", ex);
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage, ERROR_TITLE,
 		    JOptionPane.ERROR_MESSAGE);
 	}

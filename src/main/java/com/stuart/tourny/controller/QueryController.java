@@ -41,7 +41,7 @@ import java.sql.ResultSet;
  */
 public class QueryController {
 
-    private static final Logger log = Logger.getLogger(QueryController.class);
+    private static final Logger LOGGER = Logger.getLogger(QueryController.class);
 
     private final QueryEngine queryEngine;
 
@@ -49,37 +49,37 @@ public class QueryController {
 	queryEngine = new QueryEngine();
     }
 
-    public ResultSet managePlayers_viewAll() throws ServerProblem {
+    public ResultSet managePlayersViewAll() throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to run managePlayers_viewAll...");
-	    return queryEngine.managePlayers_viewAll(connTDB);
+	    LOGGER.debug("Attempting to run managePlayers_viewAll...");
+	    return queryEngine.managePlayersViewAll(connTDB);
 	} catch (Exception ex) {
 	    String error = "Problem running Manage Players View All query: " + ex;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
 
-    public ResultSet manageGames_viewAll() throws ServerProblem {
+    public ResultSet manageGamesViewAll() throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to run manageGames_viewAll...");
-	    return queryEngine.manageGames_viewAll(connTDB);
+	    LOGGER.debug("Attempting to run manageGames_viewAll...");
+	    return queryEngine.manageGamesViewAll(connTDB);
 	} catch (Exception ex) {
 	    String error = "Problem running Manage Games View All query." + System.lineSeparator()
 		    + Constants.LOG_DETAILS;
-	    log.error(error);
+	    LOGGER.error(error);
 	    throw new ServerProblem(error, ex);
 	}
     }
 
-    public ResultSet manageTournaments_viewAll() throws ServerProblem {
+    public ResultSet manageTournamentsViewAll() throws ServerProblem {
 	try (Connection connTDB = ConnectionManager.getInstance().getConnection()) {
-	    log.debug("Attempting to run manageTournaments_viewAll...");
-	    return queryEngine.manageTournaments_viewAll(connTDB);
+	    LOGGER.debug("Attempting to run manageTournaments_viewAll...");
+	    return queryEngine.manageTournamentsViewAll(connTDB);
 	} catch (Exception ex) {
 	    String error = "Problem running Manage Tournaments View All query." + System.lineSeparator()
 		    + Constants.LOG_DETAILS;
-	    log.error(error, ex);
+	    LOGGER.error(error, ex);
 	    throw new ServerProblem(error, ex);
 	}
     }

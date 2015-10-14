@@ -18,7 +18,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,14 +53,20 @@ public class TournamentGUI extends JFrame {
 
     private static final Color BACKGROUND = new Color(0, 204, 51);
     private static final List<Image> ICON_IMAGES = loadIcons();
+    private static final Logger LOGGER = Logger.getLogger(TournamentGUI.class);
 
-    private static final Logger log = Logger.getLogger(TournamentGUI.class);
+    /**
+     * Create the frame.
+     */
+    public TournamentGUI() {
+	initGUI();
+    }
 
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
-	log.info("Tournament Database started");
+	LOGGER.info("Tournament Database started");
 
 	setupLoggers();
 	EventQueue.invokeLater(() -> {
@@ -69,13 +74,6 @@ public class TournamentGUI extends JFrame {
 		TournamentGUI frame = new TournamentGUI();
 		frame.setTitle("Tournament Database");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
-		    @Override
-		    public void windowClosing(WindowEvent e) {
-			log.debug("Application closed by WindowClosing event: " + e);
-			System.exit(0);
-		    }
-		});
 		frame.setSize(800, 400);
 		frame.setResizable(false);
 		frame.setIconImages(ICON_IMAGES);
@@ -83,7 +81,7 @@ public class TournamentGUI extends JFrame {
 		frame.pack();
 		frame.setVisible(true);
 	    } catch (Exception ex) {
-		log.error(ex);
+		LOGGER.error(ex);
 	    }
 	});
     }
@@ -126,12 +124,6 @@ public class TournamentGUI extends JFrame {
 	fileAppender.setLayout(layout);
 	fileAppender.activateOptions();
 
-	// configures the root logger
-	Logger rootLogger = Logger.getRootLogger();
-	rootLogger.setLevel(Level.DEBUG);
-	rootLogger.addAppender(consoleAppender);
-	rootLogger.addAppender(fileAppender);
-
 	// Configure the logging for C3P0
 	Logger.getLogger("com.mchange.v2.c3p0").setLevel(Level.WARN);
 	Logger.getLogger("com.mchange.v2").setLevel(Level.WARN);
@@ -143,24 +135,17 @@ public class TournamentGUI extends JFrame {
     }
 
     /**
-     * Create the frame.
-     */
-    public TournamentGUI() {
-	initGUI();
-    }
-
-    /**
      * Tidy up and close things down when close is clicked.
      */
-    private void btnCloseApp_actionPerformed() {
-	log.debug("Application closed by the 'Close App' button");
+    private void btnCloseAppActionPerformed() {
+	LOGGER.debug("Application closed by the 'Close App' button");
 	this.processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
     /**
      * Create a new instance of the Manage Games dialog and display it.
      */
-    private void btnManageGames_actionPerformed() {
+    private void btnManageGamesActionPerformed() {
 	ManageGamesDialog mgd = new ManageGamesDialog(SwingUtilities.windowForComponent(this));
 	mgd.getDialog().setBackground(BACKGROUND);
 	mgd.getDialog().setIconImages(ICON_IMAGES);
@@ -172,7 +157,7 @@ public class TournamentGUI extends JFrame {
     /**
      * Create a new instance of the Manage Tournaments Dialog and display it.
      */
-    private void btnManageTournaments_actionPerformed() {
+    private void btnManageTournamentsActionPerformed() {
 	ManageTournamentsDialog mtd = new ManageTournamentsDialog(SwingUtilities.windowForComponent(this));
 	mtd.getDialog().setBackground(BACKGROUND);
 	mtd.getDialog().setIconImages(ICON_IMAGES);
@@ -184,7 +169,7 @@ public class TournamentGUI extends JFrame {
     /**
      * Create a new instance of the Manage Players Dialog and display it.
      */
-    private void btnManagePlayers_actionPerformed() {
+    private void btnManagePlayersActionPerformed() {
 	ManagePlayersDialog mpd = new ManagePlayersDialog(SwingUtilities.windowForComponent(this));
 	mpd.getDialog().setBackground(BACKGROUND);
 	mpd.getDialog().setIconImages(ICON_IMAGES);
@@ -196,7 +181,7 @@ public class TournamentGUI extends JFrame {
     /**
      * Create a new instance of the Play Game Dialog and display it.
      */
-    private void btnPlayGame_actionPerformed() {
+    private void btnPlayGameActionPerformed() {
 	try {
 	    TournamentController tournamentController = new TournamentController();
 	    List<String> tournaments = tournamentController.getTournaments();
@@ -207,7 +192,7 @@ public class TournamentGUI extends JFrame {
 		return;
 	    }
 	} catch (ServerProblem sp) {
-	    log.error(sp);
+	    LOGGER.error(sp);
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this), Constants.LOG_DETAILS,
 		    "Error populating components", JOptionPane.ERROR_MESSAGE);
 	    throw new IllegalStateException(sp);
@@ -248,24 +233,24 @@ public class TournamentGUI extends JFrame {
 	parentPane.setForeground(BACKGROUND);
 	parentPane.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 	setContentPane(parentPane);
-	GridBagLayout gbl_parentPane = new GridBagLayout();
-	gbl_parentPane.columnWidths = new int[] { 143, 0, 0 };
-	gbl_parentPane.rowHeights = new int[] { 258, 0 };
-	gbl_parentPane.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-	gbl_parentPane.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
-	parentPane.setLayout(gbl_parentPane);
+	GridBagLayout gblParentPane = new GridBagLayout();
+	gblParentPane.columnWidths = new int[] { 143, 0, 0 };
+	gblParentPane.rowHeights = new int[] { 258, 0 };
+	gblParentPane.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+	gblParentPane.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
+	parentPane.setLayout(gblParentPane);
 
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setBackground(BACKGROUND);
 	buttonPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 	parentPane.add(buttonPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		GridBagConstraints.VERTICAL, new Insets(0, 0, 5, 0), 0, 0));
-	GridBagLayout gbl_buttonPanel = new GridBagLayout();
-	gbl_buttonPanel.columnWidths = new int[] { 111, 0 };
-	gbl_buttonPanel.rowHeights = new int[] { 23, 23, 0, 0, 0, 0, 0, 0, 0 };
-	gbl_buttonPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-	gbl_buttonPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-	buttonPanel.setLayout(gbl_buttonPanel);
+	GridBagLayout gblButtonPanel = new GridBagLayout();
+	gblButtonPanel.columnWidths = new int[] { 111, 0 };
+	gblButtonPanel.rowHeights = new int[] { 23, 23, 0, 0, 0, 0, 0, 0, 0 };
+	gblButtonPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+	gblButtonPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+	buttonPanel.setLayout(gblButtonPanel);
 
 	JButton btnManagePlayers = new JButton("Manage Players");
 	btnManagePlayers.setToolTipText("Add/View Players");
@@ -281,17 +266,17 @@ public class TournamentGUI extends JFrame {
 
 	JButton btnManageTournaments = new JButton("Manage Tournaments");
 	btnManageTournaments.setToolTipText("View Tournaments and related queries");
-	btnManageTournaments.addActionListener(e -> btnManageTournaments_actionPerformed());
+	btnManageTournaments.addActionListener(e -> btnManageTournamentsActionPerformed());
 	buttonPanel.add(btnManageTournaments, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 
 	JButton btnCloseApp = new JButton("Close App");
 	btnCloseApp.setToolTipText("Exit the Application\r\n");
-	btnCloseApp.addActionListener(e -> btnCloseApp_actionPerformed());
+	btnCloseApp.addActionListener(e -> btnCloseAppActionPerformed());
 
 	JButton btnPlayGame = new JButton("Play a Game");
 	btnPlayGame.setToolTipText("Play a game, requires a Tournament to exist.");
-	btnPlayGame.addActionListener(e -> btnPlayGame_actionPerformed());
+	btnPlayGame.addActionListener(e -> btnPlayGameActionPerformed());
 	buttonPanel.add(btnPlayGame, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 		GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 
@@ -314,8 +299,8 @@ public class TournamentGUI extends JFrame {
 	lblWelcomeImage.setIcon(new ImageIcon(TournamentGUI.class.getResource("/images/worldCup_open.jpg")));
 	welcomeImgPanel.add(lblWelcomeImage);
 
-	btnManagePlayers.addActionListener(arg0 -> btnManagePlayers_actionPerformed());
+	btnManagePlayers.addActionListener(arg0 -> btnManagePlayersActionPerformed());
 
-	btnManageGames.addActionListener(e -> btnManageGames_actionPerformed());
+	btnManageGames.addActionListener(e -> btnManageGamesActionPerformed());
     }
 }

@@ -30,7 +30,7 @@ import com.stuart.tourny.model.utils.exceptions.ServerProblem;
 
 public class ManageTournamentsDialog extends ManageDialog {
 
-    private static final Logger log = Logger.getLogger(ManageTournamentsDialog.class);
+    private static final Logger LOGGER = Logger.getLogger(ManageTournamentsDialog.class);
     private static final String MANAGE_TOURNAMENTS = "Manage Tournaments";
     private static final String TOURNAMENT = "Tournament";
 
@@ -45,14 +45,15 @@ public class ManageTournamentsDialog extends ManageDialog {
     }
 
     @Override
-    protected void btnViewAll_actionPerformed() {
+    protected void btnViewAllActionPerformed() {
 	try {
 	    QueryController query = new QueryController();
-	    ResultSet rs = query.manageTournaments_viewAll();
+	    ResultSet rs = query.manageTournamentsViewAll();
 	    resultSetTablePanel.populateData(rs);
 	} catch (Exception ex) {
-	    String errorMessage = "Error encountered viewing all players." + System.lineSeparator()
+	    String errorMessage = "Error encountered viewing all tournaments." + System.lineSeparator()
 		    + "See the log for details.";
+	    LOGGER.error("Viewing all tournaments: ", ex);
 	    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage,
 		    "Error getting all Tournaments from the database", JOptionPane.ERROR_MESSAGE);
 	}
@@ -60,7 +61,7 @@ public class ManageTournamentsDialog extends ManageDialog {
     }
 
     @Override
-    protected void btnAdd_actionPerformed() {
+    protected void btnAddActionPerformed() {
 	String userInput = JOptionPane.showInputDialog(manageDialog,
 		"Please enter the full name of the new tournament." + System.lineSeparator()
 			+ "Be careful, as once created it cannot be changed!",
@@ -80,11 +81,12 @@ public class ManageTournamentsDialog extends ManageDialog {
 		} catch (ServerProblem sp) {
 		    String errorMessage = "Error encountered adding a new Tournament." + System.lineSeparator()
 			    + "Please see the log for details.";
+		    LOGGER.error("Adding new tournament: ", sp);
 		    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog), errorMessage,
 			    "Error adding new Tournament to the database.", JOptionPane.ERROR_MESSAGE);
 		}
 	    } else {
-		log.info("Tried to add invalid Tournament name: " + userInput);
+		LOGGER.info("Tried to add invalid Tournament name: " + userInput);
 		JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(manageDialog),
 			"Please use alphanumeric characters only for Tournament names!", "Oops",
 			JOptionPane.INFORMATION_MESSAGE);
