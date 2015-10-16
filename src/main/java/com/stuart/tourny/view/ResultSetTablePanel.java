@@ -142,10 +142,10 @@ public class ResultSetTablePanel {
 		rows.add(newRow);
 	    }
 	    return new DefaultTableModel(rows, columnNames);
-	} catch (Exception e) {
-	    String error = "Something went wrong converting the ResultSet: " + e;
-	    LOGGER.error(error);
-	    throw new IllegalStateException(error);
+	} catch (Exception ex) {
+	    String error = "Something went wrong converting the ResultSet! " ;
+	    LOGGER.error(error, ex);
+	    throw new IllegalStateException(ex);
 	}
     }
 
